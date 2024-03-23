@@ -69,7 +69,7 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
           <Badge size="2">{title}</Badge>
         </Box>
         <Box>
-          <ScrollArea style={{ height: "35vh" }}>
+          <ScrollArea style={{ height: "38vh" }}>
             <LevelAccordion
               nestedobj={nestedObj}
               isDiagnostics={isDiagnostics}

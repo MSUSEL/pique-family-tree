@@ -1,6 +1,11 @@
 import * as Accordion from "@radix-ui/react-accordion";
 import "../Style/LevelAccordion.css";
-import { ChevronUpIcon, ChevronDownIcon } from "@radix-ui/react-icons";
+import {
+  ChevronUpIcon,
+  ChevronDownIcon,
+  CircleIcon,
+  CheckCircledIcon,
+} from "@radix-ui/react-icons";
 import { Table, Button } from "@radix-ui/themes";
 import { useState } from "react";
 
@@ -105,6 +110,24 @@ const LevelAccordion = ({
 
   return (
     <Accordion.Root type="multiple" className="Level--AccordionRoot">
+      <div className="toggle-button-container" style={{ background: "white" }}>
+        <Button
+          className="toggle-button"
+          onClick={toggleDetailsVisibility}
+          style={{
+            right: "0",
+            fontSize: "85%",
+            color: "gray",
+          }}
+        >
+          View Additional Details
+          {detailsVisible ? (
+            <CheckCircledIcon className="chevron-icon" />
+          ) : (
+            <CircleIcon className="chevron-icon" />
+          )}
+        </Button>
+      </div>
       {Object.entries(processedItems).map(([riskLevel, items]) => (
         <Accordion.Item
           value={riskLevel}
@@ -150,20 +173,6 @@ const LevelAccordion = ({
                             </Table.Cell>
                           }
                         </Table.Row>
-                        <div className="toggle-button-container">
-                          <Button
-                            className="toggle-button"
-                            onClick={toggleDetailsVisibility}
-                            style={{ right: "0" }}
-                          >
-                            Additional Details
-                            {detailsVisible ? (
-                              <ChevronUpIcon className="chevron-icon" />
-                            ) : (
-                              <ChevronDownIcon className="chevron-icon" />
-                            )}
-                          </Button>
-                        </div>
                         <Table.Row className="AdditionalDetails">
                           {detailsVisible && renderObjectDetails(details)}
                         </Table.Row>
