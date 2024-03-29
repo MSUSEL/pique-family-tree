@@ -99,6 +99,7 @@ const LevelAccordion = ({
 }: {
   nestedobj: Record<string, FilterableItem>;
   isDiagnostics: boolean;
+  detailsVisible: boolean;
 }) => {
   const processedItems = classifyRiskLevels(nestedobj, isDiagnostics);
   return (

@@ -107,6 +107,7 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
             <LevelAccordion
               nestedobj={nestedObj}
               isDiagnostics={isDiagnostics}
+              detailsVisible={detailsVisible}
             />
           </ScrollArea>
         </Box>
