@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { State } from "../../state";
+import { State } from "../../../state";
 import { Switch, Flex, Text } from "@radix-ui/themes";
 
 export const HideZeroWeightsSwitch = () => {

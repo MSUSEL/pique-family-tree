@@ -1,7 +1,7 @@
 import React from 'react';
 import { Table, HoverCard, Link, Text, Strong, Box } from '@radix-ui/themes';
 import * as Slider from '@radix-ui/react-slider';
-import '../../Style/Slider.css';
+import '../../../Style/Slider.css';
 
 interface SingleTableRowProps {
     name: string;
@@ -25,7 +25,7 @@ const SingleTableRow: React.FC<SingleTableRowProps> = ({
 
     return (
         <Table.Row>
-            <Table.ColumnHeaderCell justify={'center'}>
+            <Table.ColumnHeaderCell align='center' justify={'center'}>
                 <HoverCard.Root>
                     <HoverCard.Trigger>
                         <Link href="#">{name}</Link>
@@ -38,9 +38,9 @@ const SingleTableRow: React.FC<SingleTableRowProps> = ({
                 </HoverCard.Root>
             </Table.ColumnHeaderCell>
 
-            <Table.Cell justify={'center'}>{qualityAspectValue.toFixed(3)}</Table.Cell>
-            <Table.Cell justify={'center'}>{weightValue.toFixed(3)}</Table.Cell> {/* Original weight value */}
-            <Table.Cell>
+            <Table.Cell align='center' justify={'center'}>{qualityAspectValue.toFixed(2)}</Table.Cell>
+            <Table.Cell align='center' justify={'center'}>{weightValue.toFixed(2)}</Table.Cell> {/* Original weight value */}
+            <Table.Cell align='center' justify={'center'}>
                 <Box style={{ position: 'relative', padding: '20px' }}>
                     <Slider.Root
                         value={[sliderValue]}
@@ -59,7 +59,7 @@ const SingleTableRow: React.FC<SingleTableRowProps> = ({
                     </div>
                 </Box>
             </Table.Cell>
-            <Table.Cell>{recalculatedWeight.toFixed(3)}</Table.Cell>
+            <Table.Cell align='center' justify={'center'}>{recalculatedWeight.toFixed(2)}</Table.Cell>
         </Table.Row>
     );
 };

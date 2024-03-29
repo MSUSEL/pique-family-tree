@@ -18,6 +18,15 @@ import {
  */
 
 export function TreeDisplay(props) {
+
+  
+  const [selectedNode, setSelectedNode] = useState(null);
+  const [selectedNodes, setSelectedNodes] = useState([]);
+
+  useEffect(() => {
+    console.log('Selected Node:', selectedNode);
+  }, [selectedNode]);
+
   const [qaChildrenEdgeVisibility, setQAChildrenEdgeVisibility] = useState(
     () => {
       let default_obj = {};
@@ -548,7 +557,7 @@ export function TreeDisplay(props) {
       .attr("rx", 2)
       .attr("x", treeNodes[0].x)
       .attr("y", treeNodes[0].y)
-      .style("fill", NodeRiskColor(treeNodes[0].json_data.value))
+      .style("fill", NodeRiskColor(treeNodes[0].json_data.value, treeNodes[0].name, selectedNode))
       .style("stroke-width", "1px")
       .style("stroke", "black");
 
@@ -594,7 +603,7 @@ export function TreeDisplay(props) {
         .attr("rx", 2)
         .attr("x", treeNodes[item].x)
         .attr("y", treeNodes[item].y)
-        .style("fill", NodeRiskColor(treeNodes[item].json_data.value))
+        .style("fill", NodeRiskColor(treeNodes[item].json_data.value, treeNodes[item].name, selectedNode))
         .style("stroke-width", "1px")
         .style("stroke", "black")
         .on("click", handleQAEdgesToggle);
@@ -886,13 +895,7 @@ export function TreeDisplay(props) {
                 .attr("rx", 2)
                 .attr("x", diag_x)
                 .attr("y", diag_y)
-                .style(
-                  "fill",
-                  NodeRiskColor(
-                    props.fileData["diagnostics"][diagnostic_name].value,
-                    "diagnostic"
-                  )
-                )
+                .style("fill",NodeRiskColor(props.fileData["diagnostics"][diagnostic_name].value, props.fileData["diagnostics"][diagnostic_name].name, selectedNode, "diagnostic"))
                 .style("stroke-width", "1px")
                 .style("stroke", "black");
 
@@ -953,9 +956,7 @@ export function TreeDisplay(props) {
             .attr("rx", 2)
             .attr("x", x_cor)
             .attr("y", y_cor)
-            .style(
-              "fill",
-              NodeRiskColor(props.fileData.measures[measure_name].value)
+            .style("fill",NodeRiskColor(props.fileData.measures[measure_name].value,props.fileData.measures[measure_name].name, selectedNode)
             )
             .style("stroke-width", "1px")
             .style("stroke", "black")
@@ -1010,7 +1011,7 @@ export function TreeDisplay(props) {
         .attr("rx", 2)
         .attr("x", p_factors[i].x)
         .attr("y", p_factors[i].y)
-        .style("fill", NodeRiskColor(p_factors[i].json_data.value))
+        .style("fill", NodeRiskColor(p_factors[i].json_data.value,p_factors[i].name,selectedNode))
         .style("stroke-width", "1px")
         .style("stroke", "black")
         .on("click", handlePFEdgesToggle);
@@ -1036,21 +1037,27 @@ export function TreeDisplay(props) {
         .attr("dominant-baseline", "middle")
         .attr("text-anchor", "middle");
     }
+    
     const handleClickingNodeForDescriptionPanel = (e) => {
       let nfpa = nodesForPanelBoxes;
-
       const clicked_id_name = e.path[0].id.split("^")[2];
-
+    
       if (
-        nodesForPanelBoxes.filter((n) => n["name"] === clicked_id_name).length >
-        0
+        nodesForPanelBoxes.filter((n) => n["name"] === clicked_id_name).length > 0
       ) {
         nfpa = nfpa.filter((e) => e.name !== clicked_id_name);
+        const previousSelectedNode = selectedNodes[selectedNodes.length - 2]; 
+        setSelectedNodes((prevSelectedNodes) => prevSelectedNodes.slice(0, -1)); 
+        setSelectedNode(previousSelectedNode); 
       } else {
         nfpa = [...nfpa, findPIQUENode(props.fileData, e.path[0].id)];
+        setSelectedNodes((prevSelectedNodes) => [...prevSelectedNodes, clicked_id_name]);
+        setSelectedNode(clicked_id_name);
       }
+    
       setNodesForPanelBoxes(nfpa);
     };
+    
 
     const handleClickingPFParentClicker = (e) => {
       //console.log(e.path[0].id)
@@ -1275,6 +1282,7 @@ export function TreeDisplay(props) {
 
   const clearSidePanel = () => {
     setNodesForPanelBoxes([]);
+    setSelectedNode(null);
   };
 
   // Adjusts SVG when node description panel opens up or close.

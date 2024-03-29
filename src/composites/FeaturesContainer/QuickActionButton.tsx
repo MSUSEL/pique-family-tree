@@ -2,7 +2,8 @@ import { useAtom, useAtomValue } from "jotai";
 import { State } from "../../state";
 import { Switch, Flex, HoverCard, Link, Text, Strong, Box  } from "@radix-ui/themes";
 import { BoxIcon, CaretDownIcon, SwitchIcon } from "@radix-ui/react-icons";
-import { HideZeroWeightsSwitch } from "./HideZeroWeightsSwitch";
+import { HideZeroWeightsSwitch } from "./QuickActions/HideZeroWeightsSwitch";
+import { HidePerfectNodesSwitch } from "./QuickActions/HidePerfectNodesSwitch";
 import React from 'react';
 import * as Separator from '@radix-ui/react-separator';
 import '../Style/Separator.css';
@@ -29,6 +30,10 @@ export const QuickActionButton = () => {
 
       <Box>
       <HideZeroWeightsSwitch />
+      </Box>
+
+      <Box>
+      <HidePerfectNodesSwitch />
       </Box>
 
     </Flex>

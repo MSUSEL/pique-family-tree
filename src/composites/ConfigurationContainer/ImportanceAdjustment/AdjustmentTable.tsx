@@ -14,7 +14,7 @@ import {
   Avatar,
 } from "@radix-ui/themes";
 import { ResetIcon, DownloadIcon } from "@radix-ui/react-icons";
-import SingleTableRow from "./SingleRowInTable";
+import SingleTableRow from "./AdjustmentTable/SingleRowInTable";
 import { Profile } from "../../../types";
 import * as schema from "../../../data/schema";
 

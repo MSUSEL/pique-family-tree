@@ -83,3 +83,29 @@
 .info-block:hover .external-link-icon {
   display: inline-block;
 }
+
+.hidden {
+  display: none;
+}
+
+.utility-block{
+  margin-bottom: 0.05%;
+  margin-left: 1%;
+}
+
+.utility-block:hover .external-link-icon {
+  display: inline-block;
+}
+
+.utility-block > div {
+  display: none;
+}
+
+.utility-block:hover > div {
+  display: block;
+}
+
+.utility-block.active > div {
+  display: block;
+}
+

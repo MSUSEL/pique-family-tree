@@ -1,0 +1,13 @@
+
+  {
+    "type": "option3",
+    "importance": {
+      "Availability": 0,
+      "Authenticity": 0,
+      "Authorization": 0,
+      "Confidentiality": 0,
+      "Non-repudiation": 0,
+      "Integrity": 1
+    }
+  }
+

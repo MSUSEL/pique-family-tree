@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Box, Select, Button, Flex, Text, Separator } from "@radix-ui/themes";
 import {
   ChevronDownIcon,
@@ -7,7 +7,7 @@ import {
   DropdownMenuIcon,
 } from "@radix-ui/react-icons";
 import { Profile } from "../../../types";
-import profilesData from "../../../assets/PIQUE_json_files/ExampleProfile.json";
+import profilesData from "../../../assets/PIQUE_json_files/ExamplePredefinedProfile.json";
 
 interface ProfileSelectionProps {
   onProfileChange: (selectedProfiles: Profile[] | null) => void;
@@ -24,6 +24,9 @@ export const ProfileSelection: React.FC<ProfileSelectionProps> = ({
       : selectedProfile.type
     : "";
 
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [isApplyButtonActive, setIsApplyButtonActive] = useState(false);
+
   // Function to handle profile selection changes
   const handleProfileChange = (value: string) => {
     const filteredProfiles = profilesData.filter(
@@ -36,34 +39,43 @@ export const ProfileSelection: React.FC<ProfileSelectionProps> = ({
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const uploadedProfiles: Profile[] = JSON.parse(
-            e.target?.result as string
-          );
-          onProfileChange(uploadedProfiles);
-        } catch (error) {
-          console.error("Error parsing the uploaded file", error);
-          onProfileChange(null);
-        }
-      };
-      reader.readAsText(file);
+      setUploadedFile(file);
+      setIsApplyButtonActive(true); // Enable the "Apply" button
+    } else {
+      setUploadedFile(null);
+      setIsApplyButtonActive(false); // Disable the "Apply" button if no file is selected
     }
   };
 
+  const handleApplyUpload = () => {
+    if (!uploadedFile) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const profiles: Profile = JSON.parse(e.target?.result as string);
+        onProfileChange([profiles]); 
+        setIsApplyButtonActive(false); 
+        setUploadedFile(null); 
+      } catch (error) {
+        console.error("Error parsing the uploaded file", error);
+        onProfileChange(null);
+      }
+    };
+    reader.readAsText(uploadedFile);
+  };
+
   return (
-    <Flex direction={"column"}>
+    <Flex direction={"column"} style={{ margin: "10px" }}>
       <Flex>
-        <Text size={"8"}> (Optional) Profile Selection</Text>
+        <Text size={"9"}> (Optional) Profile Selection</Text>
       </Flex>
-      <Flex align={"center"} justify={"between"} gap={"6"} direction={"row"}>
-        <Separator my="3" size="3" />
-        <Flex direction={"column"} align={"center"} justify={"start"}>
+      <Flex align={"start"} justify={"between"} gap={"7"} direction={"column"}>
+        <Flex direction={"row"} align={"start"} justify={"start"} gap={"5"}>
           <Box>
             <Text>
               {" "}
-              <DropdownMenuIcon /> Option 1: Predefined Industry Profiles:{" "}
+              <DropdownMenuIcon /> Option 1. Predefined Industry Profiles:{" "}
             </Text>
           </Box>
           <Box>
@@ -85,17 +97,30 @@ export const ProfileSelection: React.FC<ProfileSelectionProps> = ({
           </Box>
         </Flex>
 
-        <Separator orientation="vertical" size={"3"} />
-
-        <Flex direction={"column"} align={"center"} justify={"start"}>
+        <Flex direction={"row"} align={"start"} justify={"start"} gap={"5"}>
           <Box>
             {" "}
-            <UploadIcon /> <Text>Option 2: Personal profile</Text>
+            <UploadIcon /> <Text>Option 2. Personal Profiles: </Text>
           </Box>
           <Box>
             {" "}
             <input type="file" onChange={handleFileUpload} />{" "}
           </Box>
+          <Button
+            color={isApplyButtonActive ? "blue" : "gray"}
+            disabled={!isApplyButtonActive}
+            onClick={handleApplyUpload}
+          >
+            Apply
+          </Button>
+        </Flex>
+
+        <Flex direction={"row"} align={"start"} justify={"start"} gap={"5"}>
+          {selectValue && (
+            <Box>
+              <Text>Current Selection: {selectValue}</Text>
+            </Box>
+          )}
         </Flex>
       </Flex>
     </Flex>

@@ -1,3 +1,4 @@
+
 // Define colors for each slice of the pie chart
 export const COLORS: { [key: string]: string } = {
   Severe: "#f3000d80",

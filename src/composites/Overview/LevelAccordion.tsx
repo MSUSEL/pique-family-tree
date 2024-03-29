@@ -7,7 +7,6 @@ import {
   CheckCircledIcon,
 } from "@radix-ui/react-icons";
 import { Table, Button } from "@radix-ui/themes";
-import { useState } from "react";
 
 interface FilterableItem {
   name: string;
@@ -96,38 +95,14 @@ const renderObjectDetails = (obj: { [key: string]: any }, keyPrefix = "") => {
 const LevelAccordion = ({
   nestedobj,
   isDiagnostics,
+  detailsVisible,
 }: {
   nestedobj: Record<string, FilterableItem>;
   isDiagnostics: boolean;
 }) => {
   const processedItems = classifyRiskLevels(nestedobj, isDiagnostics);
-
-  const [detailsVisible, setDetailsVisible] = useState(false); // State to track visibility
-
-  const toggleDetailsVisibility = () => {
-    setDetailsVisible((prevState) => !prevState); // Toggle visibility
-  };
-
   return (
     <Accordion.Root type="multiple" className="Level--AccordionRoot">
-      <div className="toggle-button-container" style={{ background: "white" }}>
-        <Button
-          className="toggle-button"
-          onClick={toggleDetailsVisibility}
-          style={{
-            right: "0",
-            fontSize: "85%",
-            color: "gray",
-          }}
-        >
-          View Additional Details
-          {detailsVisible ? (
-            <CheckCircledIcon className="chevron-icon" />
-          ) : (
-            <CircleIcon className="chevron-icon" />
-          )}
-        </Button>
-      </div>
       {Object.entries(processedItems).map(([riskLevel, items]) => (
         <Accordion.Item
           value={riskLevel}

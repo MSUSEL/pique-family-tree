@@ -10,10 +10,17 @@ import {
   ScrollArea,
   Popover,
 } from "@radix-ui/themes";
+import {
+  ChevronUpIcon,
+  ChevronDownIcon,
+  CircleIcon,
+  CheckCircledIcon,
+} from "@radix-ui/react-icons";
 import { PieChart, Pie, Tooltip, Cell } from "recharts";
 import "./Overview.css";
 import "@radix-ui/colors/mauve.css";
 import LevelAccordion from "./LevelAccordion";
+import { useState } from "react";
 
 interface FilterableItem {
   name: string;
@@ -56,6 +63,12 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
   topProblematicItems,
   isDiagnostics = false,
 }) => {
+  const [detailsVisible, setDetailsVisible] = useState(false); // State to track visibility
+
+  const toggleDetailsVisibility = () => {
+    setDetailsVisible((prevState) => !prevState); // Toggle visibility
+  };
+
   return (
     <Flex direction={"row"} style={{ width: "100%" }} justify="between">
       {/* Accordion section */}
@@ -67,6 +80,27 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
       >
         <Box>
           <Badge size="2">{title}</Badge>
+        </Box>
+        <Box
+          className="toggle-button-container"
+          style={{ background: "white" }}
+        >
+          <Button
+            className="toggle-button"
+            onClick={toggleDetailsVisibility}
+            style={{
+              right: "0",
+              fontSize: "85%",
+              color: "gray",
+            }}
+          >
+            View Additional Details
+            {detailsVisible ? (
+              <CheckCircledIcon className="chevron-icon" />
+            ) : (
+              <CircleIcon className="chevron-icon" />
+            )}
+          </Button>
         </Box>
         <Box>
           <ScrollArea style={{ height: "38vh" }}>

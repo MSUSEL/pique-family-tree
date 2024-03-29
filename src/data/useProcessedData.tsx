@@ -17,6 +17,7 @@ export const useProcessedData = () => {
   const filterState = useAtomValue(State.filteringState);
   const checkboxStates = useAtomValue(State.filteringByRiskLevelCheckboxStates);
   const hideZeroWeightEdgeState = useAtomValue(State.hideZeroWeightEdgeState);
+  const hideOneValueNodeState = useAtomValue(State.hideOneValueNodeState);
   const minValueState = useAtomValue(State.minValueState);
   const maxValueState = useAtomValue(State.maxValueState);
   const minWeightState = useAtomValue(State.minWeightState);
@@ -37,8 +38,11 @@ export const useProcessedData = () => {
 
     let data = sort(sortState, dataset);
 
-    const isHiding = hideZeroWeightEdgeState === "hidding";
-    data = hideZeroWeightEdges(data, isHiding);
+    const isEdgeHiding = hideZeroWeightEdgeState === "hidding";
+    data = hideZeroWeightEdges(data, isEdgeHiding);
+
+    const isNodeHiding = hideZeroWeightEdgeState === "hidding";
+    //data = hideZeroWeightEdges(data, isEdgeHiding);
 
     data = filterByRiskLevels(data, checkboxStates);
 

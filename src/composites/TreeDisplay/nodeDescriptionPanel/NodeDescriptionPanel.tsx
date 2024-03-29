@@ -82,7 +82,7 @@ useEffect(() => {
   return (
     <div id="node_description_panel" className={`scrollable-panel ${resizing ? "resizable" : ""}`}>
       <div id="resize-handle" onMouseDown={handleMouseDown}></div>
-      <label htmlFor="orderBy">Order By: </label>
+      <label htmlFor="orderBy" style={{ marginLeft: '1%'}}> Order By: </label>
       <select id="orderBy" value={orderBy} onChange={handleOrderByChange}>
         <option value="default">Insertion Order</option>
         <option value="alphabetical">Alphabetical Order</option>

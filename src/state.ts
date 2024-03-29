@@ -6,6 +6,7 @@ export function createState() {
   const sortingState = atom<"no-sort" | "value-asc" | "value-desc" | "weight-asc" | "weight-desc">("no-sort");
   const filteringState = atom<"no-filter" | "by-risk-level" | "by-range">("no-filter");
   const hideZeroWeightEdgeState = atom<"not-hidding" | "hidding">("not-hidding");
+  const hideOneValueNodeState = atom<"not-hidding" | "hidding">("not-hidding");
   
 
   // when filteringState = by-risk-level, checkbox states
@@ -35,6 +36,7 @@ export function createState() {
     filteringState,
     filteringByRiskLevelCheckboxStates,
     hideZeroWeightEdgeState,
+    hideOneValueNodeState,
     minValueState,
     maxValueState,
     minWeightState,

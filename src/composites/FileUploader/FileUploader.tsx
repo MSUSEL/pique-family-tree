@@ -3,7 +3,7 @@ import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { InfoCircledIcon, FileTextIcon } from "@radix-ui/react-icons";
 import { useFileUpload } from "./use-file-uploader";
 import * as schema from "../../data/schema";
-import { useSetAtom } from "jotai";
+import { useSetAtom, useAtomValue } from "jotai";
 import { State } from "../../state";
 import React, { useState } from "react";
 import "./AlertDialog.css";
@@ -21,6 +21,9 @@ interface ValidationErrorIssue {
 
 export const FileUploader = () => {
   const [_, selectFile] = useFileUpload();
+
+  let tqiValue = useAtomValue(State.tqiValue);
+  let adjustedImportance = useAtomValue(State.adjustedImportance)
 
   const setDataset = useSetAtom(State.dataset);
   const setAdjustedImportance = useSetAtom(State.adjustedImportance);
@@ -86,9 +89,15 @@ export const FileUploader = () => {
               const firstTqiKey = Object.keys(tqiObjects)[0];
               const firstTqiObj = tqiObjects[firstTqiKey];
               if (firstTqiObj) {
+                adjustedImportance = firstTqiObj.weights;
+                tqiValue = firstTqiObj.value;
                 setAdjustedImportance(firstTqiObj.weights); // Set adjustedImportance
                 setTqiValue(firstTqiObj.value); // Set tqiValue
+                // Logging the new values
+        console.log('New adjustedImportance:', adjustedImportance);
+        console.log('New tqiValue:', tqiValue);
               }
+              
             } else {
               const details = JSON.stringify(
                 validationResult.error.issues,
