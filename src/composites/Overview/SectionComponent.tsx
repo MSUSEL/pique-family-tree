@@ -75,6 +75,7 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
       <Flex
         direction={"column"}
         align={"center"}
+        justify={"center"}
         gap={"5"}
         style={{ flexBasis: "30%" }}
       >
@@ -117,6 +118,7 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
       <Flex
         direction={"column"}
         align={"center"}
+        justify={"center"}
         gap={"5"}
         style={{ flexBasis: "30%" }}
       >
@@ -144,6 +146,7 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
       <Flex
         direction={"column"}
         align={"center"}
+        justify={"center"}
         gap={"5"}
         style={{ flexBasis: "30%" }}
       >
@@ -157,12 +160,14 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
                 <Popover.Trigger>
                   <Button style={{ background: "none" }}>
                     <Text as="p">
-                      <Link href="#">
-                        {item.name}:{" "}
-                        <Strong style={{ color: "#0070f3", fontSize: "1.2em" }}>
-                          {item.details.value.toFixed(2)}
-                        </Strong>
-                      </Link>
+                      <Flex direction={"column"} align={"start"}>
+                        <Link href="#">
+                          {item.name}:{" "}
+                          <Strong style={{ fontSize: "1.3em" }}>
+                            <Text as="p">{item.details.value.toFixed(2)}</Text>{" "}
+                          </Strong>
+                        </Link>
+                      </Flex>
                     </Text>
                   </Button>
                 </Popover.Trigger>
