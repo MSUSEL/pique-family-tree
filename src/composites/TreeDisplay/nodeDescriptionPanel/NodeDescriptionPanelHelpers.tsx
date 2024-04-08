@@ -76,28 +76,39 @@ export function determineNodeInfo(node, impacts) {
       );
     }
   }
-
-const renderObjectDetails = (obj: { [key: string]: any }, keyPrefix = "") => {
-  return Object.entries(obj).map(([key, value]) => {
-    if (typeof value === "object" && value !== null && !Array.isArray(value)) {
-      return (
-        <div key={`${keyPrefix}${key}`}>
-          <strong>{key}:</strong>
-          <div style={{ paddingLeft: "20px" }}>
-            {renderObjectDetails(value, `${keyPrefix}${key}-`)}
+  
+  const renderObjectDetails = (obj, keyPrefix = "") => {
+    return (
+      <div className="object-details">
+        {Object.keys(obj).map(key => (
+          <div key={`${keyPrefix}${key}`} className="object-key">
+            <strong>{key}: </strong> 
+            {typeof obj[key] === "object" && obj[key] !== null && !Array.isArray(obj[key]) && (
+              <ArrowBottomRightIcon className="arrow-icon"/>
+            )}
+            {typeof obj[key] === "string" ? (
+              <span className="object-value">{obj[key]}</span>
+            ) : (
+              <div className={typeof obj[key] === "object" && obj[key] !== null && !Array.isArray(obj[key]) ? "object-value hidden" : "object-value"}>
+                {renderValue(obj[key])}
+              </div>
+            )}
           </div>
-        </div>
-      );
+        ))}
+      </div>
+    );
+  };
+  
+  
+  const renderValue = value => {
+    if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+      return renderObjectDetails(value);
     } else {
-      return (
-        <div key={`${keyPrefix}${key}`}>
-          <strong>{key}:</strong> {value.toString()}
-        </div>
-      );
+      return value.toString();
     }
-  });
-};
-
+  };
+  
+  
 function renderUtilityFunction() {
   const utilityFunction = node.utility_function;
 

@@ -1,6 +1,7 @@
 import "./NodeDescriptionPanel.css";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { determineNodeInfo } from "./NodeDescriptionPanelHelpers";
+import { EyeOpenIcon, EyeNoneIcon } from "@radix-ui/react-icons";
 
 export default function NodeDescriptionPanel(props: { nodes: any[]; impacts: any; setSelectedNode: Function }) {
   const [orderBy, setOrderBy] = useState<string>("default");
@@ -8,6 +9,7 @@ export default function NodeDescriptionPanel(props: { nodes: any[]; impacts: any
   const [newestNodeIndex, setNewestNodeIndex] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [resizing, setResizing] = useState(false);
+  const [selectedNodeIndex, setSelectedNodeIndex] = useState<number | null>(null);
 
   const handleMouseDown = () => {
     setResizing(true);
@@ -66,12 +68,17 @@ export default function NodeDescriptionPanel(props: { nodes: any[]; impacts: any
         key={i}
         className={`node-panel${i === index ? " highlight" : ""}`}
         ref={i === index ? scrollRef : undefined}
-        onClick={() => props.setSelectedNode(node.name)} // Update selectedNode on click
       >
+        <div className="eye-icon" onClick={() => {
+          setSelectedNodeIndex(i);
+          props.setSelectedNode(node.name);
+        }}>
+          {selectedNodeIndex === i ? <EyeOpenIcon /> : <EyeNoneIcon />}
+        </div>
         {determineNodeInfo(node, props.impacts)}
       </div>
     ));
-  }, [props.nodes, orderBy, orderDirection, props.impacts, props.setSelectedNode]);
+  }, [props.nodes, orderBy, orderDirection, props.impacts, props.setSelectedNode, selectedNodeIndex]);
 
   const handleOrderByChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setOrderBy(e.target.value);

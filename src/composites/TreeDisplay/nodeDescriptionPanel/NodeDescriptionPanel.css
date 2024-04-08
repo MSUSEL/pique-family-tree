@@ -111,3 +111,23 @@
 .utility-text {
   display: inline-block;
 }
+
+.object-details {
+  margin-left: 20px;
+}
+
+.object-key {
+  margin-bottom: 5px;
+}
+
+.object-value.hidden {
+  display: none;
+}
+
+.arrow-icon {
+  cursor: pointer;
+}
+
+.arrow-icon:hover + .object-value {
+  display: block;
+}
