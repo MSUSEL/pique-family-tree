@@ -6,7 +6,7 @@ export const HideZeroWeightsSwitch = () => {
    
     const [hideZeroWeightEdgeState, setHideZeroWeightEdgeState] = useAtom(State.hideZeroWeightEdgeState);
     const handleToggle = () => {
-        setHideZeroWeightEdgeState(hideZeroWeightEdgeState === "not-hidding" ? "hidding" : "not-hidding");
+        setHideZeroWeightEdgeState(hideZeroWeightEdgeState === "not-hiding" ? "hidding" : "not-hidding");
     };
 
     console.log("Current Weight=0 Edges State:", hideZeroWeightEdgeState);
@@ -15,7 +15,7 @@ export const HideZeroWeightsSwitch = () => {
         <Flex gap="3" align="center">
             <Text as="label" size="2">
                 <Flex gap="2">
-                    <Switch checked={hideZeroWeightEdgeState === "hidding"} onCheckedChange={handleToggle} />
+                    <Switch checked={hideZeroWeightEdgeState === "hiding"} onCheckedChange={handleToggle} />
                     Hide Weight = 0 Edges 
                 </Flex>
             </Text>
