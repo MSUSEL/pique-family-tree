@@ -17,7 +17,7 @@ import {
  * @param fileData PIQUE .json output file.
  */
 
-export function TreeDisplayRefactor(props) {
+export function TreeDisplay(props) {
 
   
   const [selectedNode, setSelectedNode] = useState(null);
