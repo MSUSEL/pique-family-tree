@@ -15,7 +15,7 @@ import { ButtonContainer } from "./composites/FeaturesContainer/ButtonContainer"
 import { OverviewTab } from "./composites/Overview/OverviewTab";
 import { LegendContainer } from "./composites/LegendContainer/Legend";
 import { TreeDisplay } from "./composites/TreeDisplay/TreeDisplay";
-import { TreeDisplayRework } from "./composites/TreeDisplayRework/TreeDisplay_rework";
+import { TreeDisplay_Rework } from "./composites/TreeDisplayRework/TreeDisplay_rework";
 //import { TreeDisplayRefactor } from "./composites/TreeDisplay/TreeDisplayRefactor";
 import { ListDisplay } from "./composites/ListDisplay/ListDisplay";
 
@@ -199,7 +199,7 @@ export const Wrapper = () => {
               </Tabs.Content>
 
               <Tabs.Content value="treerefactor">
-              <TreeDisplayRework fileData={processedData} />
+              <TreeDisplay_Rework fileData={processedData} />
               </Tabs.Content>
             </Box>
           </Tabs.Root>

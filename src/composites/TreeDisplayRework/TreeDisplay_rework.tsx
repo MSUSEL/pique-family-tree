@@ -17,7 +17,9 @@ import {
  * @param fileData PIQUE .json output file.
  */
 
-export function TreeDisplayRework(props) {
+export function TreeDisplay_Rework(props) { // start of export
+
+  /*
 
   
   const [selectedNode, setSelectedNode] = useState(null);
@@ -214,9 +216,9 @@ export function TreeDisplayRework(props) {
     // Tree nodes array only contains TQI and quality aspects nodes... maybe change later for clarity?
     let treeNodes = [];
 
-    /**
-     * Creating the TQI node and putting its information into treeNodes array
-     */
+    
+    // Creating the TQI node and putting its information into treeNodes array
+    
 
     const tqi_node_x = width / 2 - node_width / 2;
     const tqi_node_y = 15;
@@ -233,9 +235,9 @@ export function TreeDisplayRework(props) {
       );
     }
 
-    /**
-     * Creating the quality aspect nodes and putting their information into treeNodes array.
-     */
+    
+    // Creating the quality aspect nodes and putting their information into treeNodes array.
+    
 
     const num_of_quality_aspects = Object.keys(
       props.fileData.factors.quality_aspects
@@ -264,10 +266,10 @@ export function TreeDisplayRework(props) {
       );
     }
 
-    /**
-     * Creating the array of product factor node information and putting it into p_factors array.
-     * @type {number}
-     */
+    
+    // Creating the array of product factor node information and putting it into p_factors array.
+    // @type {number}
+     
 
     const p_factor_size_scale = 1;
 
@@ -307,16 +309,15 @@ export function TreeDisplayRework(props) {
       );
     }
 
-    /**
-     * Important piece
-     * This removes the svg canvas before creating the new one, because without this
-     * the svg's will continue to stack onto each other.
-     */
+    // Important piece
+    // This removes the svg canvas before creating the new one, because without this
+    // the svg's will continue to stack onto each other.
+
     d3.select(tree_canvas.current).selectAll("svg").remove();
 
-    /**
-     * Creating the zoom features for the tree display.
-     */
+    
+    // Creating the zoom features for the tree display.
+    
     const zoom = (e) => {
       if (e.deltaY < 0) zoomIn();
       else zoomOut();
@@ -330,9 +331,9 @@ export function TreeDisplayRework(props) {
       setHeight((height) => (10 * height) / 9);
     };
 
-    /**
-     * Begin creating the entire svg.
-     */
+    
+    // Begin creating the entire svg.
+    
 
     const svg = d3
       .select(tree_canvas.current)
@@ -342,9 +343,8 @@ export function TreeDisplayRework(props) {
       .on("mousewheel", zoom)
       .style("vertical-align", "top");
 
-    /**
-     * Methods that handle the dragging feature of the display.
-     */
+    // Methods that handle the dragging feature of the display.
+
     const dragMove = (e) => {
       const diff_x = e.screenX - dragStartCoordinates.x;
       const diff_y = e.screenY - dragStartCoordinates.y;
@@ -385,14 +385,13 @@ export function TreeDisplayRework(props) {
 
     d3.select("svg").on("mouseup", handleSVGMouseUp);
 
-    /** -----------------------------------------------------------------------
-     * Begin drawing the edges of the svg so that they are on the
-     * "bottom" of the display and the nodes are placed over the edges.
-     * -----------------------------------------------------------------------*/
+    // -----------------------------------------------------------------------
+    //Begin drawing the edges of the svg so that they are on the
+    //"bottom" of the display and the nodes are placed over the edges.
+    //-----------------------------------------------------------------------
 
-    /**
-     * Drawing the edges between the TQI node and the quality factor nodes.
-     */
+    // Drawing the edges between the TQI node and the quality factor nodes.
+     
     for (let item = 1; item < treeNodes.length; item++) {
       treeNodes[0].children.push(treeNodes[item].name);
       const link = d3.linkHorizontal()({
@@ -434,9 +433,9 @@ export function TreeDisplayRework(props) {
         );
     }
 
-    /**
-     * Drawing the edges between the quality factor nodes and the product factor nodes.
-     */
+    
+    // Drawing the edges between the quality factor nodes and the product factor nodes.
+     
     for (let aspect = 1; aspect < treeNodes.length; aspect++) {
       for (let factor = 0; factor < p_factors.length; factor++) {
         const link = d3.linkHorizontal()({
@@ -505,9 +504,7 @@ export function TreeDisplayRework(props) {
       }
     }
 
-    /**
-     * Handle clicking a quality aspect node
-     */
+    // Handle clicking a quality aspect node
 
     //All browsers did an update in Jan 2023 that removed event.path and event.composedPath
     //from their nonstandard libraries. The follow lines of code will override that
@@ -534,9 +531,8 @@ export function TreeDisplayRework(props) {
       setQAChildrenEdgeVisibility({ ...qaChildrenEdgeVisibilityCopy });
     };
 
-    /**
-     * Creating the TQI and quality factor nodes in the treeDisplay display.
-     */
+    // Creating the TQI and quality factor nodes in the treeDisplay display.
+
     // TQI node
     // add a white background color for tqi
     svg
@@ -660,9 +656,7 @@ export function TreeDisplayRework(props) {
       setMeasureChildrenVisibility({ ...measureChildrenVisibilityCopy });
     };
 
-    /**
-     * Creating the measure nodes in the treeDisplay display.
-     */
+    // Creating the measure nodes in the treeDisplay display.
 
     // Create measure parent links if applicable
     if (measureWithParentsShowing !== null) {
@@ -801,9 +795,8 @@ export function TreeDisplayRework(props) {
             .text(p_factors[pf].json_data.weights[measure_name].toFixed(2));
 
           // ---------------------------------------------------
-          /**
-           * Draw the diagnostics for a measure.
-           */
+          // Draw the diagnostics for a measure.
+
           if (measureChildrenVisibility[measure_name]) {
             let measure_weights = [];
 
@@ -928,9 +921,7 @@ export function TreeDisplayRework(props) {
             }
           }
 
-          /**
-           * Draw the measure nodes for the associated product factor.
-           */
+          // Draw the measure nodes for the associated product factor.
           // add white bgc
           svg
             .append("rect")
@@ -988,9 +979,8 @@ export function TreeDisplayRework(props) {
       }
     }
 
-    /**
-     * Creating the product factor nodes in the treeDisplay display.
-     */
+    // Creating the product factor nodes in the treeDisplay display.
+    
     for (let i = 0; i < p_factors.length; i++) {
       // add white bgc
       svg
@@ -1102,11 +1092,10 @@ export function TreeDisplayRework(props) {
       }
     };
 
-    /**
-     * Making the clicker boxes in the top corners of each node where, when clicked,
-     * will either add the node's information to the side panel in the display or
-     * show node's edges to its parents.
-     */
+    // Making the clicker boxes in the top corners of each node where, when clicked,
+    // will either add the node's information to the side panel in the display or
+    // show node's edges to its parents.
+
     const nodes = d3.selectAll("rect")._groups[0];
     const num_of_nodes = nodes.length;
 
@@ -1158,7 +1147,8 @@ export function TreeDisplayRework(props) {
     <path d="M7.14645 2.14645C7.34171 1.95118 7.65829 1.95118 7.85355 2.14645L11.8536 6.14645C12.0488 6.34171 12.0488 6.65829 11.8536 6.85355C11.6583 7.04882 11.3417 7.04882 11.1464 6.85355L8 3.70711L8 12.5C8 12.7761 7.77614 13 7.5 13C7.22386 13 7 12.7761 7 12.5L7 3.70711L3.85355 6.85355C3.65829 7.04882 3.34171 7.04882 3.14645 6.85355C2.95118 6.65829 2.95118 6.34171 3.14645 6.14645L7.14645 2.14645Z" 
     fill="#49475B"/>
   </svg>
-`);
+  `);
+
 
         svg
           .append("svg:image")
@@ -1204,9 +1194,8 @@ export function TreeDisplayRework(props) {
       }
     }
 
-    /**
-     * Helper functions for the drag feature of the display.
-     */
+    // Helper functions for the drag feature of the display.
+     
     const handleNodeMouseEnter = () => {
       setWantToDrag(false);
     };
@@ -1346,4 +1335,6 @@ export function TreeDisplayRework(props) {
       </div>
     </>
   );
-}
+
+  */
+} // end of export
