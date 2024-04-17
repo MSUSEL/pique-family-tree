@@ -32,9 +32,9 @@ export const QuickActionButton = () => {
       <HideZeroWeightsSwitch />
       </Box>
 
-      {/* <Box>
+      {/*<Box>
       <HidePerfectNodesSwitch />
-      </Box> */}
+      </Box>*/}
 
     </Flex>
   );
