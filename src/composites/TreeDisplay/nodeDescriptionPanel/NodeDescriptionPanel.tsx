@@ -43,42 +43,79 @@ export default function NodeDescriptionPanel(props: { nodes: any[]; impacts: any
   }, [newestNodeIndex]);
 
   const makeNodePanelRectangles = useMemo(() => {
-    let orderedNodes = [...props.nodes];
+    if (orderBy === "nodeType") {
+      const groupedNodes: { [key: string]: any[] } = {};
+  
+      props.nodes.forEach((node) => {
+        const type = determineNodeType(node); 
+        if (!groupedNodes[type]) {
+          groupedNodes[type] = [];
+        }
+        groupedNodes[type].push(node);
+      });
+  
+      const nodePanels: JSX.Element[] = [];
+      for (const [type, nodes] of Object.entries(groupedNodes)) {
+        const nodePanelsOfType = nodes.map((node, i) => (
+          <div key={i} className={`node-panel`}>
+            {determineNodeInfo(node, props.impacts)}
+          </div>
+        ));
 
-    switch (orderBy) {
-      case "default":
-        break;
-      case "alphabetical":
-        orderedNodes.sort((a, b) =>
-          orderDirection === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
+        nodePanels.push(
+          <div key={type}>
+            <h2>{type}</h2>
+            {nodePanelsOfType}
+          </div>
         );
-        break;
-      case "value":
-        orderedNodes.sort((a, b) => (orderDirection === "asc" ? a.value - b.value : b.value - a.value));
-        break;
-      default:
-        break;
-    }
+      }
+      return nodePanels;
+    } else {
+      let orderedNodes = [...props.nodes];
 
-    const index = orderedNodes.findIndex((node) => node === props.nodes[props.nodes.length - 1]);
-    setNewestNodeIndex(index);
+      switch (orderBy) {
+        case "default":
+          break;
+        case "alphabetical":
+          orderedNodes.sort((a, b) =>
+            orderDirection === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
+          );
+          break;
+        case "value":
+          orderedNodes.sort((a, b) => (orderDirection === "asc" ? a.value - b.value : b.value - a.value));
+          break;
+        default:
+          break;
+      }
 
-    return orderedNodes.map((node, i) => (
-      <div
-        key={i}
-        className={`node-panel${i === index ? " highlight" : ""}`}
-        ref={i === index ? scrollRef : undefined}
-      >
-        <div className="eye-icon" onClick={() => {
-          setSelectedNodeIndex(i);
-          props.setSelectedNode(node.name);
-        }}>
-          {selectedNodeIndex === i ? <EyeOpenIcon /> : <EyeNoneIcon />}
+      const index = orderedNodes.findIndex((node) => node === props.nodes[props.nodes.length - 1]);
+      setNewestNodeIndex(index);
+
+      return orderedNodes.map((node, i) => (
+        <div
+          key={i}
+          className={`node-panel${i === index ? " highlight" : ""}`}
+          ref={i === index ? scrollRef : undefined}
+        >
+          <div className="eye-icon" onClick={() => {
+            setSelectedNodeIndex(i);
+            props.setSelectedNode(node.name);
+          }}>
+            {selectedNodeIndex === i ? <EyeOpenIcon /> : <EyeNoneIcon />}
+          </div>
+          {determineNodeInfo(node, props.impacts)}
         </div>
-        {determineNodeInfo(node, props.impacts)}
-      </div>
-    ));
+      ));
+    }
   }, [props.nodes, orderBy, orderDirection, props.impacts, props.setSelectedNode, selectedNodeIndex]);
+
+  function determineNodeType(node) {
+    if (node.name.includes("Measure")) return "Measure";
+    else if (node.name.includes("Diagnostic")) return "Diagnostic";
+    else if (node.name.includes("Category")) return "Product Factor";
+    else if (node.name) return "TQI";
+    else return "Quality Aspect";
+  }
 
   const handleOrderByChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setOrderBy(e.target.value);
@@ -96,6 +133,7 @@ export default function NodeDescriptionPanel(props: { nodes: any[]; impacts: any
         <option value="default">Insertion Order</option>
         <option value="alphabetical">Alphabetical Order</option>
         <option value="value">Value Order</option>
+        <option value="nodeType">Node Type Sort</option>
       </select>
 
       {(orderBy === "alphabetical" || orderBy === "value") && (

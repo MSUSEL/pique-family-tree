@@ -131,3 +131,7 @@
 .arrow-icon:hover + .object-value {
   display: block;
 }
+
+.eye-icon {
+  margin-left: auto;
+}
