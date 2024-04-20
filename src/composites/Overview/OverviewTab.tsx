@@ -16,6 +16,7 @@ import "@radix-ui/colors/mauve.css";
 import { ClassifyNestedObjRiskLevel } from "./ClassifyNestedObjRiskLevel";
 import { COLORS } from "./PieChartColor";
 import SectionComponent from "./SectionComponent";
+import "@radix-ui/colors/violet.css";
 
 interface FilterableItem {
   value: number;
@@ -287,7 +288,9 @@ export const OverviewTab = () => {
         >
           <Flex direction={"row"} gap={"5"} justify={"center"} align={"center"}>
             <Flex direction={"column"} align={"center"} gap={"3"}>
-              <Strong style={{ alignSelf: "center" }}>
+              <Strong
+                style={{ alignSelf: "center", color: "var(--violet-11)" }}
+              >
                 Total Quality Index
               </Strong>
               <Flex
@@ -313,8 +316,14 @@ export const OverviewTab = () => {
                 </Box>
 
                 <Flex direction={"column"}>
-                  <Text> Project Name: </Text>
-                  <Strong> {tqiRiskLevel.name} </Strong>
+                  <Text style={{ color: "var(--violet-11)" }}>
+                    {" "}
+                    Project Name:{" "}
+                  </Text>
+                  <Strong style={{ color: "var(--violet-11)" }}>
+                    {" "}
+                    {tqiRiskLevel.name}{" "}
+                  </Strong>
                 </Flex>
               </Flex>
             </Flex>
@@ -329,6 +338,7 @@ export const OverviewTab = () => {
               <Strong
                 style={{
                   fontSize: "80%",
+                  color: "var(--violet-11)",
                 }}
               >
                 Lowest section scores
@@ -341,7 +351,9 @@ export const OverviewTab = () => {
                 }}
               >
                 <Flex direction={"column"} align={"center"}>
-                  <Text>Characteristics</Text>
+                  <Text style={{ color: "var(--violet-11)" }}>
+                    Characteristics
+                  </Text>
                   <Avatar
                     fallback={
                       topProblematicQualityAspects
@@ -365,7 +377,7 @@ export const OverviewTab = () => {
                   />
                 </Flex>
                 <Flex direction={"column"} align={"center"}>
-                  <Text>Factors</Text>
+                  <Text style={{ color: "var(--violet-11)" }}>Factors</Text>
                   <Avatar
                     fallback={
                       topProblematicProductFactors
@@ -389,7 +401,7 @@ export const OverviewTab = () => {
                   />
                 </Flex>
                 <Flex direction={"column"} align={"center"}>
-                  <Text>Measures</Text>
+                  <Text style={{ color: "var(--violet-11)" }}>Measures</Text>
                   <Avatar
                     fallback={
                       topProblematicMeasures
@@ -413,7 +425,7 @@ export const OverviewTab = () => {
                   />
                 </Flex>
                 <Flex direction={"column"} align={"center"}>
-                  <Text>Diagnostics</Text>
+                  <Text style={{ color: "var(--violet-11)" }}>Diagnostics</Text>
                   <Avatar
                     fallback={
                       topProblematicDiagnostics

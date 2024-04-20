@@ -3,24 +3,24 @@ import {
   Text,
   Box,
   Button,
-  HoverCard,
   Link,
   Badge,
   Strong,
   ScrollArea,
-  Popover,
+  Dialog,
+  Separator,
 } from "@radix-ui/themes";
-import {
-  ChevronUpIcon,
-  ChevronDownIcon,
-  CircleIcon,
-  CheckCircledIcon,
-} from "@radix-ui/react-icons";
+import { CircleIcon, CheckCircledIcon } from "@radix-ui/react-icons";
 import { PieChart, Pie, Tooltip, Cell } from "recharts";
 import "./Overview.css";
 import "@radix-ui/colors/mauve.css";
 import LevelAccordion from "./LevelAccordion";
 import { useState } from "react";
+import { State } from "../../state";
+import { useAtomValue } from "jotai";
+import { useProcessedData } from "../../data/useProcessedData";
+import React from "react";
+import "@radix-ui/colors/violet.css";
 
 interface FilterableItem {
   name: string;
@@ -63,10 +63,21 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
   topProblematicItems,
   isDiagnostics = false,
 }) => {
+  const dataset = useAtomValue(State.dataset);
+  const processedData = useProcessedData();
+
   const [detailsVisible, setDetailsVisible] = useState(false); // State to track visibility
 
   const toggleDetailsVisibility = () => {
     setDetailsVisible((prevState) => !prevState); // Toggle visibility
+  };
+
+  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>(
+    {}
+  );
+
+  const toggleItem = (key: string) => {
+    setExpandedItems((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   return (
@@ -151,37 +162,55 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
         style={{ flexBasis: "30%" }}
       >
         <Box>
-          <Text>Lowest 3 Scores:</Text>
+          <Text style={{ color: "var(--violet-11)" }}>Lowest 3 Scores:</Text>
         </Box>
         <Box>
           <Flex direction="column" gap="7" align="start">
             {topProblematicItems.map((item, index) => (
-              <Popover.Root key={index}>
-                <Popover.Trigger>
+              <Dialog.Root key={index}>
+                <Dialog.Trigger>
                   <Button style={{ background: "none" }}>
                     <Text as="p">
                       <Flex direction={"column"} align={"start"}>
-                        <Link href="#">
+                        <Link href="#" style={{ color: "var(--violet-11)" }}>
                           {item.name}:{" "}
-                          <Strong style={{ fontSize: "1.3em" }}>
-                            <Text as="p">{item.details.value.toFixed(2)}</Text>{" "}
+                          <Strong
+                            style={{
+                              fontSize: "1.3em",
+                            }}
+                          >
+                            <Text as="p" style={{ color: "var(--violet-11)" }}>
+                              {item.details.value.toFixed(2)}
+                            </Text>{" "}
                           </Strong>
                         </Link>
                       </Flex>
                     </Text>
                   </Button>
-                </Popover.Trigger>
-                <Popover.Content>
-                  <Text as="div" size="1" style={{ maxWidth: 250 }}>
+                </Dialog.Trigger>
+                <Dialog.Content>
+                  <Text
+                    as="div"
+                    size="1"
+                    style={{ maxWidth: 250, color: "var(--violet-11)" }}
+                  >
                     {item.impacts && item.impacts.length > 0 ? (
                       item.impacts.map((impact, impactIndex) => (
-                        <Text as="p" key={impactIndex}>
+                        <Text
+                          as="p"
+                          key={impactIndex}
+                          style={{ color: "var(--violet-11)" }}
+                        >
+                          <Strong>Item name: </Strong> {item.name}
+                          <Separator my="3" size="4" />
                           <Strong>Impact to {impact.aspectName}:</Strong>{" "}
                           {impact.weight.toFixed(3)}
                         </Text>
                       ))
                     ) : item.weight !== undefined ? (
-                      <Text as="p">
+                      <Text as="p" style={{ color: "var(--violet-11)" }}>
+                        <Strong>Item name: </Strong> {item.name}
+                        <Separator my="3" size="4" />
                         <Strong>Impact to TQI:</Strong> {item.weight.toFixed(3)}
                       </Text>
                     ) : null}
@@ -191,8 +220,8 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
                       {item.details.description || "Not Provided"}
                     </Text>
                   </Text>
-                </Popover.Content>
-              </Popover.Root>
+                </Dialog.Content>
+              </Dialog.Root>
             ))}
           </Flex>
         </Box>

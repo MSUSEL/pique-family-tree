@@ -1,12 +1,7 @@
 import * as Accordion from "@radix-ui/react-accordion";
 import "../Style/LevelAccordion.css";
-import {
-  ChevronUpIcon,
-  ChevronDownIcon,
-  CircleIcon,
-  CheckCircledIcon,
-} from "@radix-ui/react-icons";
-import { Table, Button } from "@radix-ui/themes";
+import { ChevronDownIcon } from "@radix-ui/react-icons";
+import { Table } from "@radix-ui/themes";
 
 interface FilterableItem {
   name: string;
@@ -63,7 +58,7 @@ const renderObjectDetails = (obj: { [key: string]: any }, keyPrefix = "") => {
     if (typeof value === "object" && value !== null && !Array.isArray(value)) {
       return (
         <div key={`${keyPrefix}${key}`}>
-          <Table.Cell>
+          <Table.Cell className="Level--AccordionContentText">
             <strong>{key}:</strong>
           </Table.Cell>
           <div style={{ paddingLeft: "20px" }}>
@@ -81,10 +76,12 @@ const renderObjectDetails = (obj: { [key: string]: any }, keyPrefix = "") => {
         console.log(key, value);
         return (
           <div key={`${keyPrefix}${key}`}>
-            <Table.Cell>
+            <Table.Cell className="Level--AccordionContentText">
               <strong>{key}:</strong>
             </Table.Cell>
-            <Table.Cell>{value.toString()}</Table.Cell>
+            <Table.Cell className="Level--AccordionContentText">
+              {value.toString()}
+            </Table.Cell>
           </div>
         );
       }
@@ -143,7 +140,7 @@ const LevelAccordion = ({
                       <Table.Body>
                         <Table.Row>
                           {
-                            <Table.Cell>
+                            <Table.Cell className="Level--AccordionContentText">
                               <strong>Description: </strong>
                               {details.description || "Not Provided"}
                             </Table.Cell>
