@@ -5,6 +5,7 @@ import NodeRiskColor from "./TreeNode/NodeColorHelper";
 import "./TreeDisplay.css";
 import NodeDescriptionPanel from "./nodeDescriptionPanel/NodeDescriptionPanel";
 import { EyeOpenIcon, EyeClosedIcon } from "@radix-ui/react-icons";
+
 import {
   determineDescriptionClickerBorder,
   determineDescriptionClickerColor,
@@ -13,13 +14,125 @@ import {
   determineParentClickerColor,
   findPIQUENode,
 } from "./TreeDisplayHelpers";
-/**
- * @param fileData PIQUE .json output file.
- */
+import { T } from "ramda";
+
+
+// @param fileData PIQUE .json output file.
 
 export function TreeDisplay_Rework(props) { // start of export
 
-  
+  // my ideas is to have the node scale with the screen size in the future
+  // Setting the dimensions of each node
+  const node_width = 120;
+  const node_height = 80;
+
+  // no difference between innerX and window.innerX
+  console.log("inner height: " + innerHeight); // the canvas height I have to work with
+  console.log('inner width: ' + innerWidth); // the canvas width I have to work with
+
+  console.log("window inner height: " + window.innerHeight); // the canvas height I have to work with
+  console.log('window inner width: ' + window.innerWidth); // the canvas width I have to work with
+
+  // not sure what this does
+  const tree_canvas = useRef(null);
+
+  // central function for displaying the tree canvas
+  const showCanvas = () => {
+
+    let tree_nodes = []; // initialize list of all nodes in the tree
+
+    const window_width = window.innerWidth;
+    const window_height = window.innerHeight;
+
+    const tqi_node_x = window_width / 2; // x pos of root node
+    const tqi_node_y = window_height / 2; // y pos of root node
+
+    // push the root node
+    tree_nodes.push( new TreeNode(
+      props.fileData.factors.tqi,
+      node_width,
+      node_height,
+      tqi_node_x,
+      tqi_node_y
+    )) // end of push params
+
+    // draw the root node for a test of drawing
+
+    // copied from original
+
+    /*const svg = d3.select("body")
+      .select(tree_canvas.current)
+      .attr("id", "canvas")
+      .append("svg")
+      //.attr("viewBox", `${x} ${y} ${width} ${height}`)
+      //.on("mousewheel", zoom)
+      .style("vertical-align", "top");*/
+
+      const svg = d3.select('body')
+      .append('svg')
+      .attr('width', window_width)
+      .attr('height', window_height);
+
+    /**
+     * Creating the TQI and quality factor nodes in the treeDisplay display.
+     */
+    // TQI node
+    // add a white background color for tqi
+    svg
+      .append("rect")
+      .attr("id", "tqi^" + tree_nodes[0].name)
+      .attr("width", tree_nodes[0].width)
+      .attr("height", tree_nodes[0].height)
+      .attr("rx", 2)
+      .attr("x", tree_nodes[0].x)
+      .attr("y", tree_nodes[0].y)
+      .style("fill", "black");
+
+    /*svg
+      .append("rect")
+      .attr("id", "tqi^" + tree_nodes[0].name)
+      .attr("width", tree_nodes[0].width)
+      .attr("height", tree_nodes[0].height)
+      .attr("rx", 2)
+      .attr("x", tree_nodes[0].x)
+      .attr("y", tree_nodes[0].y)
+      .style("fill", NodeRiskColor(tree_nodes[0].json_data.value, tree_nodes[0].name, selectedNode))
+      .style("stroke-width", "1px")
+      .style("stroke", "black");
+
+    svg
+      .append("text")
+      .text(tree_nodes[0].name)
+      .attr("font-size", "10px")
+      .attr("font-weight", "bold")
+      .attr("x", tree_nodes[0].x + node_width * 0.5)
+      .attr("y", tree_nodes[0].y + node_height * 0.4)
+      .attr("fill", "black")
+      .attr("dominant-baseline", "middle")
+      .attr("text-anchor", "middle");
+
+    svg
+      .append("text")
+      .text(tree_nodes[0].json_data.value.toFixed(2))
+      .attr("font-size", "12px")
+      .attr("x", tree_nodes[0].x + node_width * 0.5)
+      .attr("y", tree_nodes[0].y + node_height * 0.6)
+      .attr("fill", "black")
+      .attr("dominant-baseline", "middle")
+      .attr("text-anchor", "middle");*/
+
+    /*
+      return (
+        <>
+          <div id={"canvas_container"}>
+            <div id={"tree_canvas"} ref={tree_canvas}></div>
+          </div>
+        </> );
+        */
+
+  } // end of show_canvas anonymous func
+
+  showCanvas();
 
 
 
@@ -27,27 +140,8 @@ export function TreeDisplay_Rework(props) { // start of export
 
 
 
+  
 
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   
   /*
 
