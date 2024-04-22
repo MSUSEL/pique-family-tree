@@ -34,18 +34,25 @@ export function TreeDisplay_Rework(props) { // start of export
   console.log('window inner width: ' + window.innerWidth); // the canvas width I have to work with
 
   // not sure what this does
-  const tree_canvas = useRef(null);
+  let tree_canvas = useRef(null);
 
   // central function for displaying the tree canvas
   const showCanvas = () => {
 
-    let tree_nodes = []; // initialize list of all nodes in the tree
+    // delete all elements in older canvas so it doesn't stack
+    d3.select(tree_canvas.current).selectAll("svg").remove();
 
     const window_width = window.innerWidth;
     const window_height = window.innerHeight;
 
-    const tqi_node_x = window_width / 2; // x pos of root node
-    const tqi_node_y = window_height / 2; // y pos of root node
+    
+
+    let tree_nodes = []; // initialize list of all nodes in the tree  
+
+    //const tqi_node_x = window_width / 2; // x pos of root node
+    //const tqi_node_y = window_height / 2; // y pos of root node
+    const tqi_node_x = 295; // x pos of root node
+    const tqi_node_y = 15; // y pos of root node
 
     // push the root node
     tree_nodes.push( new TreeNode(
@@ -55,6 +62,16 @@ export function TreeDisplay_Rework(props) { // start of export
       tqi_node_x,
       tqi_node_y
     )) // end of push params
+
+    // create the background canvas
+    const svg = d3
+    //.select(tree_canvas.current)
+    .select('#canvas')
+    .append('svg')
+    .attr('id', 'tree_canvas')
+    .attr('width', 500)
+    .attr('height', 500)
+    .style('vertical_align', 'top')
 
     // draw the root node for a test of drawing
 
@@ -68,17 +85,18 @@ export function TreeDisplay_Rework(props) { // start of export
       //.on("mousewheel", zoom)
       .style("vertical-align", "top");*/
 
-      const svg = d3.select('body')
-      .append('svg')
-      .attr('width', window_width)
-      .attr('height', window_height);
+      /*
+      svg
+        .append('svg')
+        .attr('width', window_width)
+        .attr('height', window_height);*/
 
     /**
      * Creating the TQI and quality factor nodes in the treeDisplay display.
      */
     // TQI node
     // add a white background color for tqi
-    svg
+    /*svg
       .append("rect")
       .attr("id", "tqi^" + tree_nodes[0].name)
       .attr("width", tree_nodes[0].width)
@@ -86,7 +104,7 @@ export function TreeDisplay_Rework(props) { // start of export
       .attr("rx", 2)
       .attr("x", tree_nodes[0].x)
       .attr("y", tree_nodes[0].y)
-      .style("fill", "black");
+      .style("fill", "black");*/
 
     /*svg
       .append("rect")
@@ -121,14 +139,16 @@ export function TreeDisplay_Rework(props) { // start of export
       .attr("dominant-baseline", "middle")
       .attr("text-anchor", "middle");*/
 
-    /*
+    
+      // tested that this is enough info returned to display
       return (
         <>
           <div id={"canvas_container"}>
             <div id={"tree_canvas"} ref={tree_canvas}></div>
           </div>
-        </> );
-        */
+        </>
+      );
+        
 
   } // end of show_canvas anonymous func
 
