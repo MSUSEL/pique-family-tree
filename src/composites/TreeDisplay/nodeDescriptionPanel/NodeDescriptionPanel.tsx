@@ -1,7 +1,7 @@
 import "./NodeDescriptionPanel.css";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { determineNodeInfo } from "./NodeDescriptionPanelHelpers";
-import { EyeOpenIcon, EyeNoneIcon } from "@radix-ui/react-icons";
+import { EyeOpenIcon, EyeNoneIcon, InfoCircledIcon } from "@radix-ui/react-icons";
 
 export default function NodeDescriptionPanel(props: { nodes: any[]; impacts: any; setSelectedNode: Function }) {
   const [orderBy, setOrderBy] = useState<string>("default");
@@ -44,31 +44,54 @@ export default function NodeDescriptionPanel(props: { nodes: any[]; impacts: any
 
   const makeNodePanelRectangles = useMemo(() => {
     if (orderBy === "nodeType") {
-      const groupedNodes: { [key: string]: any[] } = {};
+      const nodeTypeOrder = ["TQI", "Product Factor", "Measure", "Diagnostic"];
+  
+      const groupedNodes = {};
+      nodeTypeOrder.forEach(type => {
+        groupedNodes[type] = [];
+      });
   
       props.nodes.forEach((node) => {
         const type = determineNodeType(node); 
-        if (!groupedNodes[type]) {
-          groupedNodes[type] = [];
+        if (groupedNodes[type]) {
+          groupedNodes[type].push(node);
+        } else {
         }
-        groupedNodes[type].push(node);
       });
   
       const nodePanels: JSX.Element[] = [];
-      for (const [type, nodes] of Object.entries(groupedNodes)) {
-        const nodePanelsOfType = nodes.map((node, i) => (
-          <div key={i} className={`node-panel`}>
-            {determineNodeInfo(node, props.impacts)}
-          </div>
-        ));
-
-        nodePanels.push(
-          <div key={type}>
-            <h2>{type}</h2>
-            {nodePanelsOfType}
-          </div>
-        );
-      }
+      nodeTypeOrder.forEach((type) => {
+        const nodesOfType = groupedNodes[type];
+        if (nodesOfType && nodesOfType.length > 0) {
+          const nodePanelsOfType = nodesOfType.map((node, i) => (
+            <div key={i} className={`node-panel`}>
+              {determineNodeInfo(node, props.impacts)}
+            </div>
+          ));
+          let nodeGroup = (
+            <div key={type} className="node-group">
+              <h2 className="node-type-header">
+                {type}
+              </h2>
+              {nodePanelsOfType}
+            </div>
+          );
+          if (nodesOfType.length > 2) {
+            nodeGroup = (
+              <div key={type} className="node-group-scrollable">
+                <h2 className="node-type-header">
+                  {type}
+                </h2>
+                <div className="scrollable-nodes">
+                  {nodePanelsOfType}
+                </div>
+              </div>
+            );
+          }
+          nodePanels.push(nodeGroup);
+        }
+      });
+  
       return nodePanels;
     } else {
       let orderedNodes = [...props.nodes];
@@ -135,6 +158,10 @@ export default function NodeDescriptionPanel(props: { nodes: any[]; impacts: any
         <option value="value">Value Order</option>
         <option value="nodeType">Node Type Sort</option>
       </select>
+
+      {orderBy === "nodeType" && (
+        <InfoCircledIcon className="info-icon" />
+      )}
 
       {(orderBy === "alphabetical" || orderBy === "value") && (
         <>
