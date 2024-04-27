@@ -1,10 +1,11 @@
-// imports copied from https://airbnb.io/visx/trees for testing
+// imports and code copied from https://airbnb.io/visx/trees for testing
 
 import React, { useMemo } from 'react';
 import { Group } from '@visx/group';
 import { Tree, hierarchy } from '@visx/hierarchy';
 import { HierarchyPointNode } from '@visx/hierarchy/lib/types';
 import { LinkHorizontal } from '@visx/shape';
+import { LinkVertical } from '@visx/shape';
 import { LinearGradient } from '@visx/gradient';
 
 const peach = '#fd9b93';
@@ -16,7 +17,8 @@ const lightpurple = '#374469';
 const white = '#ffffff';
 export const background = '#272b4d';
 
-
+const node_width = 100;
+const node_height = 40;
 
 interface TreeNode {
   name: string;
@@ -25,6 +27,7 @@ interface TreeNode {
 
 type HierarchyNode = HierarchyPointNode<TreeNode>;
 
+// tree construction
 const rawTree: TreeNode = {
   name: 'T',
   children: [
@@ -69,7 +72,7 @@ const rawTree: TreeNode = {
 function RootNode({ node }: { node: HierarchyNode }) {
   return (
     <Group top={node.x} left={node.y}>
-      <circle r={12} fill="url('#lg')" />
+      <circle r={30} fill="url('#lg')" />
       <text
         dy=".33em"
         fontSize={9}
@@ -85,8 +88,8 @@ function RootNode({ node }: { node: HierarchyNode }) {
 }
 
 function ParentNode({ node }: { node: HierarchyNode }) {
-  const width = 40;
-  const height = 20;
+  const width = node_width;
+  const height = node_height;
   const centerX = -width / 2;
   const centerY = -height / 2;
 
@@ -120,12 +123,12 @@ function ParentNode({ node }: { node: HierarchyNode }) {
 
 /** Handles rendering Root, Parent, and other Nodes. */
 function Node({ node }: { node: HierarchyNode }) {
-  const width = 40;
-  const height = 20;
+  const width = node_width;
+  const height = node_height;
   const centerX = -width / 2;
   const centerY = -height / 2;
   const isRoot = node.depth === 0;
-  const isParent = !!node.children;
+  const isParent = !!node.children; // `!!` typecasts the node to a bool
 
   if (isRoot) return <RootNode node={node} />;
   if (isParent) return <ParentNode node={node} />;
@@ -169,20 +172,24 @@ export type TreeProps = {
   margin?: { top: number; right: number; bottom: number; left: number };
 };
 
-let width = 1000;
-let height = 1000;
+const min_width = 400; // the min width at which to render the tree
+let width = 900; // width of the background
+let height = 500; // height of the background
 let margin = defaultMargin;
 
-//export default function Example({ width, height, margin = defaultMargin }: TreeProps) {
+//export default function Example({ width, height, margin = defaultMargin }: TreeProps) { // original
 export function TreeDisplay_Rework() {
   const data = useMemo(() => hierarchy(rawTree), []);
   const yMax = height - margin.top - margin.bottom;
   const xMax = width - margin.left - margin.right;
 
-  return width < 10 ? null : (
+  // notes:
+  // rx is the curvature of the rect
+
+  return width < min_width ? null : (
     <svg width={width} height={height}>
       <LinearGradient id="lg" from={peach} to={pink} />
-      <rect width={width} height={height} rx={14} fill={background} />
+      <rect width={width} height={height} rx={10} fill={background} />
       <Tree<TreeNode> root={data} size={[yMax, xMax]}>
         {(tree) => (
           <Group top={margin.top} left={margin.left}>
@@ -203,14 +210,4 @@ export function TreeDisplay_Rework() {
       </Tree>
     </svg>
   );
-}
-
-/*
-export function TreeDisplay_Rework(props) { // start of export
-
-  
-
-  return <div id='testdiv'><p>hello world</p></div>;
-  
- 
-} // end of export*/
+} // end of export
