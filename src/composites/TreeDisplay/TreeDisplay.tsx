@@ -19,8 +19,7 @@ import {
 
 export function TreeDisplay(props) {
 
-  // not sure what these do
-  // useState may be some sort of mapping func
+  
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedNodes, setSelectedNodes] = useState([]);
 
@@ -211,8 +210,7 @@ export function TreeDisplay(props) {
     showCanvas();
   });
 
-  // *** the giant function in charge of actually drawing the tree *** //
-  const showCanvas = () => { // showCanvas is a var that holds the monster anonymous func
+  const showCanvas = () => {
     // Tree nodes array only contains TQI and quality aspects nodes... maybe change later for clarity?
     let treeNodes = [];
 

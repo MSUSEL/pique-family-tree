@@ -15,7 +15,7 @@ export const HidePerfectNodesSwitch = () => {
         <Flex gap="3" align="center">
             <Text as="label" size="2">
                 <Flex gap="2">
-                    <Switch checked={hideOneValueNodeState === "hiding"} onCheckedChange={handleToggle} />
+                    <Switch checked={hideOneValueNodeState === "hidding"} onCheckedChange={handleToggle} />
                     (In progress) Hide Value = 1 Nodes
                 </Flex>
             </Text>

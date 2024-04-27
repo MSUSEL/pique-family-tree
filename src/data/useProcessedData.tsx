@@ -38,10 +38,10 @@ export const useProcessedData = () => {
 
     let data = sort(sortState, dataset);
 
-    const isEdgeHiding = hideZeroWeightEdgeState === "hiding";
+    const isEdgeHiding = hideZeroWeightEdgeState === "hidding";
     data = hideZeroWeightEdges(data, isEdgeHiding);
 
-    const isNodeHiding = hideZeroWeightEdgeState === "hiding";
+    const isNodeHiding = hideZeroWeightEdgeState === "hidding";
     //data = hideZeroWeightEdges(data, isEdgeHiding);
 
     data = filterByRiskLevels(data, checkboxStates);

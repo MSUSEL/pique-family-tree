@@ -1,5 +1,4 @@
 export default class TreeNode {
-
   constructor(info, width, height, x, y) {
     this.json_data = info;
     this.width = width;

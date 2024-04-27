@@ -5,8 +5,8 @@ export function createState() {
   const dataset = atom<schema.base.Schema | undefined>(undefined);
   const sortingState = atom<"no-sort" | "value-asc" | "value-desc" | "weight-asc" | "weight-desc">("no-sort");
   const filteringState = atom<"no-filter" | "by-risk-level" | "by-range">("no-filter");
-  const hideZeroWeightEdgeState = atom<"not-hidding" | "hiding">("not-hidding");
-  const hideOneValueNodeState = atom<"not-hidding" | "hiding">("not-hidding");
+  const hideZeroWeightEdgeState = atom<"not-hidding" | "hidding">("not-hidding");
+  const hideOneValueNodeState = atom<"not-hidding" | "hidding">("not-hidding");
   
 
   // when filteringState = by-risk-level, checkbox states
