@@ -22,6 +22,7 @@
     "@radix-ui/react-slider": "^1.1.2",
     "@radix-ui/themes": "^2.0.1",
     "@stitches/react": "^1.2.8",
+    "@visx/visx": "^3.10.2",
     "d3": "^7.8.5",
     "framer-motion": "^11.0.5",
     "jotai": "^2.5.1",
