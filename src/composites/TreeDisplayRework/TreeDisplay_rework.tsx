@@ -65,8 +65,8 @@ export function TreeDisplay_Rework(props) { // start of export
 
     // create the background canvas
     const svg = d3
-    //.select(tree_canvas.current)
-    .select('#canvas')
+    .select(tree_canvas.current)
+    //.select('#canvas')
     .append('svg')
     .attr('id', 'tree_canvas')
     .attr('width', 500)
@@ -148,9 +148,16 @@ export function TreeDisplay_Rework(props) { // start of export
           </div>
         </>
       );
-        
+
+      // add svg element to dom
+      // add a ref to it
+      // modify it with d3 using the ref
+      // use effect
+      // airbnb visx
 
   } // end of show_canvas anonymous func
+
+
 
   showCanvas();
 
