@@ -17,6 +17,9 @@ const lightpurple = '#374469';
 const white = '#ffffff';
 export const background = '#272b4d';
 
+// project imports
+import TreeNode from "./TreeNode/TreeNode.jsx";
+
 const node_width = 100;
 const node_height = 40;
 
@@ -178,7 +181,36 @@ let height = 500; // height of the background
 let margin = defaultMargin;
 
 //export default function Example({ width, height, margin = defaultMargin }: TreeProps) { // original
-export function TreeDisplay_Rework() {
+export function TreeDisplay_Rework(_processedData : any) {
+
+
+  // notes about the tree:
+  //    Despite being called a tree, the linkage is different than lets say a BST.
+  //    This is because each nodes does not have a list of children, rather, its children
+  //    is the entirety of the row of nodes below it. For this reason, each node does
+  //    not store a list of its children, only the information about itself.
+  //    This is why instead of having one central list of all nodes, I broke it each layer
+  //    of nodes up into it's own list. 
+  //    From top to bottom: tqi -> quality_aspects -> product_factors
+
+  console.log(_processedData);
+
+  // top row of nodes -- function similar to root nodes (only 1 with doctored data file)
+  let tqi_nodes : any = [];
+  tqi_nodes = create_nodes(_processedData.fileData.factors.tqi);
+  //console.log('tqi nodes len: ' + tqi_nodes.length);
+
+  // second row of nodes -- the children of the tqi nodes
+  let quality_aspect_nodes : any = [];
+  quality_aspect_nodes = create_nodes(_processedData.fileData.factors.quality_aspects);
+  //console.log('quality aspect nodes len: ' + quality_aspect_nodes.length);
+
+  // third row of nodes -- the children of the quality aspect nodes
+  let product_factor_nodes : any = [];
+  product_factor_nodes = create_nodes(_processedData.fileData.factors.product_factors);
+  //console.log('product factor nodes len: ' + product_factor_nodes.length);
+
+  // start of example code -- edits have been made
   const data = useMemo(() => hierarchy(rawTree), []);
   const yMax = height - margin.top - margin.bottom;
   const xMax = width - margin.left - margin.right;
@@ -187,6 +219,16 @@ export function TreeDisplay_Rework() {
   // rx is the curvature of the rect
 
   return width < min_width ? null : (
+
+    // I need a way to dynamically write the html to draw the nodes
+    <svg width={width} height={height}>
+      <rect width={width} height={height} rx={10} fill={background} />
+      <rect height={50} width={50} x={50} y={50} fill={green} />
+      
+    </svg>
+  
+
+    /*
     <svg width={width} height={height}>
       <LinearGradient id="lg" from={peach} to={pink} />
       <rect width={width} height={height} rx={10} fill={background} />
@@ -194,7 +236,7 @@ export function TreeDisplay_Rework() {
         {(tree) => (
           <Group top={margin.top} left={margin.left}>
             {tree.links().map((link, i) => (
-              <LinkHorizontal
+              <LinkHorizontal // draws the path between
                 key={`link-${i}`}
                 data={link}
                 stroke={lightpurple}
@@ -209,5 +251,39 @@ export function TreeDisplay_Rework() {
         )}
       </Tree>
     </svg>
+    */
   );
 } // end of export
+
+// creates and returns an array of nodes representing the specified layer
+function create_nodes(_factors : any){
+
+  let nodes : any = [];
+
+  const node_x = width / 2 - node_width / 2;
+  const node_y = 15;
+
+  for (let _factor in _factors) {
+    nodes.push(
+      new TreeNode( 
+        _factors[_factor],
+        node_width,
+        node_height,
+        node_x,
+        node_y
+      )
+    );
+  }
+
+  return nodes;
+}
+
+// draws the nodes on top of the svg
+// ignores the stored values of x and y pos and calculates its own
+function draw_nodes(nodes : any[], y_pos : number){
+
+  nodes.forEach(function(node) {
+
+    return
+  });
+}

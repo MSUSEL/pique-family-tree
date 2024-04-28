@@ -198,7 +198,7 @@ export const Wrapper = () => {
               </Tabs.Content>
 
               <Tabs.Content value="treerefactor">
-                <TreeDisplay_Rework/>
+                <TreeDisplay_Rework fileData={processedData}/>
               </Tabs.Content>
             </Box>
           </Tabs.Root>

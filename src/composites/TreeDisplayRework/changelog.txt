@@ -1,2 +1,5 @@
 new dependancies:
     visx: run 'npm install --save @visx/visx'
+
+created a type declaration file for tree node
+    'TreeNode.d.ts'
