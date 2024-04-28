@@ -19,9 +19,11 @@ export const background = '#272b4d';
 
 // project imports
 import TreeNode from "./TreeNode/TreeNode.jsx";
+import { Color } from 'd3';
+import { Rect } from 'reactflow';
 
-const node_width = 100;
-const node_height = 40;
+const node_width = 120;
+const node_height = 60;
 
 interface TreeNode {
   name: string;
@@ -196,19 +198,17 @@ export function TreeDisplay_Rework(_processedData : any) {
   console.log(_processedData);
 
   // top row of nodes -- function similar to root nodes (only 1 with doctored data file)
-  let tqi_nodes : any = [];
-  tqi_nodes = create_nodes(_processedData.fileData.factors.tqi);
-  //console.log('tqi nodes len: ' + tqi_nodes.length);
+  const tqi_nodes : any[] = create_nodes(_processedData.fileData.factors.tqi); // holds the data of each node
+  const tqi_rects : any[] = create_rects(tqi_nodes, 100); // holds the actual rect objects do be drawn in the svg
+  console.log(tqi_nodes[0]);
 
   // second row of nodes -- the children of the tqi nodes
-  let quality_aspect_nodes : any = [];
-  quality_aspect_nodes = create_nodes(_processedData.fileData.factors.quality_aspects);
-  //console.log('quality aspect nodes len: ' + quality_aspect_nodes.length);
+  const quality_aspect_nodes : any[] = create_nodes(_processedData.fileData.factors.quality_aspects);
+  const quality_aspect_rects : any[] = create_rects(quality_aspect_nodes, 250);
 
   // third row of nodes -- the children of the quality aspect nodes
-  let product_factor_nodes : any = [];
-  product_factor_nodes = create_nodes(_processedData.fileData.factors.product_factors);
-  //console.log('product factor nodes len: ' + product_factor_nodes.length);
+  const product_factor_nodes : any[] = create_nodes(_processedData.fileData.factors.product_factors);
+  const product_factor_rects : any[] = create_rects(product_factor_nodes, 400);
 
   // start of example code -- edits have been made
   const data = useMemo(() => hierarchy(rawTree), []);
@@ -223,8 +223,9 @@ export function TreeDisplay_Rework(_processedData : any) {
     // I need a way to dynamically write the html to draw the nodes
     <svg width={width} height={height}>
       <rect width={width} height={height} rx={10} fill={background} />
-      <rect height={50} width={50} x={50} y={50} fill={green} />
-      
+      {tqi_rects}
+      {quality_aspect_rects}
+      {product_factor_rects}
     </svg>
   
 
@@ -265,7 +266,7 @@ function create_nodes(_factors : any){
 
   for (let _factor in _factors) {
     nodes.push(
-      new TreeNode( 
+      new TreeNode( // not sure why it's not recognizing the constructor, but its working so whatever
         _factors[_factor],
         node_width,
         node_height,
@@ -280,10 +281,25 @@ function create_nodes(_factors : any){
 
 // draws the nodes on top of the svg
 // ignores the stored values of x and y pos and calculates its own
-function draw_nodes(nodes : any[], y_pos : number){
+// the _y_pos paramter is required so this can be reused for different node types
+function create_rects(nodes : any[], _y_pos : number){
 
-  nodes.forEach(function(node) {
-
-    return
+  let rects : any[] = []; // empty array to return
+  nodes.forEach(function(node, index) {
+    let x = (index + 1) * (width / (nodes.length + 1)) - node_width / 2;
+    let y = _y_pos - node_height / 2;
+    rects.push(
+      <g key={node.name}>
+        <rect height={node_height} width={node_width} x={x} y={y} fill={green}/>
+        <text x={x + node_width / 2} y={y + node_height / 4} dominantBaseline="middle" textAnchor="middle" fontSize={10}>
+          {node.name}
+        </text>
+        <text x={x + node_width / 2} y={y + node_height / 2} dominantBaseline="middle" textAnchor="middle" fontSize={10}>
+          {node.json_data.value}
+        </text>
+      </g>
+    );
   });
+
+  return rects;
 }
