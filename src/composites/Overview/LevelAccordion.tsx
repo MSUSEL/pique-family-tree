@@ -93,6 +93,7 @@ export const renderObjectDetails = (
   });
 };
 
+// Wrapper for the accordion list used for each level
 const LevelAccordion = ({
   nestedobj,
   isDiagnostics,
@@ -105,6 +106,7 @@ const LevelAccordion = ({
   const processedItems = classifyRiskLevels(nestedobj, isDiagnostics);
   return (
     <Accordion.Root type="multiple" className="Level--AccordionRoot">
+      {/* Iterates through items held in processedItems */}
       {Object.entries(processedItems).map(([riskLevel, items]) => (
         <Accordion.Item
           value={riskLevel}
@@ -128,6 +130,7 @@ const LevelAccordion = ({
           <Accordion.Content className="Level--AccordionContent">
             <Accordion.Root type="multiple" className="Level--AccordionRoot">
               {Object.entries(items).map(([key, details]) =>
+                // renders item's information based on key and visibility level
                 renderItemDetails(key, details, detailsVisible)
               )}
             </Accordion.Root>

@@ -4,6 +4,7 @@ import { renderObjectDetails } from "./LevelAccordion";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { FilterableItem } from "./LevelAccordion";
 
+// Renders the information for a single item
 export const renderItemDetails = (
   key: string,
   details: FilterableItem,
@@ -29,6 +30,7 @@ export const renderItemDetails = (
               }
             </Table.Row>
             <Table.Row className="AdditionalDetails">
+              {/* Renders additional information if detailsVisible is true */}
               {detailsVisible && renderObjectDetails(details)}
             </Table.Row>
           </Table.Body>

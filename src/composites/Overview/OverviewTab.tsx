@@ -18,12 +18,6 @@ import { COLORS } from "./PieChartColor";
 import SectionComponent from "./SectionComponent";
 import "@radix-ui/colors/violet.css";
 
-interface FilterableItem {
-  value: number;
-  weights: Record<string, number>;
-  [key: string]: any;
-}
-
 interface Impact {
   aspectName: string;
   weight: number;
@@ -44,6 +38,7 @@ const generateChartData = (riskData: [number[], string[][]] | null) => {
   );
 };
 
+// Main wrapper for overview tab containing all overview tab features
 export const OverviewTab = () => {
   const dataset: Schema.base.Schema = useAtomValue(
     State.dataset
@@ -92,13 +87,6 @@ export const OverviewTab = () => {
     const value = Object.values(dataset.factors.tqi)[0].value;
     return { level: levelName, name, value };
   }, [tqiRiskData]);
-
-  // Zac's note: These are no longer used after removal of original overview list code
-  // const [isOverviewListOpen, setOverviewListOpen] = useState(false);
-
-  // const toggleOverviewList = () => {
-  //   setOverviewListOpen(!isOverviewListOpen);
-  // };
 
   // Prepare data for the chart
   const qualityAspectsChartData = useMemo(
@@ -256,6 +244,7 @@ export const OverviewTab = () => {
     (entry) => entry.Count !== 0
   );
 
+  // assign risk level beased on value
   function getValueRisk(value: number, isDiagnostics: boolean): string {
     if (isDiagnostics) {
       if (value < 0.2) return "Insignificant";
@@ -280,6 +269,7 @@ export const OverviewTab = () => {
         align={"center"}
         style={{ width: "100%", marginTop: "24px" }}
       >
+        {/* TQI header Card */}
         <Card
           size={"1"}
           style={{
@@ -287,6 +277,7 @@ export const OverviewTab = () => {
           }}
         >
           <Flex direction={"row"} gap={"5"} justify={"center"} align={"center"}>
+            {/* Contains left hand side of card */}
             <Flex direction={"column"} align={"center"} gap={"3"}>
               <Strong style={{ alignSelf: "center" }}>
                 Total Quality Index
@@ -326,6 +317,7 @@ export const OverviewTab = () => {
               decorative
             ></Separator>
 
+            {/* Contains right hand side of card */}
             <Flex direction={"column"} align={"center"} gap={"3"}>
               <Strong
                 style={{
@@ -486,25 +478,6 @@ export const OverviewTab = () => {
           isDiagnostics={true}
         />
       </Flex>
-
-      {/* Ziyi's note: commented out for rn, lets see whether we need this any more 
-      <Flex direction={"row"} style={{ height: "65vh" }}>
-        
-        <Button onClick={toggleOverviewList} variant="surface">
-          {isOverviewListOpen ? <Cross1Icon /> : <HamburgerMenuIcon />}
-        </Button>
-
-       
-        <Box
-          className="OverviewListContainer"
-          style={{
-            flex: "0 0 auto",
-            display: isOverviewListOpen ? "block" : "none",
-          }}
-        >
-          <OverviewList filedata={dataset} />
-        </Box>
-      </Flex> */}
     </Flex>
   );
 };

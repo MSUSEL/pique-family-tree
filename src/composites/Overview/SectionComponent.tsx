@@ -16,9 +16,6 @@ import "./Overview.css";
 import "@radix-ui/colors/mauve.css";
 import LevelAccordion from "./LevelAccordion";
 import { useState } from "react";
-import { State } from "../../state";
-import { useAtomValue } from "jotai";
-import { useProcessedData } from "../../data/useProcessedData";
 import React from "react";
 import "@radix-ui/colors/violet.css";
 
@@ -55,6 +52,8 @@ interface SectionComponentProps {
   isDiagnostics?: boolean;
 }
 
+// Wrapper for each 'section' which contains accordion, pie
+//  chart, and top 3 list based on data type (characteristic, factor, etc.)
 const SectionComponent: React.FC<SectionComponentProps> = ({
   title,
   nestedObj,
@@ -63,21 +62,10 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
   topProblematicItems,
   isDiagnostics = false,
 }) => {
-  const dataset = useAtomValue(State.dataset);
-  const processedData = useProcessedData();
-
   const [detailsVisible, setDetailsVisible] = useState(false); // State to track visibility
 
   const toggleDetailsVisibility = () => {
     setDetailsVisible((prevState) => !prevState); // Toggle visibility
-  };
-
-  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>(
-    {}
-  );
-
-  const toggleItem = (key: string) => {
-    setExpandedItems((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   return (
@@ -93,10 +81,8 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
         <Box>
           <Badge size="2">{title}</Badge>
         </Box>
-        <Box
-          className="toggle-button-container"
-          style={{ background: "white" }}
-        >
+        <Box className="toggle-button-container">
+          {/* Toggles additional details for all items in this section */}
           <Button
             className="toggle-button"
             onClick={toggleDetailsVisibility}
@@ -166,9 +152,11 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
         </Box>
         <Box>
           <Flex direction="column" gap="7" align="start">
+            {/* Renders the top 3 list's information and popup windows */}
             {topProblematicItems.map((item, index) => (
               <Dialog.Root key={index}>
                 <Dialog.Trigger>
+                  {/* Buttons containing item name, score, and trigger for popup window */}
                   <Button style={{ background: "none" }}>
                     <Text as="p">
                       <Flex direction={"column"} align={"start"}>
@@ -188,6 +176,7 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
                     </Text>
                   </Button>
                 </Dialog.Trigger>
+                {/* Content in popup window, should eventually match the accordion element, targeted on given item */}
                 <Dialog.Content>
                   <Text
                     as="div"
