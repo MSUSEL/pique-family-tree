@@ -1,9 +1,10 @@
 import * as Accordion from "@radix-ui/react-accordion";
 import "../Style/LevelAccordion.css";
+import renderItemDetails from "./RenderItemDetails";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { Table } from "@radix-ui/themes";
 
-interface FilterableItem {
+export interface FilterableItem {
   name: string;
   value: number;
   description: string;
@@ -53,7 +54,10 @@ const classifyRiskLevels = (
 };
 
 // render object properties recursively
-const renderObjectDetails = (obj: { [key: string]: any }, keyPrefix = "") => {
+export const renderObjectDetails = (
+  obj: { [key: string]: any },
+  keyPrefix = ""
+) => {
   return Object.entries(obj).map(([key, value]) => {
     if (typeof value === "object" && value !== null && !Array.isArray(value)) {
       return (
@@ -123,37 +127,9 @@ const LevelAccordion = ({
           </Accordion.Header>
           <Accordion.Content className="Level--AccordionContent">
             <Accordion.Root type="multiple" className="Level--AccordionRoot">
-              {Object.entries(items).map(([key, details]) => (
-                <Accordion.Item
-                  value={key}
-                  key={key}
-                  className="Level--AccordionLevel"
-                >
-                  <Accordion.Header className="Level--AccordionHeader">
-                    <Accordion.Trigger className="Level--AccordionTrigger">
-                      {details.name}: {details.value.toFixed(2)}
-                      <ChevronDownIcon className="Level--AccordionChevron" />
-                    </Accordion.Trigger>
-                  </Accordion.Header>
-                  <Accordion.Content className="Level--AccordionContent">
-                    <Table.Root>
-                      <Table.Body>
-                        <Table.Row>
-                          {
-                            <Table.Cell className="Level--AccordionContentText">
-                              <strong>Description: </strong>
-                              {details.description || "Not Provided"}
-                            </Table.Cell>
-                          }
-                        </Table.Row>
-                        <Table.Row className="AdditionalDetails">
-                          {detailsVisible && renderObjectDetails(details)}
-                        </Table.Row>
-                      </Table.Body>
-                    </Table.Root>
-                  </Accordion.Content>
-                </Accordion.Item>
-              ))}
+              {Object.entries(items).map(([key, details]) =>
+                renderItemDetails(key, details, detailsVisible)
+              )}
             </Accordion.Root>
           </Accordion.Content>
         </Accordion.Item>

@@ -288,9 +288,7 @@ export const OverviewTab = () => {
         >
           <Flex direction={"row"} gap={"5"} justify={"center"} align={"center"}>
             <Flex direction={"column"} align={"center"} gap={"3"}>
-              <Strong
-                style={{ alignSelf: "center", color: "var(--violet-11)" }}
-              >
+              <Strong style={{ alignSelf: "center" }}>
                 Total Quality Index
               </Strong>
               <Flex
@@ -316,14 +314,8 @@ export const OverviewTab = () => {
                 </Box>
 
                 <Flex direction={"column"}>
-                  <Text style={{ color: "var(--violet-11)" }}>
-                    {" "}
-                    Project Name:{" "}
-                  </Text>
-                  <Strong style={{ color: "var(--violet-11)" }}>
-                    {" "}
-                    {tqiRiskLevel.name}{" "}
-                  </Strong>
+                  <Text>Project Name:</Text>
+                  <Strong>{tqiRiskLevel.name} </Strong>
                 </Flex>
               </Flex>
             </Flex>
@@ -338,7 +330,6 @@ export const OverviewTab = () => {
               <Strong
                 style={{
                   fontSize: "80%",
-                  color: "var(--violet-11)",
                 }}
               >
                 Lowest section scores
@@ -351,9 +342,7 @@ export const OverviewTab = () => {
                 }}
               >
                 <Flex direction={"column"} align={"center"}>
-                  <Text style={{ color: "var(--violet-11)" }}>
-                    Characteristics
-                  </Text>
+                  <Text>Characteristics</Text>
                   <Avatar
                     fallback={
                       topProblematicQualityAspects
@@ -377,7 +366,7 @@ export const OverviewTab = () => {
                   />
                 </Flex>
                 <Flex direction={"column"} align={"center"}>
-                  <Text style={{ color: "var(--violet-11)" }}>Factors</Text>
+                  <Text>Factors</Text>
                   <Avatar
                     fallback={
                       topProblematicProductFactors
@@ -401,7 +390,7 @@ export const OverviewTab = () => {
                   />
                 </Flex>
                 <Flex direction={"column"} align={"center"}>
-                  <Text style={{ color: "var(--violet-11)" }}>Measures</Text>
+                  <Text>Measures</Text>
                   <Avatar
                     fallback={
                       topProblematicMeasures
@@ -425,7 +414,7 @@ export const OverviewTab = () => {
                   />
                 </Flex>
                 <Flex direction={"column"} align={"center"}>
-                  <Text style={{ color: "var(--violet-11)" }}>Diagnostics</Text>
+                  <Text>Diagnostics</Text>
                   <Avatar
                     fallback={
                       topProblematicDiagnostics
