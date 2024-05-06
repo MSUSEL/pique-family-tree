@@ -1,6 +1,4 @@
 
-
-
 #tree_canvas {
     fill: beige;
     margin: 0;
@@ -15,7 +13,7 @@
 
 .node_text {
 
-    color: black; /* color isn't working for some reason */
+    fill: black;
     font-size: 10px;
     dominant-baseline: middle;
     text-anchor: middle;
@@ -23,7 +21,6 @@
 
 /* I couldn't figure out how to import the colors from 
     NodeColorHelper.js */
-
 #low_node {
     fill: #00a43380;
 }

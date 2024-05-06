@@ -18,7 +18,7 @@ const node_width = 120;
 const node_height = 60;
 
 const min_width = 400; // the min width at which to render the tree
-let width = 900; // width of the background
+let width = 1000; // width of the background
 let height = 500; // height of the background
 
 //export default function Example({ width, height, margin = defaultMargin }: TreeProps) { // original
@@ -36,15 +36,15 @@ export function TreeDisplay_Rework(_processedData : any) {
 
   // top row of nodes -- function similar to root nodes (only 1 with doctored data file)
   const tqi_nodes : any[] = create_nodes(_processedData.fileData.factors.tqi); // holds the data of each node
-  const tqi_rects : any[] = create_rects(tqi_nodes, 100); // holds the actual rect objects do be drawn in the svg
+  const tqi_rects : any[] = create_rects(tqi_nodes, height / 5); // holds the actual rect objects do be drawn in the svg
 
   // second row of nodes -- the children of the tqi nodes
   const quality_aspect_nodes : any[] = create_nodes(_processedData.fileData.factors.quality_aspects);
-  const quality_aspect_rects : any[] = create_rects(quality_aspect_nodes, 250);
+  const quality_aspect_rects : any[] = create_rects(quality_aspect_nodes, (height / 5) * 2.5);
 
   // third row of nodes -- the children of the quality aspect nodes
   const product_factor_nodes : any[] = create_nodes(_processedData.fileData.factors.product_factors);
-  const product_factor_rects : any[] = create_rects(product_factor_nodes, 400);
+  const product_factor_rects : any[] = create_rects(product_factor_nodes, (height / 5) * 4);
 
   // draw links between tqi node
   const tqi_links : any[] = draw_links(tqi_rects, quality_aspect_rects);
@@ -153,6 +153,9 @@ function create_rects(nodes : any[], _y_pos : number){
 }
 
 // draws the links from the node to the children nodes
+// docs: https://d3js.org/d3-path
+//       https://observablehq.com/@d3/d3-path
+//       https://www.w3.org/TR/SVG/paths.html#PathDataLinetoCommands
 function draw_links(parents : any[], children : any[]){
 
   let links : any[] = []; // storage for all the lines
@@ -169,8 +172,23 @@ function draw_links(parents : any[], children : any[]){
       let child_x = _child.props.children[0].props.x + _child.props.children[0].props.width / 2;
       let child_y = _child.props.children[0].props.y;
 
+      // calc control points
+      let x1 = parent_x;
+      let y1 = (parent_y + child_y) / 2;
+
+      let x2 = child_x;
+      let y2 = y1;
+
+      // draws straight line
+      /*
       links.push(
         <path d={`M${parent_x} ${parent_y} L${child_x} ${child_y}`} 
+        stroke={'#000000'} strokeWidth={5} fill={'none'}/>
+      );*/
+
+      // draws bezier curve
+      links.push(
+        <path d={`M${parent_x} ${parent_y} C${x1} ${y1} ${x2} ${y2} ${child_x} ${child_y}`} 
         stroke={'#000000'} strokeWidth={5} fill={'none'}/>
       );
 
