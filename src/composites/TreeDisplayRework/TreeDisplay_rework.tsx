@@ -196,14 +196,13 @@ export function TreeDisplay_Rework(_processedData : any) {
   //    of nodes up into it's own list. 
   //    From top to bottom: tqi -> quality_aspects -> product_factors
 
-  console.log(_processedData);
-
   // top row of nodes -- function similar to root nodes (only 1 with doctored data file)
   const tqi_nodes : any[] = create_nodes(_processedData.fileData.factors.tqi); // holds the data of each node
   const tqi_rects : any[] = create_rects(tqi_nodes, 100); // holds the actual rect objects do be drawn in the svg
 
   // second row of nodes -- the children of the tqi nodes
   const quality_aspect_nodes : any[] = create_nodes(_processedData.fileData.factors.quality_aspects);
+  console.log(quality_aspect_nodes);
   const quality_aspect_rects : any[] = create_rects(quality_aspect_nodes, 250);
 
   // third row of nodes -- the children of the quality aspect nodes
@@ -263,6 +262,20 @@ export function TreeDisplay_Rework(_processedData : any) {
   );
 } // end of export
 
+// test function for sorting through nodes
+function process_data(_data : any[], _filter : number){
+
+  let clensed = [];
+
+  for (let _dataPoint in _data) {
+    if (_data[_dataPoint].value != _filter){
+      clensed.push(_data[_dataPoint]);
+    }
+  }
+
+  return clensed;
+}
+
 // creates and returns an array of nodes representing the specified layer
 function create_nodes(_factors : any){
 
@@ -270,6 +283,10 @@ function create_nodes(_factors : any){
 
   const node_x = width / 2 - node_width / 2;
   const node_y = 15;
+
+  _factors = process_data(_factors, 1.0);
+
+  console.log(_factors);
 
   for (let _factor in _factors) {
     nodes.push(
@@ -318,7 +335,7 @@ function create_rects(nodes : any[], _y_pos : number){
           {node.name}
         </text>
         <text x={x + node_width / 2} y={y + node_height / 2} className={'node_text'}>
-          {node.json_data.value}
+          {node.json_data.value.toFixed(2)}
         </text>
       </g>
     );
