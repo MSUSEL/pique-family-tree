@@ -21,6 +21,7 @@ export const background = '#272b4d';
 import TreeNode from "./TreeNode/TreeNode.jsx";
 import { Color } from 'd3';
 import { Rect } from 'reactflow';
+import './TreeDisplay.css';
 
 const node_width = 120;
 const node_height = 60;
@@ -200,7 +201,6 @@ export function TreeDisplay_Rework(_processedData : any) {
   // top row of nodes -- function similar to root nodes (only 1 with doctored data file)
   const tqi_nodes : any[] = create_nodes(_processedData.fileData.factors.tqi); // holds the data of each node
   const tqi_rects : any[] = create_rects(tqi_nodes, 100); // holds the actual rect objects do be drawn in the svg
-  console.log(tqi_nodes[0]);
 
   // second row of nodes -- the children of the tqi nodes
   const quality_aspect_nodes : any[] = create_nodes(_processedData.fileData.factors.quality_aspects);
@@ -209,6 +209,9 @@ export function TreeDisplay_Rework(_processedData : any) {
   // third row of nodes -- the children of the quality aspect nodes
   const product_factor_nodes : any[] = create_nodes(_processedData.fileData.factors.product_factors);
   const product_factor_rects : any[] = create_rects(product_factor_nodes, 400);
+
+  // draw links between tqi node
+  const tqi_links : any[] = draw_links(tqi_rects, quality_aspect_rects);
 
   // start of example code -- edits have been made
   const data = useMemo(() => hierarchy(rawTree), []);
@@ -222,10 +225,14 @@ export function TreeDisplay_Rework(_processedData : any) {
 
     // I need a way to dynamically write the html to draw the nodes
     <svg width={width} height={height}>
-      <rect width={width} height={height} rx={10} fill={background} />
+      <rect width={width} height={height} rx={10} id='tree_canvas'/>
+
+      {tqi_links}
+
       {tqi_rects}
       {quality_aspect_rects}
       {product_factor_rects}
+      
     </svg>
   
 
@@ -288,13 +295,29 @@ function create_rects(nodes : any[], _y_pos : number){
   nodes.forEach(function(node, index) {
     let x = (index + 1) * (width / (nodes.length + 1)) - node_width / 2;
     let y = _y_pos - node_height / 2;
+    
+    // determine color of the node
+    let node_id = 'low_node';
+    if (node.json_data.value < 0.2){
+      node_id = 'severe_node';
+    }
+    else if (node.json_data.value < 0.4){
+      node_id = 'high_node';
+    }
+    else if (node.json_data.value < 0.6){
+      node_id = 'elevated_node';
+    }
+    else if (node.json_data.value < 0.8){
+      node_id = 'guarded_node';
+    }
+
     rects.push(
       <g key={node.name}>
-        <rect height={node_height} width={node_width} x={x} y={y} fill={green}/>
-        <text x={x + node_width / 2} y={y + node_height / 4} dominantBaseline="middle" textAnchor="middle" fontSize={10}>
+        <rect height={node_height} width={node_width} x={x} y={y} className={'node_rect'} id={node_id}/>
+        <text x={x + node_width / 2} y={y + node_height / 4} className={'node_text'}>
           {node.name}
         </text>
-        <text x={x + node_width / 2} y={y + node_height / 2} dominantBaseline="middle" textAnchor="middle" fontSize={10}>
+        <text x={x + node_width / 2} y={y + node_height / 2} className={'node_text'}>
           {node.json_data.value}
         </text>
       </g>
@@ -302,4 +325,22 @@ function create_rects(nodes : any[], _y_pos : number){
   });
 
   return rects;
+}
+
+// draws the links from the node to the children nodes
+function draw_links(parents : any[], children : any[]){
+
+let links : any[] = []; // storage for all the lines
+
+  parents.forEach(function(_parent){
+    children.forEach(function(_child){
+      console.log('child ' + _child);
+      links.push(
+        <path d={`M${_parent.x} ${_parent.y} L${_child.x} ${_child.y}`} stroke={green} strokeWidth={5} fill={'none'}/>
+      );
+
+    });
+  });
+
+  return links
 }

@@ -1,19 +1,61 @@
+
+
+
 #tree_canvas {
+    fill: beige;
     margin: 0;
     width: 100%;
 }
+
+.node_rect {
+
+    fill: white;
+    rx: 5px;
+}
+
+.node_text {
+
+    color: black; /* color isn't working for some reason */
+    font-size: 10px;
+    dominant-baseline: middle;
+    text-anchor: middle;
+}
+
+/* I couldn't figure out how to import the colors from 
+    NodeColorHelper.js */
+
+#low_node {
+    fill: #00a43380;
+}
+#guarded_node {
+    fill: #008ff580;
+}
+#elevated_node {
+    fill: #ffee0080;
+}
+#high_node {
+    fill: #ff9c0080;
+}
+#severe_node {
+    fill: #f3000d80;
+}
+
+/*** unused below ***/
 
 .unselectableText {
     user-select: none;
 }
 
 #canvas {
-    background-color: beige;
+    /*background-color: beige;*/
+
     /* border-top: black solid 3px; 
     border-bottom: black solid 3px; */
     flex: 1;
     height: 100%;
 }
+
+
 
 #reset_tree_buttons_div {
     background-color: white;

@@ -26,8 +26,14 @@ const Low = {
   name: "Low",
   // color: "#8FBC94",
   color: "#00a43380", //19
-  
 };
+
+// Set CSS custom properties for each color
+document.documentElement.style.setProperty('--severe-color', Severe.color);
+document.documentElement.style.setProperty('--high-color', High.color);
+document.documentElement.style.setProperty('--elevated-color', Elevated.color);
+document.documentElement.style.setProperty('--guarded-color', Guarded.color);
+document.documentElement.style.setProperty('--low-color', Low.color);
 
 export default function NodeRiskColor(score, name, selectedNode, scale = "normal") {
   // Check if the node is the selected node, return ivory
