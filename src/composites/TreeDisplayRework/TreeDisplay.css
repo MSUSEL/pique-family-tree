@@ -18,6 +18,14 @@
     dominant-baseline: middle;
     text-anchor: middle;
 }
+.edge_text {
+
+    fill: black;
+    font-size: 10px;
+}
+.scroll_div{
+    overflow: auto;
+}
 
 /* I couldn't figure out how to import the colors from 
     NodeColorHelper.js */

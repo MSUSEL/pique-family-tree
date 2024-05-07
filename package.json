@@ -29,6 +29,7 @@
     "ramda": "^0.29.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-draggable": "^4.4.6",
     "reactflow": "^11.10.1",
     "recharts": "^2.10.4",
     "zod": "^3.22.4"
