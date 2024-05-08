@@ -1,8 +1,9 @@
 // used to declare the types of the tree node for type safety
 declare module "./TreeNode/TreeNode.jsx" {
   export default class TreeNode {
-    constructor(info: any, width: number, height: number, x: number, y: number);
+    constructor(info: any, rect: any, width: number, height: number, x: number, y: number);
     readonly json_data: any;
+    _rect: any;
     readonly width: number;
     readonly height: number;
     readonly x: number;

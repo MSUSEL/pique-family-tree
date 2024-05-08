@@ -40,9 +40,6 @@ const min_width = 400; // the min width at which to render the tree
 let width = 10000; // width of the background
 let height = 500; // height of the background
 
-let tqi_rects : any = [];
-let quality_aspect_rects : any = [];
-let product_factor_rects : any = [];
 let active_tqi_rects : any = [];
 let active_quality_aspect_rects : any = [];
 let active_product_factor_rects : any = [];
@@ -60,21 +57,18 @@ export function TreeDisplay_Rework(_processedData : any) {
   //    From top to bottom: tqi -> quality_aspects -> product_factors
 
   // top row of nodes -- function similar to root nodes (only 1 with doctored data file)
-  let tqi_nodes : any[] = create_nodes(_processedData.fileData.factors.tqi); // holds the data of each node
-  tqi_rects = create_rects(tqi_nodes, height / 5); // holds the actual rect objects do be drawn in the svg
+  let tqi_nodes : any[] = create_nodes(_processedData.fileData.factors.tqi, height / 5); // holds the data of each node
 
   // second row of nodes -- the children of the tqi nodes
-  let quality_aspect_nodes : any[] = create_nodes(_processedData.fileData.factors.quality_aspects);
-  quality_aspect_rects = create_rects(quality_aspect_nodes, (height / 5) * 2.5);
+  let quality_aspect_nodes : any[] = create_nodes(_processedData.fileData.factors.quality_aspects, (height / 5) * 2.5);
 
   // third row of nodes -- the children of the quality aspect nodes
-  let product_factor_nodes : any[] = create_nodes(_processedData.fileData.factors.product_factors);
-  product_factor_rects = create_rects(product_factor_nodes, (height / 5) * 4);
+  let product_factor_nodes : any[] = create_nodes(_processedData.fileData.factors.product_factors, (height / 5) * 4);
 
   // draw links between tqi node
-  let tqi_links : any[] = draw_edges(tqi_rects, tqi_nodes, quality_aspect_rects);
+  let tqi_edges : any[] = draw_edges(tqi_nodes, quality_aspect_nodes);
   // using the active will only draw the edges of the clicked parent nodes
-  let qar_links : any[] = draw_edges(quality_aspect_rects, quality_aspect_nodes, product_factor_rects); 
+  let qar_edges : any[] = draw_edges(quality_aspect_nodes, product_factor_nodes); 
 
   // notes:
   // rx is the curvature of the rect
@@ -99,11 +93,11 @@ export function TreeDisplay_Rework(_processedData : any) {
       <svg width={width} height={height} >
         <rect width={width} height={height} rx={10} id='tree_canvas' overflow={'auto'} ref={treeRef}/>
 
-        {tqi_rects}
-        {quality_aspect_rects}
-        {product_factor_rects}
-        {tqi_links}
-        {qar_links}
+        { tqi_nodes.map((node) => {return node._rect;}) }
+        { quality_aspect_nodes.map((node) => {return node._rect;}) }
+        { product_factor_nodes.map((node) => {return node._rect;}) }
+        {tqi_edges}
+        {qar_edges}
 
       </svg>
 
@@ -125,91 +119,68 @@ function process_data(_data : any[], _filter : number){
 }
 
 // creates and returns an array of nodes representing the specified layer
-function create_nodes(_factors : any){
-
-  let nodes : any = [];
-
-  const node_x = width / 2 - node_width / 2;
-  const node_y = 15;
+function create_nodes(_factors : any, _y_pos: number){
 
   _factors = process_data(_factors, 0.0);
 
-  for (let _factor in _factors) {
-    nodes.push(
-      new TreeNode( // not sure why it's not recognizing the constructor, but its working so whatever
-        _factors[_factor],
-        node_width,
-        node_height,
-        node_x,
-        node_y
-      )
-    );
-  }
+  return _factors.map((_factor : any, index : number) => {
 
-  return nodes;
-}
-
-// draws the nodes on top of the svg
-// ignores the stored values of x and y pos and calculates its own
-// the _y_pos paramter is required so this can be reused for different node types
-function create_rects(nodes : any[], _y_pos : number){
-
-  // Return an array of draggable nodes
-  return nodes.map((node, index) => {
-
-    // percentage distance
-    //let x = (index + 1) * (width / (nodes.length + 1)) - node_width / 2;
-    //let y = _y_pos - node_height / 2;
 
     // fixed distance
     const M = width / 2;
-    const C = nodes.length / 2;
+    const C = _factors.length / 2;
     const x = (M - C * 150) + (index * 150);
     const y = _y_pos - node_height / 2;
 
     // Determine node color
     let node_id = 'low_node';
-    if (node.json_data.value < 0.2){
+    if (_factors[index].value < 0.2){
       node_id = 'severe_node';
     }
-    else if (node.json_data.value < 0.4){
+    else if (_factors[index].value < 0.4){
       node_id = 'high_node';
     }
-    else if (node.json_data.value < 0.6){
+    else if (_factors[index].value < 0.6){
       node_id = 'elevated_node';
     }
-    else if (node.json_data.value < 0.8){
+    else if (_factors[index].value < 0.8){
       node_id = 'guarded_node';
     }
 
-    // Return a Draggable component containing the node
-    return (
-      <Draggable key={node.name} disabled={false} 
-      onMouseDown={(e) => {node_clicked(e)}} 
-      >
-        <g>
-          <rect height={node_height} width={node_width} x={x} y={y} className={'node_rect'} id={node_id}/>
-          <text x={x + node_width / 2} y={y + node_height / 4} className={'node_text'}>
-            {node.name}
-          </text>
-          <text x={x + node_width / 2} y={y + node_height / 2} className={'node_text'}>
-            {node.json_data.value.toFixed(2)}
-          </text>
-        </g>
-      </Draggable>
-    );
+    return new TreeNode(
+      _factors[index],
+      (<Draggable key={_factors[index].name} disabled={false} 
+        onMouseDown={(e) => {node_clicked(e)}} 
+        >
+          <g>
+            <rect height={node_height} width={node_width} x={x} y={y} className={'node_rect'} id={node_id}/>
+            <text x={x + node_width / 2} y={y + node_height / 4} className={'node_text'}>
+              {_factors[index].name}
+            </text>
+            <text x={x + node_width / 2} y={y + node_height / 2} className={'node_text'}>
+              {_factors[index].value.toFixed(2)}
+            </text>
+          </g>
+        </Draggable>),
+      node_width,
+      node_height,
+      x,
+      y
+    )
   });
 }
 
 // called when a node is clicked
 function node_clicked(e : MouseEvent){
 
-  // ** attemp 4 at draggable nodes
+  // ** attempt 4 at draggable nodes
 
-
+  
 
   // ** only displaying active parent's edges
 
+
+  /*
   // check to see if it is a tqi node
   tqi_rects.forEach((_rect : any) => {
 
@@ -261,6 +232,8 @@ function node_clicked(e : MouseEvent){
     }
   });
 
+  */
+
 
 }
 
@@ -268,22 +241,23 @@ function node_clicked(e : MouseEvent){
 // docs: https://d3js.org/d3-path
 //       https://observablehq.com/@d3/d3-path
 //       https://www.w3.org/TR/SVG/paths.html#PathDataLinetoCommands
-function draw_edges(parents : any[], nodes: any[], children : any[]){
+function draw_edges(_parents : any[], _children : any[]){
 
   //parents.forEach(function(_parent){
-    return parents.map((_parent, p_index) => {
+    return _parents.map((_parent, p_index) => {
 
+    console.log(_parent);
 
     // get parents x and y coords
-    let parent_x = _parent.props.children.props.children[0].props.x + _parent.props.children.props.children[0].props.width / 2;
-    let parent_y = _parent.props.children.props.children[0].props.y + _parent.props.children.props.children[0].props.height;
+    let parent_x = _parent._rect.props.children.props.children[0].props.x + _parent._rect.props.children.props.children[0].props.width / 2;
+    let parent_y = _parent._rect.props.children.props.children[0].props.y + _parent._rect.props.children.props.children[0].props.height;
 
     //children.forEach(function(_child){
-    return children.map((_child, c_index) => {
+    return _children.map((_child, c_index) => {
 
       // get childrens x and y coord
-      let child_x = _child.props.children.props.children[0].props.x + _child.props.children.props.children[0].props.width / 2;
-      let child_y = _child.props.children.props.children[0].props.y;
+      let child_x = _child._rect.props.children.props.children[0].props.x + _child._rect.props.children.props.children[0].props.width / 2;
+      let child_y = _child._rect.props.children.props.children[0].props.y;
 
       // calc control points
       let x1 = parent_x;
@@ -299,14 +273,14 @@ function draw_edges(parents : any[], nodes: any[], children : any[]){
       if (child_x > parent_x){
         return(
           <g>
-            <path key={_parent.key + _child.key} id={_parent.key + _child.key} d={`M${parent_x} ${parent_y} C${x1} ${y1} ${x2} ${y2} ${child_x} ${child_y}`} 
+            <path key={_parent._rect.key + _child.key} id={_parent._rect.key + _child._rect.key} d={`M${parent_x} ${parent_y} C${x1} ${y1} ${x2} ${y2} ${child_x} ${child_y}`} 
             stroke={'#000000'} strokeWidth={1} fill={'none'}/>
             <text>
               <textPath 
-              href={`#${_parent.key + _child.key}`}
+              href={`#${_parent._rect.key + _child._rect.key}`}
               startOffset={'50%'}
               className={'edge_text'}>
-                {nodes[p_index].json_data.weights[_child.key].toFixed(2)}
+                {_parent.json_data.weights[_child._rect.key].toFixed(2)}
               </textPath>
             </text>
           </g>
@@ -315,14 +289,14 @@ function draw_edges(parents : any[], nodes: any[], children : any[]){
       else{
         return(
           <g>
-            <path key={_parent.key + _child.key} id={_parent.key + _child.key} d={`M${child_x} ${child_y} C${x2} ${y2} ${x1} ${y1} ${parent_x} ${parent_y}`} 
+            <path key={_parent._rect.key + _child.key} id={_parent._rect.key + _child._rect.key} d={`M${child_x} ${child_y} C${x2} ${y2} ${x1} ${y1} ${parent_x} ${parent_y}`} 
             stroke={'#000000'} strokeWidth={1} fill={'none'}/>
             <text>
               <textPath 
-              href={`#${_parent.key + _child.key}`}
+              href={`#${_parent._rect.key + _child._rect.key}`}
               startOffset={'50%'}
               className={'edge_text'}>
-                {nodes[p_index].json_data.weights[_child.key].toFixed(2)}
+                {_parent.json_data.weights[_child._rect.key].toFixed(2)}
               </textPath>
             </text>
           </g>
