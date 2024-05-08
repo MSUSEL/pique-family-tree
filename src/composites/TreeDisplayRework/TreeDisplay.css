@@ -4,13 +4,6 @@
     margin: 0;
     width: 100%;
 }
-
-.node_rect {
-
-    fill: white;
-    rx: 5px;
-}
-
 .node_text {
 
     fill: black;
@@ -29,19 +22,29 @@
 
 /* I couldn't figure out how to import the colors from 
     NodeColorHelper.js */
-#low_node {
+.low_node {
+    fill: white;
+    rx: 5px;
     fill: #00a43380;
 }
-#guarded_node {
+.guarded_node {
+    fill: white;
+    rx: 5px;
     fill: #008ff580;
 }
-#elevated_node {
+.elevated_node {
+    fill: white;
+    rx: 5px;
     fill: #ffee0080;
 }
-#high_node {
+.high_node {
+    fill: white;
+    rx: 5px;
     fill: #ff9c0080;
 }
-#severe_node {
+.severe_node {
+    fill: white;
+    rx: 5px;
     fill: #f3000d80;
 }
 

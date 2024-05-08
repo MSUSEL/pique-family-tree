@@ -17,6 +17,14 @@ export default class TreeNode {
     this._rect = _rect;
   }
 
+  set x(x){
+    this._x = x;
+  }
+
+  set y(y){
+    this._y = y;
+  }
+
   get node_center_x() {
     return this.x + this.width / 2;
   }

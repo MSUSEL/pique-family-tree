@@ -1,20 +1,11 @@
-// imports and code copied from https://airbnb.io/visx/trees for testing
+// project imports
+import TreeNode from "./TreeNode/TreeNode.jsx";
+import './TreeDisplay.css';
+import { CornerTopRightIcon } from '@radix-ui/react-icons';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
-import { Group } from '@visx/group';
-import { Tree, hierarchy } from '@visx/hierarchy';
-import { HierarchyPointNode } from '@visx/hierarchy/lib/types';
-import { LinkHorizontal } from '@visx/shape';
-import { LinkVertical } from '@visx/shape';
-import { LinearGradient } from '@visx/gradient';
-
-// project imports
-import TreeNode from "./TreeNode/TreeNode.jsx";
-import { Color, tree } from 'd3';
-import { Rect } from 'reactflow';
-import './TreeDisplay.css';
-import { CornerTopRightIcon } from '@radix-ui/react-icons';
+import {process_data, draw_edges} from './TreeDisplayHelpers.tsx'
 
 
 // TODO:
@@ -38,11 +29,15 @@ const node_height = 60;
 
 const min_width = 400; // the min width at which to render the tree
 let width = 10000; // width of the background
-let height = 500; // height of the background
+let height = 600; // height of the background
 
-let active_tqi_rects : any = [];
-let active_quality_aspect_rects : any = [];
-let active_product_factor_rects : any = [];
+let active_tqi_nodes : any = [];
+let active_quality_aspect_nodes : any = [];
+let active_product_factor_nodes : any = [];
+
+let tqi_nodes : any[] = [];
+let quality_aspect_nodes : any[] = [];
+let product_factor_nodes : any[] = [];
 
 //export default function Example({ width, height, margin = defaultMargin }: TreeProps) { // original
 export function TreeDisplay_Rework(_processedData : any) {
@@ -57,18 +52,21 @@ export function TreeDisplay_Rework(_processedData : any) {
   //    From top to bottom: tqi -> quality_aspects -> product_factors
 
   // top row of nodes -- function similar to root nodes (only 1 with doctored data file)
-  let tqi_nodes : any[] = create_nodes(_processedData.fileData.factors.tqi, height / 5); // holds the data of each node
+  tqi_nodes = create_nodes(_processedData.fileData.factors.tqi, 100); // holds the data of each node
+  active_tqi_nodes = tqi_nodes;
 
   // second row of nodes -- the children of the tqi nodes
-  let quality_aspect_nodes : any[] = create_nodes(_processedData.fileData.factors.quality_aspects, (height / 5) * 2.5);
+  quality_aspect_nodes = create_nodes(_processedData.fileData.factors.quality_aspects, 250);
+  active_quality_aspect_nodes = quality_aspect_nodes;
 
   // third row of nodes -- the children of the quality aspect nodes
-  let product_factor_nodes : any[] = create_nodes(_processedData.fileData.factors.product_factors, (height / 5) * 4);
+  product_factor_nodes = create_nodes(_processedData.fileData.factors.product_factors, 400);
+  active_product_factor_nodes = product_factor_nodes;
 
   // draw links between tqi node
-  let tqi_edges : any[] = draw_edges(tqi_nodes, quality_aspect_nodes);
+  let tqi_edges : any[] = draw_edges(active_tqi_nodes, active_quality_aspect_nodes);
   // using the active will only draw the edges of the clicked parent nodes
-  let qar_edges : any[] = draw_edges(quality_aspect_nodes, product_factor_nodes); 
+  let qar_edges : any[] = draw_edges(active_quality_aspect_nodes, active_product_factor_nodes); 
 
   // notes:
   // rx is the curvature of the rect
@@ -79,23 +77,23 @@ export function TreeDisplay_Rework(_processedData : any) {
     if (treeRef.current) {
 
 
-      //treeRef.current.scrollLeft = 5000; // doesn't actually set it and I'm not sure why
-      //console.log(treeRef)
+      treeRef.current.scrollLeft = 5000; // doesn't actually set it and I'm not sure why
+      console.log(treeRef)
 
       // Ensure that treeRef.current is not null or undefined
       
-      //console.log(treeRef.current.scrollLeft);
+      console.log(treeRef.current.scrollLeft);
     }
   }, []);
 
   return width < min_width ? null : (
     
       <svg width={width} height={height} >
-        <rect width={width} height={height} rx={10} id='tree_canvas' overflow={'auto'} ref={treeRef}/>
+        <rect width={width} height={height} rx={10} id='tree_canvas' overflow-x={'auto'} ref={treeRef}/>
 
-        { tqi_nodes.map((node) => {return node._rect;}) }
-        { quality_aspect_nodes.map((node) => {return node._rect;}) }
-        { product_factor_nodes.map((node) => {return node._rect;}) }
+        { active_tqi_nodes.map((node : any) => {return node._rect;}) }
+        { active_quality_aspect_nodes.map((node) => {return node._rect;}) }
+        { active_product_factor_nodes.map((node) => {return node._rect;}) }
         {tqi_edges}
         {qar_edges}
 
@@ -103,20 +101,6 @@ export function TreeDisplay_Rework(_processedData : any) {
 
   );
 } // end of export
-
-// test function for sorting through nodes
-function process_data(_data : any[], _filter : number){
-
-  let clensed = [];
-
-  for (let _dataPoint in _data) {
-    if (_data[_dataPoint].value != _filter){
-      clensed.push(_data[_dataPoint]);
-    }
-  }
-
-  return clensed;
-}
 
 // creates and returns an array of nodes representing the specified layer
 function create_nodes(_factors : any, _y_pos: number){
@@ -153,7 +137,7 @@ function create_nodes(_factors : any, _y_pos: number){
         onMouseDown={(e) => {node_clicked(e)}} 
         >
           <g>
-            <rect height={node_height} width={node_width} x={x} y={y} className={'node_rect'} id={node_id}/>
+            <rect height={node_height} width={node_width} x={x} y={y} className={node_id} id={_factors[index].name}/>
             <text x={x + node_width / 2} y={y + node_height / 4} className={'node_text'}>
               {_factors[index].name}
             </text>
@@ -170,12 +154,20 @@ function create_nodes(_factors : any, _y_pos: number){
   });
 }
 
+
 // called when a node is clicked
 function node_clicked(e : MouseEvent){
 
   // ** attempt 4 at draggable nodes
 
-  
+  //console.log(document.getElementById(e.target.id));
+  console.log(e.target);
+
+  // updates aren't dynamic
+  console.log(tqi_nodes[0]._x);
+  tqi_nodes[0]._x += 10;
+  //active_quality_aspect_nodes.length = 0;
+  active_quality_aspect_nodes = [];
 
   // ** only displaying active parent's edges
 
@@ -233,75 +225,4 @@ function node_clicked(e : MouseEvent){
   });
 
   */
-
-
 }
-
-// draws the links from the node to the children nodes
-// docs: https://d3js.org/d3-path
-//       https://observablehq.com/@d3/d3-path
-//       https://www.w3.org/TR/SVG/paths.html#PathDataLinetoCommands
-function draw_edges(_parents : any[], _children : any[]){
-
-  //parents.forEach(function(_parent){
-    return _parents.map((_parent, p_index) => {
-
-    console.log(_parent);
-
-    // get parents x and y coords
-    let parent_x = _parent._rect.props.children.props.children[0].props.x + _parent._rect.props.children.props.children[0].props.width / 2;
-    let parent_y = _parent._rect.props.children.props.children[0].props.y + _parent._rect.props.children.props.children[0].props.height;
-
-    //children.forEach(function(_child){
-    return _children.map((_child, c_index) => {
-
-      // get childrens x and y coord
-      let child_x = _child._rect.props.children.props.children[0].props.x + _child._rect.props.children.props.children[0].props.width / 2;
-      let child_y = _child._rect.props.children.props.children[0].props.y;
-
-      // calc control points
-      let x1 = parent_x;
-      let y1 = (parent_y + child_y) / 2;
-
-      let x2 = child_x;
-      let y2 = y1;
-      
-      // draws bezier curve
-      // the id for each edge is the parent node name concatenated with the child node name without a space
-      // note: i need a messy conditional here because the 'side' attribute of the <textPath> is not supported in 
-      //      any browsers besides firefox; so my rememdy is to reverse the start and endpoints of the path manually
-      if (child_x > parent_x){
-        return(
-          <g>
-            <path key={_parent._rect.key + _child.key} id={_parent._rect.key + _child._rect.key} d={`M${parent_x} ${parent_y} C${x1} ${y1} ${x2} ${y2} ${child_x} ${child_y}`} 
-            stroke={'#000000'} strokeWidth={1} fill={'none'}/>
-            <text>
-              <textPath 
-              href={`#${_parent._rect.key + _child._rect.key}`}
-              startOffset={'50%'}
-              className={'edge_text'}>
-                {_parent.json_data.weights[_child._rect.key].toFixed(2)}
-              </textPath>
-            </text>
-          </g>
-        ); // end return
-      } // end if
-      else{
-        return(
-          <g>
-            <path key={_parent._rect.key + _child.key} id={_parent._rect.key + _child._rect.key} d={`M${child_x} ${child_y} C${x2} ${y2} ${x1} ${y1} ${parent_x} ${parent_y}`} 
-            stroke={'#000000'} strokeWidth={1} fill={'none'}/>
-            <text>
-              <textPath 
-              href={`#${_parent._rect.key + _child._rect.key}`}
-              startOffset={'50%'}
-              className={'edge_text'}>
-                {_parent.json_data.weights[_child._rect.key].toFixed(2)}
-              </textPath>
-            </text>
-          </g>
-        ); // end return
-      } // end else
-    }); // end child map
-  }); // end parent map
-} // end func
