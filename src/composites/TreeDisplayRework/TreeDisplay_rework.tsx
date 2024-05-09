@@ -7,6 +7,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 import {process_data, draw_edges} from './TreeDisplayHelpers.tsx'
 import { boolean } from "zod";
+import { update } from "ramda";
 
 
 // TODO:
@@ -14,16 +15,16 @@ import { boolean } from "zod";
 //    - drag page around
 //    - measures nodes
 //    - diagnostics nodes
-//    - link to color helper .js
 //    - differentiate between types of nodes
 //    - edge weights                                            ** done ** 
 //    - edit edge weights
 //    - edit node values
 //    - add up arrow and close eye icon to nodes
 //    - horizontal and vertical scroll bars to tree canvas      ** need to center horizontal bar upon loading ** 
-//    - reset zoom button
+//    - reset zoom functionality
 //    - reset selection button
 //    - quick actions button
+//    - click on node to activate its edges to it's children    ** done **
 
 
 //    - d3/visx panning/scrolling/zooming
@@ -60,10 +61,18 @@ export function TreeDisplay_Rework(_processedData : any) {
   const [active_product_factor_nodes, setActiveProductFactorNodes] = useState<any[]>([]);
   const [tqi_edges, setTQIEdges] = useState<any[]>([]);
   const [qa_edges, setQAEdges] = useState<any[]>([]);
+  const [node_clicked_marker, setNodeClickedMarker] = useState<MouseEvent>();
 
-  function node_clicked(e : MouseEvent){
+  // called when a button is pressed.
+  // used to ensure the button clicks update with the newest information
+  useEffect(() => {
+    
+    console.log(tqi_nodes);
 
-    const newNodeId = e.target.id;
+    if (node_clicked_marker == null)
+      return;
+
+    const newNodeId = node_clicked_marker.target.id;
 
     // Check if node clicked is a tqi node
     const clickedTQI = tqi_nodes.find((_node) => _node.name === newNodeId);
@@ -73,115 +82,62 @@ export function TreeDisplay_Rework(_processedData : any) {
     const clickedPF = product_factor_nodes.find((_node) => _node.name === newNodeId);
     
     if (clickedTQI) {
-      console.log('clicked tqi');
+
+      console.log('tqi');
+ 
       // Create a new array for updated active nodes
-      const updatedActiveNodes = active_tqi_nodes.includes(clickedTQI)
-        ? active_tqi_nodes.filter((activeNode) => activeNode !== clickedTQI) // Remove node if already active
-        : [...active_tqi_nodes, clickedTQI]; // Add node if not active
+      let updatedActiveNodes : any[] = [...active_tqi_nodes];
     
+      if (updatedActiveNodes.find((_node) => _node.name === newNodeId)) {
+        const index = updatedActiveNodes.indexOf(updatedActiveNodes.find((_node) => _node.name === newNodeId));
+        updatedActiveNodes.splice(index, 1);
+      }
+      else{
+        updatedActiveNodes = [...updatedActiveNodes, clickedTQI];
+      }
 
       setActiveTQINodes(updatedActiveNodes);
     }
     
     if (clickedQA) {
-      console.log('clicked qa');
-
       // Create a new array for updated active nodes
-      const updatedActiveNodes = active_quality_aspect_nodes.includes(clickedQA)
-        ? active_quality_aspect_nodes.filter((activeNode) => activeNode !== clickedQA) // Remove node if already active
-        : [...active_quality_aspect_nodes, clickedQA]; // Add node if not active
+      let updatedActiveNodes : any[] = [...active_quality_aspect_nodes];
     
-      console.log(updatedActiveNodes);
+      if (updatedActiveNodes.find((_node) => _node.name === newNodeId)) {
+        const index = updatedActiveNodes.indexOf(updatedActiveNodes.find((_node) => _node.name === newNodeId));
+        updatedActiveNodes.splice(index, 1);
+      }
+      else{
+        updatedActiveNodes = [...updatedActiveNodes, clickedQA];
+      }
+
       setActiveQualityAspectNodes(updatedActiveNodes);
     }
 
     if (clickedPF) {
-      console.log('clicked pf');
-
       // Create a new array for updated active nodes
-      const updatedActiveNodes = active_product_factor_nodes.includes(clickedPF)
-        ? active_product_factor_nodes.filter((activeNode) => activeNode !== clickedPF) // Remove node if already active
-        : [...active_product_factor_nodes, clickedPF]; // Add node if not active
+      let updatedActiveNodes : any[] = [...active_product_factor_nodes];
     
+      if (updatedActiveNodes.find((_node) => _node.name === newNodeId)) {
+        const index = updatedActiveNodes.indexOf(updatedActiveNodes.find((_node) => _node.name === newNodeId));
+        updatedActiveNodes.splice(index, 1);
+      }
+      else{
+        updatedActiveNodes = [...updatedActiveNodes, clickedPF];
+      }
+
       setActiveProductFactorNodes(updatedActiveNodes);
     }
-    
 
-    /*
+  }, [node_clicked_marker]); // Empty dependency array ensures it runs only once after component mount
 
-    // check if node clicked was a pf node
-    quality_aspect_nodes.map((_node) => {
+  // calls the above use effect when a button is pressed.
+  function node_clicked(e : MouseEvent){
 
-      let marker : boolean = false;;
-
-      if (_node.name === e.target.id){ // we found the node clicked
-
-        new_active_nodes = active_quality_aspect_nodes;
-
-        console.log('is pf node');
-        
-        active_quality_aspect_nodes.map((active_node) => { // check if it is currently active
-
-          if (active_node.name === e.target.id){ // remove item from active array
-            console.log('is active');
-            const index = active_quality_aspect_nodes.indexOf(active_node);
-            new_active_nodes.splice(index, 1);
-            setActiveQualityAspectNodes(new_active_nodes);
-            marker = true;
-            return;
-          }
-        });
-
-        if (marker)
-          return;
-
-        // if we don't find anything, add the node to the active list
-        new_active_nodes.push(_node);
-        setActiveQualityAspectNodes(new_active_nodes);
-        console.log('isnt active');
-
-        return; // don't bother checking the other types of nodes
-      }
-    });
-
-    // check if node clicked was a pf node
-    product_factor_nodes.map((_node) => {
-
-      let marker : boolean = false;;
-
-      if (_node.name === e.target.id){ // we found the node clicked
-
-        new_active_nodes = active_product_factor_nodes;
-
-        console.log('is pf node');
-        
-        active_product_factor_nodes.map((active_node) => { // check if it is currently active
-
-          if (active_node.name === e.target.id){ // remove item from active array
-            console.log('is active');
-            const index = active_product_factor_nodes.indexOf(active_node);
-            new_active_nodes.splice(index, 1);
-            setActiveProductFactorNodes(new_active_nodes);
-            marker = true;
-            return;
-          }
-        });
-
-        if (marker)
-          return;
-
-        // if we don't find anything, add the node to the active list
-        new_active_nodes.push(_node);
-        setActiveProductFactorNodes(new_active_nodes);
-        console.log('isnt active');
-
-        return; // don't bother checking the other types of nodes
-      }
-    });*/
+    setNodeClickedMarker(e);
   }
 
-  
-
+  // used to display the updated node lists
   useEffect(() => {
 
     function set_nodes() {
@@ -196,7 +152,7 @@ export function TreeDisplay_Rework(_processedData : any) {
       //active_quality_aspect_nodes.map((node : any) => {node._rect.addEventListener(MouseEvent, node_clicked)});
 
       // third row of nodes -- the children of the quality aspect nodes
-      setProductFactorNodes(create_nodes(_processedData.fileData.factors.product_factors, 400));
+      setProductFactorNodes(create_nodes(_processedData.fileData.factors.product_factors, 500));
       //setActiveProductFactorNodes(product_factor_nodes);
       //active_product_factor_nodes.map((node : any) => {node._rect.addEventListener(MouseEvent, node_clicked)});
     }
@@ -204,7 +160,8 @@ export function TreeDisplay_Rework(_processedData : any) {
     set_nodes();
   }, []);
   
-  useEffect(() => { // for some reason this doens't render on the intial load
+  // used to draw the edges of active nodes.
+  useEffect(() => { // for some reason this doens't render when the active arrays are
 
     function draw_active_edges() {
       console.log('inside draw active edges');
