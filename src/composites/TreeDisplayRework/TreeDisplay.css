@@ -23,27 +23,22 @@
 /* I couldn't figure out how to import the colors from 
     NodeColorHelper.js */
 .low_node {
-    fill: white;
     rx: 5px;
     fill: #00a43380;
 }
 .guarded_node {
-    fill: white;
     rx: 5px;
     fill: #008ff580;
 }
 .elevated_node {
-    fill: white;
     rx: 5px;
     fill: #ffee0080;
 }
 .high_node {
-    fill: white;
     rx: 5px;
     fill: #ff9c0080;
 }
 .severe_node {
-    fill: white;
     rx: 5px;
     fill: #f3000d80;
 }

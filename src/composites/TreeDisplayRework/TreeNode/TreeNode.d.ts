@@ -8,6 +8,7 @@ declare module "./TreeNode/TreeNode.jsx" {
     readonly height: number;
     _x: number;
     _y: number;
+    _active: boolean;
     readonly children: TreeNode[];
     readonly node_center_x: number;
     readonly node_center_y: number;

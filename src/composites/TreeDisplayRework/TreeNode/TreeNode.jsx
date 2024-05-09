@@ -4,8 +4,9 @@ export default class TreeNode {
     this._rect = rect;
     this.width = width;
     this.height = height;
-    this.x = x;
-    this.y = y;
+    this._x = x;
+    this._y = y;
+    this._active = true;
     this.children = [];
   }
 
@@ -23,6 +24,14 @@ export default class TreeNode {
 
   set y(y){
     this._y = y;
+  }
+
+  get active(){
+    return this._active;
+  }
+
+  set active(active){
+    this._active = active;
   }
 
   get node_center_x() {
