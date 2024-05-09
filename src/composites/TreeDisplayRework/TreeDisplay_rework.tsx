@@ -36,7 +36,7 @@ const node_height = 60;
 
 const min_width = 400; // the min width at which to render the tree
 let width = 10000; // width of the background
-let height = 600; // height of the background
+let height = 1000; // height of the background
 
 //export default function Example({ width, height, margin = defaultMargin }: TreeProps) { // original
 export function TreeDisplay_Rework(_processedData : any) {
@@ -56,9 +56,15 @@ export function TreeDisplay_Rework(_processedData : any) {
   const [tqi_nodes, setTQINodes] = useState<any[]>([]);
   const [quality_aspect_nodes, setQualityAspectNodes] = useState<any[]>([]);
   const [product_factor_nodes, setProductFactorNodes] = useState<any[]>([]);
+  const [measure_nodes, setMeasureNodes] = useState<any[]>([]);
+  const [diagnostic_nodes, setDiagnosticNodes] = useState<any[]>([]);
+
   const [active_tqi_nodes, setActiveTQINodes] = useState<any[]>([]);
   const [active_quality_aspect_nodes, setActiveQualityAspectNodes] = useState<any[]>([]);
   const [active_product_factor_nodes, setActiveProductFactorNodes] = useState<any[]>([]);
+  const [active_measure_nodes, setActiveMeasureNodes] = useState<any[]>([]);
+  const [active_diagnostic_nodes, setActiveDiagnosticNodes] = useState<any[]>([]);
+
   const [tqi_edges, setTQIEdges] = useState<any[]>([]);
   const [qa_edges, setQAEdges] = useState<any[]>([]);
   const [node_clicked_marker, setNodeClickedMarker] = useState<MouseEvent>();
@@ -66,24 +72,25 @@ export function TreeDisplay_Rework(_processedData : any) {
   // called when a button is pressed.
   // used to ensure the button clicks update with the newest information
   useEffect(() => {
-    
-    console.log(tqi_nodes);
 
+    // for not crashing upon first load
     if (node_clicked_marker == null)
       return;
 
     const newNodeId = node_clicked_marker.target.id;
 
-    // Check if node clicked is a tqi node
     const clickedTQI = tqi_nodes.find((_node) => _node.name === newNodeId);
-    // Check if node clicked is a qa node
     const clickedQA = quality_aspect_nodes.find((_node) => _node.name === newNodeId);
-    // Check if node clicked is a pf node
     const clickedPF = product_factor_nodes.find((_node) => _node.name === newNodeId);
+    const clickedMeasure = measure_nodes.find((_node) => _node.name === newNodeId);
+    const clickedDiagnsotic = diagnostic_nodes.find((_node) => _node.name === newNodeId);
+
+
+    // testing
+    setActiveMeasureNodes(measure_nodes);
+    setActiveMeasureNodes(diagnostic_nodes);
     
     if (clickedTQI) {
-
-      console.log('tqi');
  
       // Create a new array for updated active nodes
       let updatedActiveNodes : any[] = [...active_tqi_nodes];
@@ -141,7 +148,7 @@ export function TreeDisplay_Rework(_processedData : any) {
   useEffect(() => {
 
     function set_nodes() {
-      console.log('inside set nodes');
+
       // top row of nodes -- function similar to root nodes (only 1 with doctored data file)
       setTQINodes(create_nodes(_processedData.fileData.factors.tqi, 100)); // holds the data of each node
       //setActiveTQINodes(tqi_nodes);
@@ -155,6 +162,12 @@ export function TreeDisplay_Rework(_processedData : any) {
       setProductFactorNodes(create_nodes(_processedData.fileData.factors.product_factors, 500));
       //setActiveProductFactorNodes(product_factor_nodes);
       //active_product_factor_nodes.map((node : any) => {node._rect.addEventListener(MouseEvent, node_clicked)});
+
+      // fourth row of children -- hidden by default until a QA node is clicked
+      setMeasureNodes(create_nodes(_processedData.fileData.measures, 650));
+
+      // fourth row of children -- hidden by default until a measure node is clicked
+      setDiagnosticNodes(create_nodes(_processedData.fileData.diagnostics, 800));
     }
 
     set_nodes();
@@ -164,13 +177,14 @@ export function TreeDisplay_Rework(_processedData : any) {
   useEffect(() => { // for some reason this doens't render when the active arrays are
 
     function draw_active_edges() {
-      console.log('inside draw active edges');
       setTQIEdges(draw_edges(active_tqi_nodes, quality_aspect_nodes));
       setQAEdges(draw_edges(active_quality_aspect_nodes, product_factor_nodes));
     }
 
     draw_active_edges();
-  }, [active_tqi_nodes, active_quality_aspect_nodes, active_product_factor_nodes]);
+  }, [active_tqi_nodes, active_quality_aspect_nodes, active_product_factor_nodes,
+      active_measure_nodes, active_diagnostic_nodes
+  ]);
 
   // draw links between tqi node
   //let tqi_edges : any[] = draw_edges(active_tqi_nodes, active_quality_aspect_nodes);
@@ -188,6 +202,8 @@ export function TreeDisplay_Rework(_processedData : any) {
         {tqi_nodes.map((node : any) => {return node._rect;}) }
         {quality_aspect_nodes.map((node : any) => {return node._rect;}) }
         {product_factor_nodes.map((node : any) => {return node._rect;}) }
+        {measure_nodes.map((node : any) => {return node._rect;}) }
+        {diagnostic_nodes.map((node : any) => {return node._rect;}) }
         {tqi_edges}
         {qa_edges}
 
