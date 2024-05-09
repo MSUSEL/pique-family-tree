@@ -2,6 +2,7 @@ import "./NodeDescriptionPanel.css";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { determineNodeInfo } from "./NodeDescriptionPanelHelpers";
 import { EyeOpenIcon, EyeNoneIcon, InfoCircledIcon } from "@radix-ui/react-icons";
+import * as Tooltip from '@radix-ui/react-tooltip';
 
 export default function NodeDescriptionPanel(props: { nodes: any[]; impacts: any; setSelectedNode: Function }) {
   const [orderBy, setOrderBy] = useState<string>("default");
@@ -160,7 +161,15 @@ export default function NodeDescriptionPanel(props: { nodes: any[]; impacts: any
       </select>
 
       {orderBy === "nodeType" && (
-        <InfoCircledIcon className="info-icon" />
+        <Tooltip.Root>
+          <Tooltip.Trigger asChild>
+            <InfoCircledIcon className="info-icon" />
+          </Tooltip.Trigger>
+          <Tooltip.Content className="TooltipContent" sideOffset={5}>
+            Placeholder tooltip text
+            <Tooltip.Arrow className="TooltipArrow" />
+          </Tooltip.Content>
+        </Tooltip.Root>
       )}
 
       {(orderBy === "alphabetical" || orderBy === "value") && (

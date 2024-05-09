@@ -153,10 +153,23 @@
   padding-right: 20px;
 }
 
+.TooltipContent {
+  border-radius: 4px;
+  padding: 10px 15px;
+  font-size: 0.8vw; 
+  color: #000; 
+  background-color: ivory; 
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); 
+}
+
+.TooltipArrow {
+  fill: ivory; 
+}
+
 .info-icon {
-  margin-left: 4px;
+  margin-left: 4px; 
   vertical-align: middle;
-  cursor: pointer;
+  cursor: pointer; 
 }
 
 .info-text {
