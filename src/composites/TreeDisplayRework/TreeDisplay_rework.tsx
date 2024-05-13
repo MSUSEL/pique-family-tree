@@ -8,6 +8,7 @@ import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 import {process_data, draw_edges} from './TreeDisplayHelpers.tsx'
 import { boolean } from "zod";
 import { update } from "ramda";
+import { create } from "d3";
 
 
 // TODO:
@@ -59,14 +60,15 @@ export function TreeDisplay_Rework(_processedData : any) {
   const [measure_nodes, setMeasureNodes] = useState<any[]>([]);
   const [diagnostic_nodes, setDiagnosticNodes] = useState<any[]>([]);
 
-  const [active_tqi_nodes, setActiveTQINodes] = useState<any[]>([]);
-  const [active_quality_aspect_nodes, setActiveQualityAspectNodes] = useState<any[]>([]);
-  const [active_product_factor_nodes, setActiveProductFactorNodes] = useState<any[]>([]);
-  const [active_measure_nodes, setActiveMeasureNodes] = useState<any[]>([]);
-  const [active_diagnostic_nodes, setActiveDiagnosticNodes] = useState<any[]>([]);
+  const [active_tqi_node, setActiveTQINode] = useState<any>(null);
+  const [active_quality_aspect_node, setActiveQualityAspectNode] = useState<any>(null);
+  const [active_product_factor_node, setActiveProductFactorNode] = useState<any>(null);
+  const [active_measure_node, setActiveMeasureNode] = useState<any>(null);
 
   const [tqi_edges, setTQIEdges] = useState<any[]>([]);
   const [qa_edges, setQAEdges] = useState<any[]>([]);
+  const [pf_edges, setPFEdges] = useState<any[]>([]);
+  const [measure_edges, setMeasureEdges] = useState<any[]>([]);
   const [node_clicked_marker, setNodeClickedMarker] = useState<MouseEvent>();
 
   // called when a button is pressed.
@@ -83,61 +85,92 @@ export function TreeDisplay_Rework(_processedData : any) {
     const clickedQA = quality_aspect_nodes.find((_node) => _node.name === newNodeId);
     const clickedPF = product_factor_nodes.find((_node) => _node.name === newNodeId);
     const clickedMeasure = measure_nodes.find((_node) => _node.name === newNodeId);
-    const clickedDiagnsotic = diagnostic_nodes.find((_node) => _node.name === newNodeId);
-
-
-    // testing
-    setActiveMeasureNodes(measure_nodes);
-    setActiveMeasureNodes(diagnostic_nodes);
     
     if (clickedTQI) {
- 
-      // Create a new array for updated active nodes
-      let updatedActiveNodes : any[] = [...active_tqi_nodes];
-    
-      if (updatedActiveNodes.find((_node) => _node.name === newNodeId)) {
-        const index = updatedActiveNodes.indexOf(updatedActiveNodes.find((_node) => _node.name === newNodeId));
-        updatedActiveNodes.splice(index, 1);
+      // case: it is not active, so the active node must be switched to it
+      if (!active_tqi_node || clickedTQI.name !== active_tqi_node.name) { 
+        setActiveTQINode(clickedTQI);
       }
-      else{
-        updatedActiveNodes = [...updatedActiveNodes, clickedTQI];
+      else {       // case: it is already active so it should be deactivated
+        setActiveTQINode(null);
       }
-
-      setActiveTQINodes(updatedActiveNodes);
     }
     
-    if (clickedQA) {
-      // Create a new array for updated active nodes
-      let updatedActiveNodes : any[] = [...active_quality_aspect_nodes];
-    
-      if (updatedActiveNodes.find((_node) => _node.name === newNodeId)) {
-        const index = updatedActiveNodes.indexOf(updatedActiveNodes.find((_node) => _node.name === newNodeId));
-        updatedActiveNodes.splice(index, 1);
+    else if (clickedQA) {
+      // case: it is not active, so the active node must be switched to it
+      if (!active_quality_aspect_node || clickedQA.name !== active_quality_aspect_node.name) { 
+        setActiveQualityAspectNode(clickedQA);
       }
-      else{
-        updatedActiveNodes = [...updatedActiveNodes, clickedQA];
+      else {       // case: it is already active so it should be deactivated
+        setActiveQualityAspectNode(null);
       }
-
-      setActiveQualityAspectNodes(updatedActiveNodes);
     }
 
-    if (clickedPF) {
-      // Create a new array for updated active nodes
-      let updatedActiveNodes : any[] = [...active_product_factor_nodes];
-    
-      if (updatedActiveNodes.find((_node) => _node.name === newNodeId)) {
-        const index = updatedActiveNodes.indexOf(updatedActiveNodes.find((_node) => _node.name === newNodeId));
-        updatedActiveNodes.splice(index, 1);
+    else if (clickedPF) { // only has one active node
+      // case: it is not active, so the active node must be switched to it
+      if (!active_product_factor_node || clickedPF.name !== active_product_factor_node.name) { 
+        setActiveProductFactorNode(clickedPF);
       }
-      else{
-        updatedActiveNodes = [...updatedActiveNodes, clickedPF];
+      else {       // case: it is already active so it should be deactivated
+        setActiveProductFactorNode(null);
       }
+    }
 
-      setActiveProductFactorNodes(updatedActiveNodes);
+    else if (clickedMeasure) { // only has one active node
+      // case: it is not active, so the active node must be switched to it
+      if (!active_measure_node || clickedMeasure.name !== active_measure_node.name) { 
+        setActiveMeasureNode(clickedMeasure);
+      }
+      else {       // case: it is already active so it should be deactivated
+        setActiveMeasureNode(null);
+      }
     }
 
   }, [node_clicked_marker]); // Empty dependency array ensures it runs only once after component mount
 
+  // called when a product factor node is pressed to display the appropriate measure nodes in the correct location
+  useEffect(() => {
+
+    setMeasureNodes([]);
+    setActiveMeasureNode(null);
+
+    if (!active_product_factor_node) { // don't try to operate if there isn't an active node
+      return;
+    }
+
+    let new_measures : any[] = []; // stores the measure nodes the PF node has weights for
+
+    for (let name in _processedData.fileData.measures){
+      if (active_product_factor_node.json_data.weights[name] !== undefined){
+        new_measures.push(_processedData.fileData.measures[name]);
+      }
+    }
+
+    setMeasureNodes(create_nodes(new_measures, active_product_factor_node._x + 75, 650));
+
+  }, [active_product_factor_node]);
+
+   // called when a measure node is pressed to display the appropriate diagnsotic nodes in the correct location
+   useEffect(() => {
+
+    setDiagnosticNodes([]);
+
+    if (!active_measure_node) { // don't try to operate if there isn't an active node
+      return;
+    }
+
+    let new_diagnostics : any[] = []; // stores the measure nodes the PF node has weights for
+
+    for (let name in _processedData.fileData.diagnostics){
+      if (active_measure_node.json_data.weights[name] !== undefined){
+        new_diagnostics.push(_processedData.fileData.diagnostics[name]);
+      }
+    }
+
+    setDiagnosticNodes(create_nodes(new_diagnostics, active_measure_node._x + 75, 800));
+
+  }, [active_measure_node]);
+  
   // calls the above use effect when a button is pressed.
   function node_clicked(e : MouseEvent){
 
@@ -150,40 +183,31 @@ export function TreeDisplay_Rework(_processedData : any) {
     function set_nodes() {
 
       // top row of nodes -- function similar to root nodes (only 1 with doctored data file)
-      setTQINodes(create_nodes(_processedData.fileData.factors.tqi, 100)); // holds the data of each node
-      //setActiveTQINodes(tqi_nodes);
+      setTQINodes(create_nodes(_processedData.fileData.factors.tqi, width / 2, 100)); // holds the data of each node
 
       // second row of nodes -- the children of the tqi nodes
-      setQualityAspectNodes(create_nodes(_processedData.fileData.factors.quality_aspects, 250));
-      //setActiveQualityAspectNodes(quality_aspect_nodes);
-      //active_quality_aspect_nodes.map((node : any) => {node._rect.addEventListener(MouseEvent, node_clicked)});
+      setQualityAspectNodes(create_nodes(_processedData.fileData.factors.quality_aspects, width / 2, 250));
 
       // third row of nodes -- the children of the quality aspect nodes
-      setProductFactorNodes(create_nodes(_processedData.fileData.factors.product_factors, 500));
-      //setActiveProductFactorNodes(product_factor_nodes);
-      //active_product_factor_nodes.map((node : any) => {node._rect.addEventListener(MouseEvent, node_clicked)});
-
-      // fourth row of children -- hidden by default until a QA node is clicked
-      setMeasureNodes(create_nodes(_processedData.fileData.measures, 650));
-
-      // fourth row of children -- hidden by default until a measure node is clicked
-      setDiagnosticNodes(create_nodes(_processedData.fileData.diagnostics, 800));
+      setProductFactorNodes(create_nodes(_processedData.fileData.factors.product_factors, width / 2, 500));
     }
 
     set_nodes();
   }, []);
   
   // used to draw the edges of active nodes.
-  useEffect(() => { // for some reason this doens't render when the active arrays are
+  useEffect(() => {
 
     function draw_active_edges() {
-      setTQIEdges(draw_edges(active_tqi_nodes, quality_aspect_nodes));
-      setQAEdges(draw_edges(active_quality_aspect_nodes, product_factor_nodes));
+      setTQIEdges(draw_edges(active_tqi_node, quality_aspect_nodes));
+      setQAEdges(draw_edges(active_quality_aspect_node, product_factor_nodes));
+      setPFEdges(draw_edges(active_product_factor_node, measure_nodes));
+      setMeasureEdges(draw_edges(active_measure_node, diagnostic_nodes));
     }
 
     draw_active_edges();
-  }, [active_tqi_nodes, active_quality_aspect_nodes, active_product_factor_nodes,
-      active_measure_nodes, active_diagnostic_nodes
+  }, [active_tqi_node, active_quality_aspect_node, 
+      measure_nodes, diagnostic_nodes
   ]);
 
   // draw links between tqi node
@@ -206,21 +230,24 @@ export function TreeDisplay_Rework(_processedData : any) {
         {diagnostic_nodes.map((node : any) => {return node._rect;}) }
         {tqi_edges}
         {qa_edges}
+        {pf_edges}
+        {measure_edges}
 
       </svg>
 
   );
 
   // creates and returns an array of nodes representing the specified layer
-  function create_nodes(_factors : any, _y_pos: number){
+  function create_nodes(_factors : any, _x_pos: number, _y_pos: number){
 
-    _factors = process_data(_factors, 0.0);
+    // ** REQUIRED TO PROCESS DATA ** //
+    // TODO: will need to refactor so it doesn't break without
+    _factors = process_data(_factors, 10.0);
 
     return _factors.map((_factor : any, index : number) => {
 
-
       // fixed distance
-      const M = width / 2;
+      const M = _x_pos;
       const C = _factors.length / 2;
       const x = (M - C * 150) + (index * 150);
       const y = _y_pos - node_height / 2;
@@ -239,6 +266,8 @@ export function TreeDisplay_Rework(_processedData : any) {
       else if (_factors[index].value < 0.8){
         node_id = 'guarded_node';
       }
+
+
 
       return new TreeNode(
         _factors[index],
