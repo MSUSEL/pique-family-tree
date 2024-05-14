@@ -21,7 +21,8 @@ import { EyeOpenIcon, EyeClosedIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 //    - edge weights                                            ** done ** 
 //    - edit edge weights
 //    - edit node values
-//    - add up arrow and close eye icon to nodes                ** FOCUS ** 
+//    - add up arrow                                            ** done**
+//    - dynamic close and open eye icon                         ** FOCUS ** 
 //    - horizontal and vertical scroll bars to tree canvas      ** need to center horizontal bar upon loading ** 
 //    - reset zoom functionality
 //    - reset selection button
@@ -74,6 +75,8 @@ export function TreeDisplay_Rework(_processedData : any) {
   const [PF_up_edges, setPFUpEdges] = useState<any[]>([]);
   const [node_clicked_marker, setNodeClickedMarker] = useState<MouseEvent>();
   const [arrow_clicked_marker, setArrowClickedMarker] = useState<MouseEvent>();
+  const [open_eye_clicked_marker, setOpenEyeClickedMarker] = useState<MouseEvent>();
+  const [closed_eye_clicked_marker, setClosedEyeClickedMarker] = useState<MouseEvent>();
 
   // called when a button is pressed.
   // used to ensure the button clicks update with the newest information
@@ -163,6 +166,186 @@ export function TreeDisplay_Rework(_processedData : any) {
     setUpwardsProductFactorNode(clickedPF);
     setPFUpEdges(draw_up_edges(clickedPF, quality_aspect_nodes));
   }, [arrow_clicked_marker]);
+
+  // calls the open eye use effect func.
+  function closed_eye_clicked(e : any){
+    setClosedEyeClickedMarker(e);
+  }
+
+  // called when an open eye icon is clicked
+  useEffect(() => {
+
+    if (!closed_eye_clicked_marker) // so it doesn't break on initial load
+      return;
+
+    // .substring cleans the 'openeye ' part of id
+    const clicked_ID = closed_eye_clicked_marker.target.id.substring(10);
+
+    console.log(clicked_ID);
+
+    const clickedTQI = tqi_nodes.find((_node) => _node.name === clicked_ID);
+    const clickedQA = quality_aspect_nodes.find((_node) => _node.name === clicked_ID);
+    const clickedPF = product_factor_nodes.find((_node) => _node.name === clicked_ID);
+    const clickedMeasure = measure_nodes.find((_node) => _node.name === clicked_ID);
+    const clickedDiagnostic = diagnostic_nodes.find((_node) => _node.name === clicked_ID);
+    
+    
+    if (clickedTQI) {
+      console.log('clicked tqi');
+      let new_tqi_nodes = [];
+      new_tqi_nodes = tqi_nodes.map((_node) => {
+        if (_node.json_data.name === clickedTQI.json_data.name){
+          return redraw_node(_node, false, true);
+        }
+        else{
+          return _node;
+        }
+      });
+      setTQINodes(new_tqi_nodes);
+    }
+    else if (clickedQA){
+      console.log('clicked qa');
+      let new_qa_nodes = [];
+      new_qa_nodes = quality_aspect_nodes.map((_node) => {
+        if (_node.json_data.name === clickedQA.json_data.name){
+          return redraw_node(_node, false, true);
+        }
+        else{
+          return _node;
+        }
+      });
+      setQualityAspectNodes(new_qa_nodes);
+    }
+    else if (clickedPF){
+      console.log('clicked pf');
+      let new_pf_nodes = [];
+      new_pf_nodes = product_factor_nodes.map((_node) => {
+        if (_node.json_data.name === clickedPF.json_data.name){
+          return redraw_node(_node, true, true);
+        }
+        else{
+          return _node;
+        }
+      });
+      setProductFactorNodes(new_pf_nodes);
+    }
+    else if (clickedMeasure){
+      console.log('clicked measure');
+      let new_measure_nodes = [];
+      new_measure_nodes = measure_nodes.map((_node) => {
+        if (_node.json_data.name === clickedMeasure.json_data.name){
+          return redraw_node(_node, false, true);
+        }
+        else{
+          return _node;
+        }
+      });
+      setMeasureNodes(new_measure_nodes);
+    }
+    else if (clickedDiagnostic){
+      console.log('clicked diagnostic');
+      let new_diagnostic_nodes = [];
+      new_diagnostic_nodes = diagnostic_nodes.map((_node) => {
+        if (_node.json_data.name === clickedDiagnostic.json_data.name){
+          return redraw_node(_node, false, true);
+        }
+        else{
+          return _node;
+        }
+      });
+      setDiagnosticNodes(new_diagnostic_nodes);
+    }    
+  }, [closed_eye_clicked_marker]);
+
+  // calls the open eye use effect func.
+  function open_eye_clicked(e : any){
+    setOpenEyeClickedMarker(e);
+  }
+
+  // called when an open eye icon is clicked
+  useEffect(() => {
+
+    if (!open_eye_clicked_marker) // so it doesn't break on initial load
+      return;
+
+    // .substring cleans the 'openeye ' part of id
+    const clicked_ID = open_eye_clicked_marker.target.id.substring(8);
+
+    console.log(clicked_ID);
+
+    const clickedTQI = tqi_nodes.find((_node) => _node.name === clicked_ID);
+    const clickedQA = quality_aspect_nodes.find((_node) => _node.name === clicked_ID);
+    const clickedPF = product_factor_nodes.find((_node) => _node.name === clicked_ID);
+    const clickedMeasure = measure_nodes.find((_node) => _node.name === clicked_ID);
+    const clickedDiagnostic = diagnostic_nodes.find((_node) => _node.name === clicked_ID);
+    
+    
+    if (clickedTQI) {
+      console.log('clicked tqi');
+      let new_tqi_nodes = [];
+      new_tqi_nodes = tqi_nodes.map((_node) => {
+        if (_node.json_data.name === clickedTQI.json_data.name){
+          return redraw_node(_node, false, false);
+        }
+        else{
+          return _node;
+        }
+      });
+      setTQINodes(new_tqi_nodes);
+    }
+    else if (clickedQA){
+      console.log('clicked qa');
+      let new_qa_nodes = [];
+      new_qa_nodes = quality_aspect_nodes.map((_node) => {
+        if (_node.json_data.name === clickedQA.json_data.name){
+          return redraw_node(_node, false, false);
+        }
+        else{
+          return _node;
+        }
+      });
+      setQualityAspectNodes(new_qa_nodes);
+    }
+    else if (clickedPF){
+      console.log('clicked pf');
+      let new_pf_nodes = [];
+      new_pf_nodes = product_factor_nodes.map((_node) => {
+        if (_node.json_data.name === clickedPF.json_data.name){
+          return redraw_node(_node, true, false);
+        }
+        else{
+          return _node;
+        }
+      });
+      setProductFactorNodes(new_pf_nodes);
+    }
+    else if (clickedMeasure){
+      console.log('clicked measure');
+      let new_measure_nodes = [];
+      new_measure_nodes = measure_nodes.map((_node) => {
+        if (_node.json_data.name === clickedMeasure.json_data.name){
+          return redraw_node(_node, false, false);
+        }
+        else{
+          return _node;
+        }
+      });
+      setMeasureNodes(new_measure_nodes);
+    }
+    else if (clickedDiagnostic){
+      console.log('clicked diagnostic');
+      let new_diagnostic_nodes = [];
+      new_diagnostic_nodes = diagnostic_nodes.map((_node) => {
+        if (_node.json_data.name === clickedDiagnostic.json_data.name){
+          return redraw_node(_node, false, false);
+        }
+        else{
+          return _node;
+        }
+      });
+      setDiagnosticNodes(new_diagnostic_nodes);
+    }    
+  }, [open_eye_clicked_marker]);
 
   // called when a product factor node is pressed to display the appropriate measure nodes in the correct location
   useEffect(() => {
@@ -298,8 +481,6 @@ export function TreeDisplay_Rework(_processedData : any) {
         node_id = 'guarded_node';
       }
 
-
-
       return new TreeNode(
         _factors[index],
         (<Draggable key={_factors[index].name} disabled={true}
@@ -316,11 +497,11 @@ export function TreeDisplay_Rework(_processedData : any) {
               </text>
 
               {_arrow ? <>
-              <rect id={'uparrow ' + _factors[index].name} onClick={(e) => arrow_clicked(e)} height={20} width={25} x={x} y={y} className={node_id}/>
-              <ArrowUpIcon x={x + 5} y={y+2}/> </> : <></>}
+              <rect id={'uparrow ' + _factors[index].name} onClick={(e) => arrow_clicked(e)} height={15} width={25} x={x} y={y} className={node_id}/>
+              <ArrowUpIcon x={x + 5} y={y}/> </> : <></>}
 
-              <rect onClick={() => {console.log('eye icon');}} height={20} width={25} x={x + node_width - 25} y={y} className={node_id}/>
-              <EyeOpenIcon onClick={() => {console.log('eye icon');}}  x={x + node_width - 20} y={y + 2}/>
+              <rect id={'closedeye ' + _factors[index].name} onClick={(e) => closed_eye_clicked(e)} height={15} width={25} x={x + node_width - 25} y={y} className={node_id}/>
+              <EyeClosedIcon x={x + node_width - 20} y={y}/>
             </g>
           </Draggable>),
         node_width,
@@ -329,6 +510,71 @@ export function TreeDisplay_Rework(_processedData : any) {
         y
       );
     });
+  }
+
+  // accepts a node as an input and redraws it with arrow, open eye, and closed eye icons toggleable
+  function redraw_node(_node : any, _arrow : boolean, _open : boolean){
+
+    const x = _node.x;
+    const y = _node.y;
+
+    // Determine node color
+    let node_id = 'low_node';
+    if (_node.json_data.value < 0.2){
+      node_id = 'severe_node';
+    }
+    else if (_node.json_data.value < 0.4){
+      node_id = 'high_node';
+    }
+    else if (_node.json_data.value < 0.6){
+      node_id = 'elevated_node';
+    }
+    else if (_node.json_data.value < 0.8){
+      node_id = 'guarded_node';
+    }
+
+    return new TreeNode(
+      _node.json_data,
+      (
+        <Draggable key={_node.json_data.name} disabled={true}
+        onMouseDown={node_clicked}
+        >   
+            <g>
+            
+              <rect height={node_height} width={node_width} x={x} y={y} className={node_id} id={_node.json_data.name}/>
+              <text x={x + node_width / 2} y={10+y + node_height / 4} className={'node_text'}>
+                {_node.json_data.name}
+              </text>
+              <text x={x + node_width / 2} y={10+y + node_height / 2} className={'node_text'}>
+                {_node.json_data.value.toFixed(2)}
+              </text>
+
+              {
+                _arrow ? <>
+                <rect id={'uparrow ' + _node.json_data.name} onClick={(e) => arrow_clicked(e)} height={15} width={25} x={x} y={y} className={node_id}/>
+                <ArrowUpIcon x={x + 5} y={y}/> </> : <></>
+              }
+              
+              {
+                _open ?
+                  <>
+                    <rect id={'openeye ' + _node.json_data.name} onClick={(e) => open_eye_clicked(e)} height={15} width={25} x={x + node_width - 25} y={y} className={node_id}/>
+                    <EyeOpenIcon x={x + node_width - 20} y={y}/>
+                  </> :
+                  <>
+                    <rect id={'closedeye ' + _node.json_data.name} onClick={(e) => closed_eye_clicked(e)} height={15} width={25} x={x + node_width - 25} y={y} className={node_id}/>
+                    <EyeClosedIcon x={x + node_width - 20} y={y}/>
+                  </>
+              }
+              
+            </g>
+          </Draggable>
+      ),
+      _node.width,
+      _node.height,
+      x,
+      y
+    );
   }
 
 } // end of export

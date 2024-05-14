@@ -25,22 +25,32 @@
 .low_node {
     rx: 5px;
     fill: #00a43380;
+    stroke: #000000;
+    stroke-width: 1px;
 }
 .guarded_node {
     rx: 5px;
     fill: #008ff580;
+    stroke: #000000;
+    stroke-width: 1px;
 }
 .elevated_node {
     rx: 5px;
     fill: #ffee0080;
+    stroke: #000000;
+    stroke-width: 1px;
 }
 .high_node {
     rx: 5px;
     fill: #ff9c0080;
+    stroke: #000000;
+    stroke-width: 1px;
 }
 .severe_node {
     rx: 5px;
     fill: #f3000d80;
+    stroke: #000000;
+    stroke-width: 1px;
 }
 
 /*** unused below ***/
