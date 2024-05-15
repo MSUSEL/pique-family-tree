@@ -172,15 +172,56 @@ export default function NodeDescriptionPanel(props: { nodes: any[]; impacts: any
         </Tooltip.Root>
       )}
 
-      {(orderBy === "alphabetical" || orderBy === "value") && (
-        <>
-          <label htmlFor="orderDirection"> Order Direction: </label>
-          <select id="orderDirection" value={orderDirection} onChange={handleOrderDirectionChange}>
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-          </select>
-        </>
+      {orderBy === "default" && (
+        <Tooltip.Root>
+          <Tooltip.Trigger asChild>
+            <InfoCircledIcon className="info-icon" />
+          </Tooltip.Trigger>
+          <Tooltip.Content className="TooltipContent" sideOffset={5}>
+            Nodes are sorted by the order they were selected in. 
+            <Tooltip.Arrow className="TooltipArrow" />
+          </Tooltip.Content>
+        </Tooltip.Root>
       )}
+
+{(orderBy === "alphabetical") && (
+  <>
+    <label htmlFor="orderDirection"> Order Direction: </label>
+    <select id="orderDirection" value={orderDirection} onChange={handleOrderDirectionChange}>
+      <option value="asc">Ascending</option>
+      <option value="desc">Descending</option>
+    </select>
+    <Tooltip.Root>
+      <Tooltip.Trigger asChild>
+        <InfoCircledIcon className="info-icon" />
+      </Tooltip.Trigger>
+      <Tooltip.Content className="TooltipContent" sideOffset={5}>
+        Sort alphabetically {orderDirection === "asc" ? "ascending" : "descending"}
+        <Tooltip.Arrow className="TooltipArrow" />
+      </Tooltip.Content>
+    </Tooltip.Root>
+  </>
+)}
+
+{(orderBy === "value") && (
+  <>
+    <label htmlFor="orderDirection"> Order Direction: </label>
+    <select id="orderDirection" value={orderDirection} onChange={handleOrderDirectionChange}>
+      <option value="asc">Ascending</option>
+      <option value="desc">Descending</option>
+    </select>
+    <Tooltip.Root>
+      <Tooltip.Trigger asChild>
+        <InfoCircledIcon className="info-icon" />
+      </Tooltip.Trigger>
+      <Tooltip.Content className="TooltipContent" sideOffset={5}>
+        Sort by value {orderDirection === "asc" ? "ascending" : "descending"}
+        <Tooltip.Arrow className="TooltipArrow" />
+      </Tooltip.Content>
+    </Tooltip.Root>
+  </>
+)}
+
 
       {makeNodePanelRectangles}
     </div>
