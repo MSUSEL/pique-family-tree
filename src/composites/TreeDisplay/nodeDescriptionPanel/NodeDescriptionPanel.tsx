@@ -166,7 +166,7 @@ export default function NodeDescriptionPanel(props: { nodes: any[]; impacts: any
             <InfoCircledIcon className="info-icon" />
           </Tooltip.Trigger>
           <Tooltip.Content className="TooltipContent" sideOffset={5}>
-            Placeholder tooltip text
+            Nodes are grouped by Node Type (TQI, Product Factor, Measure, Diagnostic)
             <Tooltip.Arrow className="TooltipArrow" />
           </Tooltip.Content>
         </Tooltip.Root>
