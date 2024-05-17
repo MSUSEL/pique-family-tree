@@ -196,7 +196,7 @@ export default function NodeDescriptionPanel(props: { nodes: any[]; impacts: any
         <InfoCircledIcon className="info-icon" />
       </Tooltip.Trigger>
       <Tooltip.Content className="TooltipContent" sideOffset={5}>
-        Sort alphabetically {orderDirection === "asc" ? "ascending" : "descending"}
+        Nodes are sorted alphabetically in {orderDirection === "asc" ? "ascending order (A-Z)" : "descending order (Z-A)"}
         <Tooltip.Arrow className="TooltipArrow" />
       </Tooltip.Content>
     </Tooltip.Root>
@@ -215,7 +215,7 @@ export default function NodeDescriptionPanel(props: { nodes: any[]; impacts: any
         <InfoCircledIcon className="info-icon" />
       </Tooltip.Trigger>
       <Tooltip.Content className="TooltipContent" sideOffset={5}>
-        Sort by value {orderDirection === "asc" ? "ascending" : "descending"}
+        Nodes are sorted by value in {orderDirection === "asc" ? "ascending order (0-1)" : "descending order (1-0)"}
         <Tooltip.Arrow className="TooltipArrow" />
       </Tooltip.Content>
     </Tooltip.Root>
