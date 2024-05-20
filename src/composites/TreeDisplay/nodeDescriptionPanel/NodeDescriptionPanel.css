@@ -31,6 +31,8 @@
   font-size: 0.8vw;
   background-color: transparent;
   border-bottom: 2px solid gray;
+  position: relative;
+  
 }
 
 .node-name {
@@ -134,7 +136,10 @@
 }
 
 .eye-icon {
-  margin-left: auto;
+ position: absolute;
+ top: 5px;
+ left: 5px;
+ 
 }
 
 .node-type-header {
