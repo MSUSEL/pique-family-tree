@@ -58,10 +58,12 @@ export function draw_edges(_parent : any, _children : any[]){
     // the id for each edge is the parent node name concatenated with the child node name without a space
     // note: i need a messy conditional here because the 'side' attribute of the <textPath> is not supported in 
     //      any browsers besides firefox; so my rememdy is to reverse the start and endpoints of the path manually
-    if (child_x > parent_x){
+    if (_parent.json_data.weights[_child._rect.key]){
       return(
         <g>
-          <path key={_parent._rect.key + _child.key} id={_parent._rect.key + _child._rect.key} d={`M${parent_x} ${parent_y} C${x1} ${y1} ${x2} ${y2} ${child_x} ${child_y}`} 
+          <path key={_parent._rect.key + _child.key} id={_parent._rect.key + _child._rect.key} 
+          d={child_x > parent_x ? `M${parent_x} ${parent_y} C${x1} ${y1} ${x2} ${y2} ${child_x} ${child_y}`
+            : `M${child_x} ${child_y} C${x2} ${y2} ${x1} ${y1} ${parent_x} ${parent_y}`} 
           stroke={'#000000'} strokeWidth={1} fill={'none'}/>
           <text>
             <textPath 
@@ -74,22 +76,6 @@ export function draw_edges(_parent : any, _children : any[]){
         </g>
       ); // end return
     } // end if
-    else{
-      return(
-        <g>
-          <path key={_parent._rect.key + _child.key} id={_parent._rect.key + _child._rect.key} d={`M${child_x} ${child_y} C${x2} ${y2} ${x1} ${y1} ${parent_x} ${parent_y}`} 
-          stroke={'#000000'} strokeWidth={1} fill={'none'}/>
-          <text>
-            <textPath 
-            href={`#${_parent._rect.key + _child._rect.key}`}
-            startOffset={'50%'}
-            className={'edge_text'}>
-              {_parent.json_data.weights[_child._rect.key].toFixed(2)}
-            </textPath>
-          </text>
-        </g>
-      ); // end return
-    } // end else
   }); // end child map
 } // end func
 
@@ -120,10 +106,12 @@ export function draw_up_edges(_parent : any, _children : any[]){
     // the id for each edge is the parent node name concatenated with the child node name without a space
     // note: i need a messy conditional here because the 'side' attribute of the <textPath> is not supported in 
     //      any browsers besides firefox; so my rememdy is to reverse the start and endpoints of the path manually
-    if (child_x > parent_x){
+    if (_child.json_data.weights[_parent._rect.key]){
       return(
         <g>
-          <path key={_parent._rect.key + _child.key} id={_parent._rect.key + _child._rect.key} d={`M${parent_x} ${parent_y} C${x1} ${y1} ${x2} ${y2} ${child_x} ${child_y}`} 
+          <path key={_parent._rect.key + _child.key} id={_parent._rect.key + _child._rect.key} 
+          d={child_x > parent_x ? `M${parent_x} ${parent_y} C${x1} ${y1} ${x2} ${y2} ${child_x} ${child_y}`
+            : `M${child_x} ${child_y} C${x2} ${y2} ${x1} ${y1} ${parent_x} ${parent_y}`} 
           stroke={'#000000'} strokeWidth={1} fill={'none'}/>
           <text>
             <textPath 
@@ -136,21 +124,5 @@ export function draw_up_edges(_parent : any, _children : any[]){
         </g>
       ); // end return
     } // end if
-    else{
-      return(
-        <g>
-          <path key={_parent._rect.key + _child.key} id={_parent._rect.key + _child._rect.key} d={`M${child_x} ${child_y} C${x2} ${y2} ${x1} ${y1} ${parent_x} ${parent_y}`} 
-          stroke={'#000000'} strokeWidth={1} fill={'none'}/>
-          <text>
-            <textPath 
-            href={`#${_parent._rect.key + _child._rect.key}`}
-            startOffset={'50%'}
-            className={'edge_text'}>
-              {_child.json_data.weights[_parent._rect.key].toFixed(2)}
-            </textPath>
-          </text>
-        </g>
-      ); // end return
-    } // end else
   }); // end child map
 }

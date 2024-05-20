@@ -10,6 +10,7 @@ import { update } from "ramda";
 import { create } from "d3";
 import { EyeOpenIcon, EyeClosedIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import NodeDescriptionPanel from "./nodeDescriptionPanel/NodeDescriptionPanel";
+import { useProcessedData } from "../../data/useProcessedData";
 
 // TODO:
 //    - support node description panel                          ** FOCUS **
@@ -28,8 +29,10 @@ import NodeDescriptionPanel from "./nodeDescriptionPanel/NodeDescriptionPanel";
 //    - reset selection button
 //    - quick actions button
 //    - click on node to activate its edges to it's children    ** done **
+//    - look at list display to see how it gets the updated data - it's not passed as a parameter   ** done **
+//    - BUGFIX - processed data does not reset without reloading page and showing 0 weights is no longer working
 
-
+//    - REWORK SCROLLBARS TO BE PANNING AND ZOOMING - REMOVE SCROLLBARS
 //    - d3/visx panning/scrolling/zooming
 //    - react gesture for dragging
 //    - usestate/usememo/usecallback/useeffect
@@ -42,7 +45,10 @@ let width = 10000; // width of the background
 let height = 1000; // height of the background
 
 //export default function Example({ width, height, margin = defaultMargin }: TreeProps) { // original
-export function TreeDisplay_Rework(_processedData : any) {
+export function TreeDisplay_Rework() {
+
+  const processedData = useProcessedData();
+
 
   // notes about the tree:
   //    Despite being called a tree, the linkage is different than lets say a BST.
@@ -77,7 +83,6 @@ export function TreeDisplay_Rework(_processedData : any) {
   const [arrow_clicked_marker, setArrowClickedMarker] = useState<MouseEvent>();
   const [open_eye_clicked_marker, setOpenEyeClickedMarker] = useState<MouseEvent>();
   const [closed_eye_clicked_marker, setClosedEyeClickedMarker] = useState<MouseEvent>();
-  const [hide_weights_marker, setHideWeightsMarker] = useState<MouseEvent>();
 
   const [nodesForPanelBoxes, setNodesForPanelBoxes] = useState([]);
 
@@ -345,9 +350,9 @@ export function TreeDisplay_Rework(_processedData : any) {
 
     let new_measures : any[] = []; // stores the measure nodes the PF node has weights for
 
-    for (let name in _processedData.fileData.measures){
+    for (let name in processedData.measures){
       if (active_product_factor_node.json_data.weights[name] !== undefined){
-        new_measures.push(_processedData.fileData.measures[name]);
+        new_measures.push(processedData.measures[name]);
       }
     }
 
@@ -366,9 +371,9 @@ export function TreeDisplay_Rework(_processedData : any) {
 
     let new_diagnostics : any[] = []; // stores the measure nodes the PF node has weights for
 
-    for (let name in _processedData.fileData.diagnostics){
+    for (let name in processedData.diagnostics){
       if (active_measure_node.json_data.weights[name] !== undefined){
-        new_diagnostics.push(_processedData.fileData.diagnostics[name]);
+        new_diagnostics.push(processedData.diagnostics[name]);
       }
     }
 
@@ -382,13 +387,13 @@ export function TreeDisplay_Rework(_processedData : any) {
     function set_nodes() {
 
       // top row of nodes -- function similar to root nodes (only 1 with doctored data file)
-      setTQINodes(create_nodes(_processedData.fileData.factors.tqi, width / 2, 100, false)); // holds the data of each node
+      setTQINodes(create_nodes(processedData.factors.tqi, width / 2, 100, false)); // holds the data of each node
 
       // second row of nodes -- the children of the tqi nodes
-      setQualityAspectNodes(create_nodes(_processedData.fileData.factors.quality_aspects, width / 2, 250, false));
+      setQualityAspectNodes(create_nodes(processedData.factors.quality_aspects, width / 2, 250, false));
 
       // third row of nodes -- the children of the quality aspect nodes
-      setProductFactorNodes(create_nodes(_processedData.fileData.factors.product_factors, width / 2, 500, true));
+      setProductFactorNodes(create_nodes(processedData.factors.product_factors, width / 2, 500, true));
     }
 
     set_nodes();
@@ -409,18 +414,6 @@ export function TreeDisplay_Rework(_processedData : any) {
       measure_nodes, diagnostic_nodes
   ]);
 
-  // calls the hide wdight use effect func.
-  function hide_weights(e : any){
-    setHideWeightsMarker(e);
-  }
-
-  // updates the entire tree display to not include any nodes with edge weight === 0
-  useEffect(() => {
-
-
-
-  }, [hide_weights_marker]);
-
   // draw links between tqi node
   //let tqi_edges : any[] = draw_edges(active_tqi_nodes, active_quality_aspect_nodes);
   // using the active will only draw the edges of the clicked parent nodes
@@ -429,18 +422,17 @@ export function TreeDisplay_Rework(_processedData : any) {
   // notes:
   // rx is the curvature of the rect
 
+  console.log(product_factor_nodes.length);
+
   return width < min_width ? null : (
     
       <svg width={width} height={height} >
         <rect width={width} height={height} rx={10} id='tree_canvas' overflow-x={'auto'}/>
 
 
-        {quality_aspect_nodes.length > 0 ? (
-          <NodeDescriptionPanel nodes={quality_aspect_nodes} />
-        ) : null}
-        <div>
+     
           {tqi_nodes.map((node : any) => {return node._rect;}) }
-        </div>
+        
 
         {quality_aspect_nodes.map((node : any) => {return node._rect;}) }
         {product_factor_nodes.map((node : any) => {return node._rect;}) }
