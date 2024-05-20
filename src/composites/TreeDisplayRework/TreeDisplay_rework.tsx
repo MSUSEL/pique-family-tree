@@ -2,17 +2,17 @@
 import TreeNode from "./TreeNode/TreeNode.jsx";
 import './TreeDisplay.css';
 import { CornerTopRightIcon } from '@radix-ui/react-icons';
-
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 import {process_data, draw_edges, draw_up_edges} from './TreeDisplayHelpers.tsx'
 import { boolean } from "zod";
 import { update } from "ramda";
 import { create } from "d3";
-
 import { EyeOpenIcon, EyeClosedIcon, ArrowUpIcon } from "@radix-ui/react-icons";
+import NodeDescriptionPanel from "./nodeDescriptionPanel/NodeDescriptionPanel";
 
 // TODO:
+//    - support node description panel                          ** FOCUS **
 //    - drag nodes                                              ** I need a way to grab the updated x and y coords of the <draggable>
 //    - drag page around
 //    - measures nodes                                          ** done **
@@ -22,7 +22,7 @@ import { EyeOpenIcon, EyeClosedIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 //    - edit edge weights
 //    - edit node values
 //    - add up arrow                                            ** done**
-//    - dynamic close and open eye icon                         ** FOCUS ** 
+//    - dynamic close and open eye icon                         ** done ** 
 //    - horizontal and vertical scroll bars to tree canvas      ** need to center horizontal bar upon loading ** 
 //    - reset zoom functionality
 //    - reset selection button
@@ -77,6 +77,9 @@ export function TreeDisplay_Rework(_processedData : any) {
   const [arrow_clicked_marker, setArrowClickedMarker] = useState<MouseEvent>();
   const [open_eye_clicked_marker, setOpenEyeClickedMarker] = useState<MouseEvent>();
   const [closed_eye_clicked_marker, setClosedEyeClickedMarker] = useState<MouseEvent>();
+  const [hide_weights_marker, setHideWeightsMarker] = useState<MouseEvent>();
+
+  const [nodesForPanelBoxes, setNodesForPanelBoxes] = useState([]);
 
   // called when a button is pressed.
   // used to ensure the button clicks update with the newest information
@@ -94,9 +97,6 @@ export function TreeDisplay_Rework(_processedData : any) {
     const clickedMeasure = measure_nodes.find((_node) => _node.name === newNodeId);
     
     if (clickedTQI) {
-      //console.log(clickedTQI);
-      console.log(clickedTQI._rect.props.children.props.children[3]);
-      clickedTQI._rect.props.children.props.children[3];
       // case: it is not active, so the active node must be switched to it
       if (!active_tqi_node || clickedTQI.name !== active_tqi_node.name) { 
         setActiveTQINode(clickedTQI);
@@ -181,8 +181,6 @@ export function TreeDisplay_Rework(_processedData : any) {
     // .substring cleans the 'openeye ' part of id
     const clicked_ID = closed_eye_clicked_marker.target.id.substring(10);
 
-    console.log(clicked_ID);
-
     const clickedTQI = tqi_nodes.find((_node) => _node.name === clicked_ID);
     const clickedQA = quality_aspect_nodes.find((_node) => _node.name === clicked_ID);
     const clickedPF = product_factor_nodes.find((_node) => _node.name === clicked_ID);
@@ -191,7 +189,6 @@ export function TreeDisplay_Rework(_processedData : any) {
     
     
     if (clickedTQI) {
-      console.log('clicked tqi');
       let new_tqi_nodes = [];
       new_tqi_nodes = tqi_nodes.map((_node) => {
         if (_node.json_data.name === clickedTQI.json_data.name){
@@ -204,7 +201,6 @@ export function TreeDisplay_Rework(_processedData : any) {
       setTQINodes(new_tqi_nodes);
     }
     else if (clickedQA){
-      console.log('clicked qa');
       let new_qa_nodes = [];
       new_qa_nodes = quality_aspect_nodes.map((_node) => {
         if (_node.json_data.name === clickedQA.json_data.name){
@@ -217,7 +213,6 @@ export function TreeDisplay_Rework(_processedData : any) {
       setQualityAspectNodes(new_qa_nodes);
     }
     else if (clickedPF){
-      console.log('clicked pf');
       let new_pf_nodes = [];
       new_pf_nodes = product_factor_nodes.map((_node) => {
         if (_node.json_data.name === clickedPF.json_data.name){
@@ -230,7 +225,6 @@ export function TreeDisplay_Rework(_processedData : any) {
       setProductFactorNodes(new_pf_nodes);
     }
     else if (clickedMeasure){
-      console.log('clicked measure');
       let new_measure_nodes = [];
       new_measure_nodes = measure_nodes.map((_node) => {
         if (_node.json_data.name === clickedMeasure.json_data.name){
@@ -243,7 +237,6 @@ export function TreeDisplay_Rework(_processedData : any) {
       setMeasureNodes(new_measure_nodes);
     }
     else if (clickedDiagnostic){
-      console.log('clicked diagnostic');
       let new_diagnostic_nodes = [];
       new_diagnostic_nodes = diagnostic_nodes.map((_node) => {
         if (_node.json_data.name === clickedDiagnostic.json_data.name){
@@ -271,8 +264,6 @@ export function TreeDisplay_Rework(_processedData : any) {
     // .substring cleans the 'openeye ' part of id
     const clicked_ID = open_eye_clicked_marker.target.id.substring(8);
 
-    console.log(clicked_ID);
-
     const clickedTQI = tqi_nodes.find((_node) => _node.name === clicked_ID);
     const clickedQA = quality_aspect_nodes.find((_node) => _node.name === clicked_ID);
     const clickedPF = product_factor_nodes.find((_node) => _node.name === clicked_ID);
@@ -281,7 +272,6 @@ export function TreeDisplay_Rework(_processedData : any) {
     
     
     if (clickedTQI) {
-      console.log('clicked tqi');
       let new_tqi_nodes = [];
       new_tqi_nodes = tqi_nodes.map((_node) => {
         if (_node.json_data.name === clickedTQI.json_data.name){
@@ -294,7 +284,6 @@ export function TreeDisplay_Rework(_processedData : any) {
       setTQINodes(new_tqi_nodes);
     }
     else if (clickedQA){
-      console.log('clicked qa');
       let new_qa_nodes = [];
       new_qa_nodes = quality_aspect_nodes.map((_node) => {
         if (_node.json_data.name === clickedQA.json_data.name){
@@ -307,7 +296,6 @@ export function TreeDisplay_Rework(_processedData : any) {
       setQualityAspectNodes(new_qa_nodes);
     }
     else if (clickedPF){
-      console.log('clicked pf');
       let new_pf_nodes = [];
       new_pf_nodes = product_factor_nodes.map((_node) => {
         if (_node.json_data.name === clickedPF.json_data.name){
@@ -320,7 +308,6 @@ export function TreeDisplay_Rework(_processedData : any) {
       setProductFactorNodes(new_pf_nodes);
     }
     else if (clickedMeasure){
-      console.log('clicked measure');
       let new_measure_nodes = [];
       new_measure_nodes = measure_nodes.map((_node) => {
         if (_node.json_data.name === clickedMeasure.json_data.name){
@@ -333,7 +320,6 @@ export function TreeDisplay_Rework(_processedData : any) {
       setMeasureNodes(new_measure_nodes);
     }
     else if (clickedDiagnostic){
-      console.log('clicked diagnostic');
       let new_diagnostic_nodes = [];
       new_diagnostic_nodes = diagnostic_nodes.map((_node) => {
         if (_node.json_data.name === clickedDiagnostic.json_data.name){
@@ -423,6 +409,18 @@ export function TreeDisplay_Rework(_processedData : any) {
       measure_nodes, diagnostic_nodes
   ]);
 
+  // calls the hide wdight use effect func.
+  function hide_weights(e : any){
+    setHideWeightsMarker(e);
+  }
+
+  // updates the entire tree display to not include any nodes with edge weight === 0
+  useEffect(() => {
+
+
+
+  }, [hide_weights_marker]);
+
   // draw links between tqi node
   //let tqi_edges : any[] = draw_edges(active_tqi_nodes, active_quality_aspect_nodes);
   // using the active will only draw the edges of the clicked parent nodes
@@ -436,7 +434,14 @@ export function TreeDisplay_Rework(_processedData : any) {
       <svg width={width} height={height} >
         <rect width={width} height={height} rx={10} id='tree_canvas' overflow-x={'auto'}/>
 
-        {tqi_nodes.map((node : any) => {return node._rect;}) }
+
+        {quality_aspect_nodes.length > 0 ? (
+          <NodeDescriptionPanel nodes={quality_aspect_nodes} />
+        ) : null}
+        <div>
+          {tqi_nodes.map((node : any) => {return node._rect;}) }
+        </div>
+
         {quality_aspect_nodes.map((node : any) => {return node._rect;}) }
         {product_factor_nodes.map((node : any) => {return node._rect;}) }
         {measure_nodes.map((node : any) => {return node._rect;}) }
@@ -446,6 +451,8 @@ export function TreeDisplay_Rework(_processedData : any) {
         {pf_edges}
         {PF_up_edges}
         {measure_edges}
+
+  
 
       </svg>
 
