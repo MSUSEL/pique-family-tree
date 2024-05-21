@@ -196,3 +196,8 @@
 .node-type-header:hover .info-text {
   display: inline-block;
 }
+
+.order-by-header {
+  border-bottom: 2px solid gray;
+  padding: 4px;
+}

@@ -152,76 +152,78 @@ export default function NodeDescriptionPanel(props: { nodes: any[]; impacts: any
   return (
     <div id="node_description_panel" className={`scrollable-panel ${resizing ? "resizable" : ""}`}>
       <div id="resize-handle" onMouseDown={handleMouseDown}></div>
-      <label htmlFor="orderBy" style={{ marginLeft: "1%" }}> Order By: </label>
-      <select id="orderBy" value={orderBy} onChange={handleOrderByChange}>
-        <option value="default">Insertion Order</option>
-        <option value="alphabetical">Alphabetical Order</option>
-        <option value="value">Value Order</option>
-        <option value="nodeType">Node Type Sort</option>
-      </select>
+      
+      <div className="order-by-header">
+        <label htmlFor="orderBy" style={{ marginLeft: "1%" }}> Order By: </label>
+        <select id="orderBy" value={orderBy} onChange={handleOrderByChange}>
+          <option value="default">Insertion Order</option>
+          <option value="alphabetical">Alphabetical Order</option>
+          <option value="value">Value Order</option>
+          <option value="nodeType">Node Type Sort</option>
+        </select>
 
-      {orderBy === "nodeType" && (
-        <Tooltip.Root>
-          <Tooltip.Trigger asChild>
-            <InfoCircledIcon className="info-icon" />
-          </Tooltip.Trigger>
-          <Tooltip.Content className="TooltipContent" sideOffset={5}>
-            Nodes are grouped by Node Type (TQI, Product Factor, Measure, Diagnostic)
-            <Tooltip.Arrow className="TooltipArrow" />
-          </Tooltip.Content>
-        </Tooltip.Root>
-      )}
+        {orderBy === "nodeType" && (
+          <Tooltip.Root>
+            <Tooltip.Trigger asChild>
+              <InfoCircledIcon className="info-icon" />
+            </Tooltip.Trigger>
+            <Tooltip.Content className="TooltipContent" sideOffset={5}>
+              Nodes are grouped by Node Type (TQI, Product Factor, Measure, Diagnostic)
+              <Tooltip.Arrow className="TooltipArrow" />
+            </Tooltip.Content>
+          </Tooltip.Root>
+        )}
 
-      {orderBy === "default" && (
-        <Tooltip.Root>
-          <Tooltip.Trigger asChild>
-            <InfoCircledIcon className="info-icon" />
-          </Tooltip.Trigger>
-          <Tooltip.Content className="TooltipContent" sideOffset={5}>
-            Nodes are sorted by the order they were selected in. 
-            <Tooltip.Arrow className="TooltipArrow" />
-          </Tooltip.Content>
-        </Tooltip.Root>
-      )}
+        {orderBy === "default" && (
+          <Tooltip.Root>
+            <Tooltip.Trigger asChild>
+              <InfoCircledIcon className="info-icon" />
+            </Tooltip.Trigger>
+            <Tooltip.Content className="TooltipContent" sideOffset={5}>
+              Nodes are sorted by the order they were selected in. 
+              <Tooltip.Arrow className="TooltipArrow" />
+            </Tooltip.Content>
+          </Tooltip.Root>
+        )}
 
-{(orderBy === "alphabetical") && (
-  <>
-    <label htmlFor="orderDirection"> Order Direction: </label>
-    <select id="orderDirection" value={orderDirection} onChange={handleOrderDirectionChange}>
-      <option value="asc">Ascending</option>
-      <option value="desc">Descending</option>
-    </select>
-    <Tooltip.Root>
-      <Tooltip.Trigger asChild>
-        <InfoCircledIcon className="info-icon" />
-      </Tooltip.Trigger>
-      <Tooltip.Content className="TooltipContent" sideOffset={5}>
-        Nodes are sorted alphabetically in {orderDirection === "asc" ? "ascending order (A-Z)" : "descending order (Z-A)"}
-        <Tooltip.Arrow className="TooltipArrow" />
-      </Tooltip.Content>
-    </Tooltip.Root>
-  </>
-)}
+        {(orderBy === "alphabetical") && (
+          <>
+            <label htmlFor="orderDirection"> Order Direction: </label>
+            <select id="orderDirection" value={orderDirection} onChange={handleOrderDirectionChange}>
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <InfoCircledIcon className="info-icon" />
+              </Tooltip.Trigger>
+              <Tooltip.Content className="TooltipContent" sideOffset={5}>
+                Nodes are sorted alphabetically in {orderDirection === "asc" ? "ascending order (A-Z)" : "descending order (Z-A)"}
+                <Tooltip.Arrow className="TooltipArrow" />
+              </Tooltip.Content>
+            </Tooltip.Root>
+          </>
+        )}
 
-{(orderBy === "value") && (
-  <>
-    <label htmlFor="orderDirection"> Order Direction: </label>
-    <select id="orderDirection" value={orderDirection} onChange={handleOrderDirectionChange}>
-      <option value="asc">Ascending</option>
-      <option value="desc">Descending</option>
-    </select>
-    <Tooltip.Root>
-      <Tooltip.Trigger asChild>
-        <InfoCircledIcon className="info-icon" />
-      </Tooltip.Trigger>
-      <Tooltip.Content className="TooltipContent" sideOffset={5}>
-        Nodes are sorted by value in {orderDirection === "asc" ? "ascending order (0-1)" : "descending order (1-0)"}
-        <Tooltip.Arrow className="TooltipArrow" />
-      </Tooltip.Content>
-    </Tooltip.Root>
-  </>
-)}
-
+        {(orderBy === "value") && (
+          <>
+            <label htmlFor="orderDirection"> Order Direction: </label>
+            <select id="orderDirection" value={orderDirection} onChange={handleOrderDirectionChange}>
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <InfoCircledIcon className="info-icon" />
+              </Tooltip.Trigger>
+              <Tooltip.Content className="TooltipContent" sideOffset={5}>
+                Nodes are sorted by value in {orderDirection === "asc" ? "ascending order (0-1)" : "descending order (1-0)"}
+                <Tooltip.Arrow className="TooltipArrow" />
+              </Tooltip.Content>
+            </Tooltip.Root>
+          </>
+        )}
+      </div>
 
       {makeNodePanelRectangles}
     </div>
