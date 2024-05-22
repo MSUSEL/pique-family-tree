@@ -1,16 +1,17 @@
 // project imports
 import TreeNode from "./TreeNode/TreeNode.jsx";
 import './TreeDisplay.css';
-import { CornerTopRightIcon } from '@radix-ui/react-icons';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 import {process_data, draw_edges, draw_up_edges} from './TreeDisplayHelpers.tsx'
-import { boolean } from "zod";
-import { update } from "ramda";
-import { create } from "d3";
 import { EyeOpenIcon, EyeClosedIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import NodeDescriptionPanel from "./nodeDescriptionPanel/NodeDescriptionPanel";
 import { useProcessedData } from "../../data/useProcessedData";
+import { useAtomValue } from "jotai";
+import { State } from "../../state";
+import * as d3 from 'd3';
+import { render } from "react-dom";
+
 
 // TODO:
 //    - support node description panel                          ** FOCUS **
@@ -40,15 +41,24 @@ import { useProcessedData } from "../../data/useProcessedData";
 const node_width = 120;
 const node_height = 60;
 
+// the height on the canvas to render the various nodes
+let node_y_spacing = 200;
+const tqi_y = 70;
+const quality_aspect_y = tqi_y + node_y_spacing;
+const product_factor_y = quality_aspect_y + node_y_spacing;
+const measure_y = product_factor_y + node_y_spacing;
+const diagnostic_y = measure_y + node_y_spacing;
+
 const min_width = 400; // the min width at which to render the tree
-let width = 10000; // width of the background
-let height = 1000; // height of the background
+let canvas_width = 10000; // width of the background
+let canvas_height = diagnostic_y + 70; // height of the background
+
+
 
 //export default function Example({ width, height, margin = defaultMargin }: TreeProps) { // original
 export function TreeDisplay_Rework() {
 
   const processedData = useProcessedData();
-
 
   // notes about the tree:
   //    Despite being called a tree, the linkage is different than lets say a BST.
@@ -58,8 +68,6 @@ export function TreeDisplay_Rework() {
   //    This is why instead of having one central list of all nodes, I broke it each layer
   //    of nodes up into it's own list. 
   //    From top to bottom: tqi -> quality_aspects -> product_factors
-
-
 
   // Define state variables to manage dynamic aspects
   const [tqi_nodes, setTQINodes] = useState<any[]>([]);
@@ -79,14 +87,14 @@ export function TreeDisplay_Rework() {
   const [pf_edges, setPFEdges] = useState<any[]>([]);
   const [measure_edges, setMeasureEdges] = useState<any[]>([]);
   const [PF_up_edges, setPFUpEdges] = useState<any[]>([]);
-  const [node_clicked_marker, setNodeClickedMarker] = useState<MouseEvent>();
-  const [arrow_clicked_marker, setArrowClickedMarker] = useState<MouseEvent>();
-  const [open_eye_clicked_marker, setOpenEyeClickedMarker] = useState<MouseEvent>();
-  const [closed_eye_clicked_marker, setClosedEyeClickedMarker] = useState<MouseEvent>();
+  const [node_clicked_marker, setNodeClickedMarker] = useState<React.MouseEvent<SVGGElement, MouseEvent>>();
+  const [arrow_clicked_marker, setArrowClickedMarker] = useState<React.MouseEvent<SVGGElement, MouseEvent>>();
+  const [open_eye_clicked_marker, setOpenEyeClickedMarker] = useState<React.MouseEvent<SVGGElement, MouseEvent>>();
+  const [closed_eye_clicked_marker, setClosedEyeClickedMarker] = useState<React.MouseEvent<SVGGElement, MouseEvent>>();
 
   const [nodesForPanelBoxes, setNodesForPanelBoxes] = useState([]);
 
-  // called when a button is pressed.
+  // called when a node is pressed.
   // used to ensure the button clicks update with the newest information
   useEffect(() => {
 
@@ -143,8 +151,8 @@ export function TreeDisplay_Rework() {
 
   }, [node_clicked_marker]); // Empty dependency array ensures it runs only once after component mount
   
-  // calls the above use effect when a button is pressed.
-  function node_clicked(e : MouseEvent){
+  // calls the above use effect when a node is pressed.
+  function node_clicked(e: React.MouseEvent<SVGGElement, MouseEvent>){
     setNodeClickedMarker(e);
   }
 
@@ -356,7 +364,7 @@ export function TreeDisplay_Rework() {
       }
     }
 
-    setMeasureNodes(create_nodes(new_measures, active_product_factor_node._x + 75, 650, false));
+    setMeasureNodes(create_nodes(new_measures, active_product_factor_node._x + 75, measure_y, false));
 
   }, [active_product_factor_node]);
 
@@ -377,7 +385,7 @@ export function TreeDisplay_Rework() {
       }
     }
 
-    setDiagnosticNodes(create_nodes(new_diagnostics, active_measure_node._x + 75, 800, false));
+    setDiagnosticNodes(create_nodes(new_diagnostics, active_measure_node._x + 75, diagnostic_y, false));
 
   }, [active_measure_node]);
 
@@ -387,13 +395,13 @@ export function TreeDisplay_Rework() {
     function set_nodes() {
 
       // top row of nodes -- function similar to root nodes (only 1 with doctored data file)
-      setTQINodes(create_nodes(processedData.factors.tqi, width / 2, 100, false)); // holds the data of each node
+      setTQINodes(create_nodes(processedData.factors.tqi, canvas_width / 2, tqi_y, false)); // holds the data of each node
 
       // second row of nodes -- the children of the tqi nodes
-      setQualityAspectNodes(create_nodes(processedData.factors.quality_aspects, width / 2, 250, false));
+      setQualityAspectNodes(create_nodes(processedData.factors.quality_aspects, canvas_width / 2, quality_aspect_y, false));
 
       // third row of nodes -- the children of the quality aspect nodes
-      setProductFactorNodes(create_nodes(processedData.factors.product_factors, width / 2, 500, true));
+      setProductFactorNodes(create_nodes(processedData.factors.product_factors, canvas_width / 2, product_factor_y, true));
     }
 
     set_nodes();
@@ -414,26 +422,14 @@ export function TreeDisplay_Rework() {
       measure_nodes, diagnostic_nodes
   ]);
 
-  // draw links between tqi node
-  //let tqi_edges : any[] = draw_edges(active_tqi_nodes, active_quality_aspect_nodes);
-  // using the active will only draw the edges of the clicked parent nodes
-  //let qar_edges : any[] = draw_edges(active_quality_aspect_nodes, active_product_factor_nodes); 
+  function reset_selection(){
 
-  // notes:
-  // rx is the curvature of the rect
+  }
 
-  console.log(product_factor_nodes.length);
-
-  return width < min_width ? null : (
-    
-      <svg width={width} height={height} >
-        <rect width={width} height={height} rx={10} id='tree_canvas' overflow-x={'auto'}/>
-
-
-     
-          {tqi_nodes.map((node : any) => {return node._rect;}) }
-        
-
+  function render_nodes_and_edges(){
+    return(
+      <svg width={canvas_width} height={canvas_height} fill={'green'}>
+        {tqi_nodes.map((node : any) => {return node._rect;}) }
         {quality_aspect_nodes.map((node : any) => {return node._rect;}) }
         {product_factor_nodes.map((node : any) => {return node._rect;}) }
         {measure_nodes.map((node : any) => {return node._rect;}) }
@@ -443,12 +439,86 @@ export function TreeDisplay_Rework() {
         {pf_edges}
         {PF_up_edges}
         {measure_edges}
-
-  
-
       </svg>
+    );
+  }
 
+  // panning and zooming
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const gRef = useRef<SVGGElement | null>(null);
+  const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown>>();
+
+  // handles the zooming and panning
+  // thank you chatgpt!
+  useEffect(() => {
+
+    if (svgRef.current && gRef.current) {
+
+      const svgElement = svgRef.current;
+      const g = d3.select<SVGGElement, unknown>(gRef.current);
+
+      const center_start_x = -svgElement.clientWidth / 2 + window.innerWidth / 3;
+      const center_start_y = -svgElement.clientHeight / 2 + 450;
+
+      // Set up zoom behavior
+      const zoom = d3.zoom<SVGSVGElement, unknown>()
+        .scaleExtent([0.5, 4])
+        .on('zoom', (event) => {
+          g.attr('transform', event.transform);
+        });
+
+      // Save the zoom behavior in a ref to access it later
+      zoomRef.current = zoom;
+
+      // center page when loaded
+      const initialTransform = d3.zoomIdentity
+        .translate(center_start_x, center_start_y)
+        .scale(1);
+
+      // Apply zoom behavior to the svg
+      const svg = d3.select<SVGSVGElement, unknown>(svgElement);
+      svg.call(zoom);
+
+      // Set initial zoom and position
+      svg.call(zoom.transform, initialTransform);
+
+      // Clean up on unmount
+      return () => {
+        svg.on('.zoom', null);
+      };
+    }
+  }, []);
+
+  // handles the reset zoom button
+  const handleResetZoom = () => {
+    if (svgRef.current && zoomRef.current) {
+      const svgElement = svgRef.current;
+      const center_start_x = -svgElement.clientWidth / 2 + window.innerWidth / 3;
+      const center_start_y = -svgElement.clientHeight / 2 + 450;
+      const resetTransform = d3.zoomIdentity
+        .translate(center_start_x, center_start_y)
+        .scale(1);
+
+      const svg = d3.select<SVGSVGElement, unknown>(svgElement);
+      svg.transition().duration(500).call(zoomRef.current.transform, resetTransform);
+    }
+  };
+
+  return (
+
+    <div id={'tree_canvas'}>
+      <div style={{ marginBottom: '10px', background: 'white'}}>
+        <button className={"reset_buttons"} onClick={handleResetZoom}>Reset Zoom</button>
+      </div>
+      <svg ref={svgRef} width={canvas_width} height={canvas_height}>
+        <g ref={gRef}>
+          {render_nodes_and_edges()}
+        </g>
+      </svg>
+    </div>
   );
+
+  // TODO: refactor create_nodes() and redraw_node() so they can be moved to helper file
 
   // creates and returns an array of nodes representing the specified layer
   function create_nodes(_factors : any, _x_pos: number, _y_pos: number, _arrow : boolean){
@@ -482,27 +552,22 @@ export function TreeDisplay_Rework() {
 
       return new TreeNode(
         _factors[index],
-        (<Draggable key={_factors[index].name} disabled={true}
-        onMouseDown={node_clicked}
-        >   
-            <g>
-            
-              <rect height={node_height} width={node_width} x={x} y={y} className={node_id} id={_factors[index].name}/>
-              <text x={x + node_width / 2} y={10+y + node_height / 4} className={'node_text'}>
-                {_factors[index].name}
-              </text>
-              <text x={x + node_width / 2} y={10+y + node_height / 2} className={'node_text'}>
-                {_factors[index].value.toFixed(2)}
-              </text>
-
-              {_arrow ? <>
-              <rect id={'uparrow ' + _factors[index].name} onClick={(e) => arrow_clicked(e)} height={15} width={25} x={x} y={y} className={node_id}/>
-              <ArrowUpIcon x={x + 5} y={y}/> </> : <></>}
-
-              <rect id={'closedeye ' + _factors[index].name} onClick={(e) => closed_eye_clicked(e)} height={15} width={25} x={x + node_width - 25} y={y} className={node_id}/>
-              <EyeClosedIcon x={x + node_width - 20} y={y}/>
-            </g>
-          </Draggable>),
+        (
+          <g key={_factors[index].name} onClick={node_clicked}>
+            <rect height={node_height} width={node_width} x={x} y={y} className={node_id} id={_factors[index].name}/>
+            <text x={x + node_width / 2} y={10+y + node_height / 4} className={'node_text'}>
+              {_factors[index].name}
+            </text>
+            <text x={x + node_width / 2} y={10+y + node_height / 2} className={'node_text'}>
+              {_factors[index].value.toFixed(2)}
+            </text>
+            {_arrow ? <>
+            <rect id={'uparrow ' + _factors[index].name} onClick={(e) => arrow_clicked(e)} height={15} width={25} x={x} y={y} className={node_id}/>
+            <ArrowUpIcon x={x + 5} y={y}/> </> : <></>}
+            <rect id={'closedeye ' + _factors[index].name} onClick={(e) => closed_eye_clicked(e)} height={15} width={25} x={x + node_width - 25} y={y} className={node_id}/>
+            <EyeClosedIcon x={x + node_width - 20} y={y}/>
+          </g>
+        ),
         node_width,
         node_height,
         x,
@@ -516,6 +581,8 @@ export function TreeDisplay_Rework() {
 
     const x = _node.x;
     const y = _node.y;
+    const node_width = _node.width;
+    const node_height = _node.height;
 
     // Determine node color
     let node_id = 'low_node';
@@ -535,39 +602,31 @@ export function TreeDisplay_Rework() {
     return new TreeNode(
       _node.json_data,
       (
-        <Draggable key={_node.json_data.name} disabled={true}
-        onMouseDown={node_clicked}
-        >   
-            <g>
-            
-              <rect height={node_height} width={node_width} x={x} y={y} className={node_id} id={_node.json_data.name}/>
-              <text x={x + node_width / 2} y={10+y + node_height / 4} className={'node_text'}>
-                {_node.json_data.name}
-              </text>
-              <text x={x + node_width / 2} y={10+y + node_height / 2} className={'node_text'}>
-                {_node.json_data.value.toFixed(2)}
-              </text>
-
-              {
-                _arrow ? <>
-                <rect id={'uparrow ' + _node.json_data.name} onClick={(e) => arrow_clicked(e)} height={15} width={25} x={x} y={y} className={node_id}/>
-                <ArrowUpIcon x={x + 5} y={y}/> </> : <></>
-              }
-              
-              {
-                _open ?
-                  <>
-                    <rect id={'openeye ' + _node.json_data.name} onClick={(e) => open_eye_clicked(e)} height={15} width={25} x={x + node_width - 25} y={y} className={node_id}/>
-                    <EyeOpenIcon x={x + node_width - 20} y={y}/>
-                  </> :
-                  <>
-                    <rect id={'closedeye ' + _node.json_data.name} onClick={(e) => closed_eye_clicked(e)} height={15} width={25} x={x + node_width - 25} y={y} className={node_id}/>
-                    <EyeClosedIcon x={x + node_width - 20} y={y}/>
-                  </>
-              }
-              
-            </g>
-          </Draggable>
+          <g key={_node.name} onClick={node_clicked}>
+            <rect height={node_height} width={node_width} x={x} y={y} className={node_id} id={_node.json_data.name}/>
+            <text x={x + node_width / 2} y={10+y + node_height / 4} className={'node_text'}>
+              {_node.json_data.name}
+            </text>
+            <text x={x + node_width / 2} y={10+y + node_height / 2} className={'node_text'}>
+              {_node.json_data.value.toFixed(2)}
+            </text>
+            {
+              _arrow ? <>
+              <rect id={'uparrow ' + _node.json_data.name} onClick={(e) => arrow_clicked(e)} height={15} width={25} x={x} y={y} className={node_id}/>
+              <ArrowUpIcon x={x + 5} y={y}/> </> : <></>
+            }
+            {
+              _open ?
+                <>
+                  <rect id={'openeye ' + _node.json_data.name} onClick={(e) => open_eye_clicked(e)} height={15} width={25} x={x + node_width - 25} y={y} className={node_id}/>
+                  <EyeOpenIcon x={x + node_width - 20} y={y}/>
+                </> :
+                <>
+                  <rect id={'closedeye ' + _node.json_data.name} onClick={(e) => closed_eye_clicked(e)} height={15} width={25} x={x + node_width - 25} y={y} className={node_id}/>
+                  <EyeClosedIcon x={x + node_width - 20} y={y}/>
+                </>
+            }
+          </g>
       ),
       _node.width,
       _node.height,
