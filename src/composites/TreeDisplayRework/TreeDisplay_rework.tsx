@@ -422,9 +422,7 @@ export function TreeDisplay_Rework() {
       measure_nodes, diagnostic_nodes
   ]);
 
-  function reset_selection(){
-
-  }
+ 
 
   function render_nodes_and_edges(){
     return(
@@ -489,8 +487,8 @@ export function TreeDisplay_Rework() {
     }
   }, []);
 
-  // handles the reset zoom button
-  const handleResetZoom = () => {
+  // handles the reset zoom button behavior
+  function reset_zoom(){
     if (svgRef.current && zoomRef.current) {
       const svgElement = svgRef.current;
       const center_start_x = -svgElement.clientWidth / 2 + window.innerWidth / 3;
@@ -504,11 +502,22 @@ export function TreeDisplay_Rework() {
     }
   };
 
+  // handles the reset selection button behavior
+  function reset_selection(){
+    setActiveTQINode(null);
+    setActiveQualityAspectNode(null);
+    setActiveProductFactorNode(null);
+    setActiveMeasureNode(null);
+    setUpwardsProductFactorNode(null);
+    setPFUpEdges([]);
+  }
+
   return (
 
     <div id={'tree_canvas'}>
       <div style={{ marginBottom: '10px', background: 'white'}}>
-        <button className={"reset_buttons"} onClick={handleResetZoom}>Reset Zoom</button>
+        <button className={"reset_buttons"} onClick={reset_zoom}>Reset Zoom</button>
+        <button className={"reset_buttons"} onClick={reset_selection}>Reset Selection</button>
       </div>
       <svg ref={svgRef} width={canvas_width} height={canvas_height}>
         <g ref={gRef}>
@@ -523,9 +532,8 @@ export function TreeDisplay_Rework() {
   // creates and returns an array of nodes representing the specified layer
   function create_nodes(_factors : any, _x_pos: number, _y_pos: number, _arrow : boolean){
 
-    // ** REQUIRED TO PROCESS DATA ** //
-    // TODO: will need to refactor so it doesn't break without
-    _factors = process_data(_factors, 10.0);
+    // required so we can use map on the factors.
+    _factors = process_data(_factors);
 
     return _factors.map((_factor : any, index : number) => {
 
