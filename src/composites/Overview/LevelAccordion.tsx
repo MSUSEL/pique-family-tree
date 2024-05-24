@@ -98,21 +98,27 @@ const LevelAccordion = ({
   nestedobj,
   isDiagnostics,
   detailsVisible,
+  selectedItem,
 }: {
   nestedobj: Record<string, FilterableItem>;
   isDiagnostics: boolean;
   detailsVisible: boolean;
+  selectedItem?: FilterableItem | null; 
 }) => {
   const processedItems = classifyRiskLevels(nestedobj, isDiagnostics);
   return (
     <Accordion.Root type="multiple" className="Level--AccordionRoot">
       {/* Iterates through items held in processedItems */}
       {Object.entries(processedItems).map(([riskLevel, items]) => (
-        <Accordion.Item
-          value={riskLevel}
-          key={riskLevel}
-          className="Level--AccordionLevel"
-        >
+         <Accordion.Item
+         value={riskLevel}
+         key={riskLevel}
+         className={`Level--AccordionLevel ${
+           selectedItem && Object.keys(items).includes(selectedItem.name)
+             ? "selected"
+             : ""
+         }`}
+       >
           <Accordion.Header className="Level--AccordionHeader">
             <Accordion.Trigger
               className={`Level--AccordionTrigger ${

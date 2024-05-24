@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useAtomValue } from "jotai";
 import * as Schema from "../../data/schema";
 import { State } from "../../state";
@@ -40,6 +40,7 @@ const generateChartData = (riskData: [number[], string[][]] | null) => {
 
 // Main wrapper for overview tab containing all overview tab features
 export const OverviewTab = () => {
+  const [selectedItem, setSelectedItem] = useState<any>(null);
   const dataset: Schema.base.Schema = useAtomValue(
     State.dataset
   ) as Schema.base.Schema;
@@ -443,6 +444,7 @@ export const OverviewTab = () => {
           colors={COLORS}
           topProblematicItems={topProblematicQualityAspects}
           isDiagnostics={false}
+          propSelectedItem={selectedItem}
         />
 
         <Separator my="3" size="4" />
@@ -454,6 +456,7 @@ export const OverviewTab = () => {
           colors={COLORS}
           topProblematicItems={topProblematicProductFactors}
           isDiagnostics={false}
+          propSelectedItem={selectedItem}
         />
 
         <Separator my="3" size="4" />
@@ -465,6 +468,7 @@ export const OverviewTab = () => {
           colors={COLORS}
           topProblematicItems={topProblematicMeasures}
           isDiagnostics={false}
+          propSelectedItem={selectedItem}
         />
 
         <Separator my="3" size="4" />
@@ -476,6 +480,7 @@ export const OverviewTab = () => {
           colors={COLORS}
           topProblematicItems={topProblematicDiagnostics}
           isDiagnostics={true}
+          propSelectedItem={selectedItem}
         />
       </Flex>
     </Flex>

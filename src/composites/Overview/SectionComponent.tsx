@@ -15,9 +15,10 @@ import { PieChart, Pie, Tooltip, Cell } from "recharts";
 import "./Overview.css";
 import "@radix-ui/colors/mauve.css";
 import LevelAccordion from "./LevelAccordion";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import React from "react";
 import "@radix-ui/colors/violet.css";
+import { renderObjectDetails } from "./LevelAccordion";
 
 interface FilterableItem {
   name: string;
@@ -50,6 +51,7 @@ interface SectionComponentProps {
   colors: Record<string, string>;
   topProblematicItems: TopProblematicItem[];
   isDiagnostics?: boolean;
+  propSelectedItem: any;
 }
 
 // Wrapper for each 'section' which contains accordion, pie
@@ -61,11 +63,23 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
   colors,
   topProblematicItems,
   isDiagnostics = false,
+  propSelectedItem,
+  
 }) => {
   const [detailsVisible, setDetailsVisible] = useState(false); // State to track visibility
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  useEffect(() => {
+    console.log("SectionComponent - propSelectedItem:", propSelectedItem);
+  }, [propSelectedItem]);
 
   const toggleDetailsVisibility = () => {
     setDetailsVisible((prevState) => !prevState); // Toggle visibility
+  };
+
+  const handleItemClick = (item) => {
+    setSelectedItem(item);
+    console.log("Selected Item:", item);
   };
 
   return (
@@ -103,9 +117,10 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
         <Box>
           <ScrollArea style={{ height: "38vh" }}>
             <LevelAccordion
-              nestedobj={nestedObj}
-              isDiagnostics={isDiagnostics}
-              detailsVisible={detailsVisible}
+             nestedobj={nestedObj}
+             isDiagnostics={isDiagnostics}
+             detailsVisible={detailsVisible}
+             selectedItem={selectedItem}
             />
           </ScrollArea>
         </Box>
@@ -157,7 +172,7 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
               <Dialog.Root key={index}>
                 <Dialog.Trigger>
                   {/* Buttons containing item name, score, and trigger for popup window */}
-                  <Button style={{ background: "none" }}>
+                  <Button style={{ background: "none" }} onClick={() => handleItemClick(item)}>
                     <Text as="p">
                       <Flex direction={"column"} align={"start"}>
                         <Link href="#" style={{ color: "var(--violet-11)" }}>
@@ -178,38 +193,40 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
                 </Dialog.Trigger>
                 {/* Content in popup window, should eventually match the accordion element, targeted on given item */}
                 <Dialog.Content>
-                  <Text
-                    as="div"
-                    size="1"
-                    style={{ maxWidth: 250, color: "var(--violet-11)" }}
-                  >
-                    {item.impacts && item.impacts.length > 0 ? (
-                      item.impacts.map((impact, impactIndex) => (
-                        <Text
-                          as="p"
-                          key={impactIndex}
-                          style={{ color: "var(--violet-11)" }}
-                        >
-                          <Strong>Item name: </Strong> {item.name}
-                          <Separator my="3" size="4" />
-                          <Strong>Impact to {impact.aspectName}:</Strong>{" "}
-                          {impact.weight.toFixed(3)}
-                        </Text>
-                      ))
-                    ) : item.weight !== undefined ? (
-                      <Text as="p" style={{ color: "var(--violet-11)" }}>
-                        <Strong>Item name: </Strong> {item.name}
-                        <Separator my="3" size="4" />
-                        <Strong>Impact to TQI:</Strong> {item.weight.toFixed(3)}
-                      </Text>
-                    ) : null}
+  <Text as="div" size="2" style={{ color: "var(--violet-11)" }}>
+    {/* Render impacts or weight */}
+    {item.impacts && item.impacts.length > 0 ? (
+      item.impacts.map((impact, impactIndex) => (
+        <Text
+          as="p"
+          key={impactIndex}
+          style={{ color: "var(--violet-11)" }}
+        >
+          <Strong>Item name: </Strong> {item.name}
+          <Separator my="3" size="4" />
+          <Strong>Impact to {impact.aspectName}:</Strong>{" "}
+          {impact.weight.toFixed(3)}
+        </Text>
+      ))
+    ) : item.weight !== undefined ? (
+      <Text as="p" style={{ color: "var(--violet-11)" }}>
+        <Strong>Item name: </Strong> {item.name}
+        <Separator my="3" size="4" />
+        <Strong>Impact to TQI:</Strong> {item.weight.toFixed(3)}
+      </Text>
+    ) : null}
 
-                    <Text as="p">
-                      <Strong>Description:</Strong>{" "}
-                      {item.details.description || "Not Provided"}
-                    </Text>
-                  </Text>
-                </Dialog.Content>
+    {/* Description */}
+    <Text as="p">
+      <Strong>Description:</Strong>{" "}
+      {item.details.description || "Not Provided"}
+    </Text>
+
+    {/* Additional details */}
+    {renderObjectDetails(item.details)}
+  </Text>
+</Dialog.Content>
+
               </Dialog.Root>
             ))}
           </Flex>
