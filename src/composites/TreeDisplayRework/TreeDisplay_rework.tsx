@@ -11,6 +11,8 @@ import { useAtomValue } from "jotai";
 import { State } from "../../state";
 import * as d3 from 'd3';
 import { render } from "react-dom";
+import "./nodeDescriptionPanel/NodeDescriptionPanel.css";
+
 
 
 // TODO:
@@ -50,7 +52,7 @@ const measure_y = product_factor_y + node_y_spacing;
 const diagnostic_y = measure_y + node_y_spacing;
 
 const min_width = 400; // the min width at which to render the tree
-let canvas_width = 10000; // width of the background
+let canvas_width = 8000; // width of the background
 let canvas_height = diagnostic_y + 70; // height of the background
 
 
@@ -92,7 +94,12 @@ export function TreeDisplay_Rework() {
   const [open_eye_clicked_marker, setOpenEyeClickedMarker] = useState<React.MouseEvent<SVGGElement, MouseEvent>>();
   const [closed_eye_clicked_marker, setClosedEyeClickedMarker] = useState<React.MouseEvent<SVGGElement, MouseEvent>>();
 
-  const [nodesForPanelBoxes, setNodesForPanelBoxes] = useState([]);
+  // panning and zooming
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const gRef = useRef<SVGGElement | null>(null);
+  const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown>>();
+
+  const [nodesForPanelBoxes, setNodesForPanelBoxes] = useState<any>([]);
 
   // called when a node is pressed.
   // used to ensure the button clicks update with the newest information
@@ -185,7 +192,7 @@ export function TreeDisplay_Rework() {
     setClosedEyeClickedMarker(e);
   }
 
-  // called when an open eye icon is clicked
+  // called when a closed eye icon is clicked
   useEffect(() => {
 
     if (!closed_eye_clicked_marker) // so it doesn't break on initial load
@@ -202,6 +209,7 @@ export function TreeDisplay_Rework() {
     
     
     if (clickedTQI) {
+      setNodesForPanelBoxes([...nodesForPanelBoxes, clickedTQI.json_data]);
       let new_tqi_nodes = [];
       new_tqi_nodes = tqi_nodes.map((_node) => {
         if (_node.json_data.name === clickedTQI.json_data.name){
@@ -214,6 +222,7 @@ export function TreeDisplay_Rework() {
       setTQINodes(new_tqi_nodes);
     }
     else if (clickedQA){
+      setNodesForPanelBoxes([...nodesForPanelBoxes, clickedQA.json_data]);
       let new_qa_nodes = [];
       new_qa_nodes = quality_aspect_nodes.map((_node) => {
         if (_node.json_data.name === clickedQA.json_data.name){
@@ -226,6 +235,7 @@ export function TreeDisplay_Rework() {
       setQualityAspectNodes(new_qa_nodes);
     }
     else if (clickedPF){
+      setNodesForPanelBoxes([...nodesForPanelBoxes, clickedPF.json_data]);
       let new_pf_nodes = [];
       new_pf_nodes = product_factor_nodes.map((_node) => {
         if (_node.json_data.name === clickedPF.json_data.name){
@@ -238,6 +248,7 @@ export function TreeDisplay_Rework() {
       setProductFactorNodes(new_pf_nodes);
     }
     else if (clickedMeasure){
+      setNodesForPanelBoxes([...nodesForPanelBoxes, clickedMeasure.json_data]);
       let new_measure_nodes = [];
       new_measure_nodes = measure_nodes.map((_node) => {
         if (_node.json_data.name === clickedMeasure.json_data.name){
@@ -250,6 +261,7 @@ export function TreeDisplay_Rework() {
       setMeasureNodes(new_measure_nodes);
     }
     else if (clickedDiagnostic){
+      setNodesForPanelBoxes([...nodesForPanelBoxes, clickedDiagnostic.json_data]);
       let new_diagnostic_nodes = [];
       new_diagnostic_nodes = diagnostic_nodes.map((_node) => {
         if (_node.json_data.name === clickedDiagnostic.json_data.name){
@@ -282,9 +294,12 @@ export function TreeDisplay_Rework() {
     const clickedPF = product_factor_nodes.find((_node) => _node.name === clicked_ID);
     const clickedMeasure = measure_nodes.find((_node) => _node.name === clicked_ID);
     const clickedDiagnostic = diagnostic_nodes.find((_node) => _node.name === clicked_ID);
-    
-    
+
     if (clickedTQI) {
+      // filter the clicked data out of the panel box list
+      setNodesForPanelBoxes(nodesForPanelBoxes.filter((_node : any) => {
+        return _node !== clickedTQI.json_data;
+      }));
       let new_tqi_nodes = [];
       new_tqi_nodes = tqi_nodes.map((_node) => {
         if (_node.json_data.name === clickedTQI.json_data.name){
@@ -297,6 +312,10 @@ export function TreeDisplay_Rework() {
       setTQINodes(new_tqi_nodes);
     }
     else if (clickedQA){
+      // filter the clicked data out of the panel box list
+      setNodesForPanelBoxes(nodesForPanelBoxes.filter((_node : any) => {
+        return _node !== clickedQA.json_data;
+      }));
       let new_qa_nodes = [];
       new_qa_nodes = quality_aspect_nodes.map((_node) => {
         if (_node.json_data.name === clickedQA.json_data.name){
@@ -309,6 +328,10 @@ export function TreeDisplay_Rework() {
       setQualityAspectNodes(new_qa_nodes);
     }
     else if (clickedPF){
+      // filter the clicked data out of the panel box list
+      setNodesForPanelBoxes(nodesForPanelBoxes.filter((_node : any) => {
+        return _node !== clickedPF.json_data;
+      }));
       let new_pf_nodes = [];
       new_pf_nodes = product_factor_nodes.map((_node) => {
         if (_node.json_data.name === clickedPF.json_data.name){
@@ -321,6 +344,10 @@ export function TreeDisplay_Rework() {
       setProductFactorNodes(new_pf_nodes);
     }
     else if (clickedMeasure){
+      // filter the clicked data out of the panel box list
+      setNodesForPanelBoxes(nodesForPanelBoxes.filter((_node : any) => {
+        return _node !== clickedMeasure.json_data;
+      }));
       let new_measure_nodes = [];
       new_measure_nodes = measure_nodes.map((_node) => {
         if (_node.json_data.name === clickedMeasure.json_data.name){
@@ -333,6 +360,10 @@ export function TreeDisplay_Rework() {
       setMeasureNodes(new_measure_nodes);
     }
     else if (clickedDiagnostic){
+      // filter the clicked data out of the panel box list
+      setNodesForPanelBoxes(nodesForPanelBoxes.filter((_node : any) => {
+        return _node !== clickedDiagnostic.json_data;
+      }));
       let new_diagnostic_nodes = [];
       new_diagnostic_nodes = diagnostic_nodes.map((_node) => {
         if (_node.json_data.name === clickedDiagnostic.json_data.name){
@@ -441,10 +472,7 @@ export function TreeDisplay_Rework() {
     );
   }
 
-  // panning and zooming
-  const svgRef = useRef<SVGSVGElement | null>(null);
-  const gRef = useRef<SVGGElement | null>(null);
-  const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown>>();
+
 
   // handles the zooming and panning
   // thank you chatgpt!
@@ -512,20 +540,169 @@ export function TreeDisplay_Rework() {
     setPFUpEdges([]);
   }
 
+
+  // the below code was copied from the old tree display to get stuff working
+  // TODO: refactor code so its easier to read and doesn't have so many errors/warnings
+  
+  const [qaImpacts] = useState(() => {
+    let qa_impacts = {};
+    let qa_impacts_array = [];
+    for (let weight in processedData.factors.tqi[
+      Object.keys(processedData.factors.tqi)[0]
+    ].weights) {
+      qa_impacts_array.push([
+        weight,
+        processedData.factors.tqi[Object.keys(processedData.factors.tqi)[0]]
+          .weights[weight] *
+          (1 - processedData.factors.quality_aspects[weight].value),
+      ]);
+    }
+    qa_impacts_array.sort((qa1, qa2) => qa2[1] - qa1[1]);
+
+    for (let item = 0; item < qa_impacts_array.length; item++) {
+      qa_impacts[qa_impacts_array[item][0]] = {
+        rank: item + 1,
+        value: qa_impacts_array[item][1],
+      };
+    }
+    return qa_impacts;
+  });
+
+  const [pfImpacts] = useState(() => {
+    let pf_impacts = {};
+    for (let pf in processedData.factors.product_factors) {
+      pf_impacts[pf] = 0;
+    }
+    for (let qa in processedData.factors.quality_aspects) {
+      for (let weight in processedData.factors.quality_aspects[qa].weights) {
+        pf_impacts[weight] +=
+          ((processedData.factors.quality_aspects[qa].weights[weight] *
+            (1 - processedData.factors.product_factors[weight].value)) /
+            (1 - processedData.factors.quality_aspects[qa].value)) *
+          qaImpacts[qa].value;
+      }
+    }
+    let pf_impacts_array = [];
+    for (let pf in pf_impacts) {
+      pf_impacts_array.push([pf, pf_impacts[pf]]);
+    }
+    pf_impacts_array.sort((pf1, pf2) => pf2[1] - pf1[1]);
+    for (let item = 0; item < pf_impacts_array.length; item++) {
+      pf_impacts[pf_impacts_array[item][0]] = {
+        rank: item + 1,
+        value: pf_impacts_array[item][1],
+      };
+    }
+    return pf_impacts;
+  });
+
+  const [measureImpacts] = useState(() => {
+    let m_impacts = {};
+    for (let measure in processedData.measures) {
+      m_impacts[measure] = 0;
+    }
+    for (let pf in processedData.factors.product_factors) {
+      for (let weight in processedData.factors.product_factors[pf].weights) {
+        m_impacts[weight] +=
+          ((processedData.factors.product_factors[pf].weights[weight] *
+            (1 - processedData.measures[weight].value)) /
+            (1 - processedData.factors.product_factors[pf].value)) *
+          pfImpacts[pf].value;
+      }
+    }
+
+    for (let m in m_impacts) {
+      if (isNaN(m_impacts[m])) m_impacts[m] = 0; // Hopefully get rid of this in future
+    }
+    let m_impacts_array = [];
+    for (let m in m_impacts) {
+      m_impacts_array.push([m, m_impacts[m]]);
+    }
+    m_impacts_array.sort((m1, m2) => m2[1] - m1[1]);
+    for (let item = 0; item < m_impacts_array.length; item++) {
+      m_impacts[m_impacts_array[item][0]] = {
+        rank: item + 1,
+        value: m_impacts_array[item][1],
+      };
+    }
+    return m_impacts;
+  });
+
+  const [impacts] = useState({
+    "Quality Aspect": qaImpacts,
+    "Product Factor": pfImpacts,
+    Measure: measureImpacts,
+  });
+
+  // clears the side panel
+  function clear_side_panel(){
+
+    setNodesForPanelBoxes([]);
+
+    // reset tqi nodes
+    let new_tqi_nodes = [];
+    new_tqi_nodes = tqi_nodes.map((_node) => {
+      return redraw_node(_node, false, false);
+    });
+    setTQINodes(new_tqi_nodes);
+
+    // reset qa nodes
+    let new_qa_nodes = [];
+    new_qa_nodes = quality_aspect_nodes.map((_node) => {
+      return redraw_node(_node, false, false);
+    });
+    setQualityAspectNodes(new_qa_nodes);
+
+    // reset pf nodes
+    let new_pf_nodes = [];
+    new_pf_nodes = product_factor_nodes.map((_node) => {
+      return redraw_node(_node, false, false);
+    });
+    setProductFactorNodes(new_pf_nodes);
+
+    // reset measure nodes
+    let new_m_nodes = [];
+    new_m_nodes = measure_nodes.map((_node) => {
+      return redraw_node(_node, false, false);
+    });
+    setMeasureNodes(new_m_nodes);
+
+    // reset diagnostic nodes
+    let new_d_nodes = [];
+    new_d_nodes = diagnostic_nodes.map((_node) => {
+      return redraw_node(_node, false, false);
+    });
+    setDiagnosticNodes(new_d_nodes);
+  }
+
   return (
 
-    <div id={'tree_canvas'}>
-      <div style={{ marginBottom: '10px', background: 'white'}}>
-        <button className={"reset_buttons"} onClick={reset_zoom}>Reset Zoom</button>
-        <button className={"reset_buttons"} onClick={reset_selection}>Reset Selection</button>
+    <div id={"canvas_container"}>
+      
+      <div id={'tree_canvas'}>
+        <div id={'button_div'}>
+          <button className={"reset_buttons"} onClick={reset_zoom}>Reset Zoom</button>
+          <button className={"reset_buttons"} onClick={reset_selection}>Reset Selection</button>
+          {nodesForPanelBoxes.length > 0 && <button className={"reset_buttons"} onClick={clear_side_panel}>Clear Side Panel</button>}          
+        </div>
+        <svg ref={svgRef} width={canvas_width} height={canvas_height}>
+          <g ref={gRef}>
+            {render_nodes_and_edges()}
+          </g>
+        </svg>
       </div>
-      <svg ref={svgRef} width={canvas_width} height={canvas_height}>
-        <g ref={gRef}>
-          {render_nodes_and_edges()}
-        </g>
-      </svg>
+
+      {nodesForPanelBoxes.length > 0 && <NodeDescriptionPanel nodes={nodesForPanelBoxes} impacts={impacts} />}
     </div>
+    
   );
+
+
+  // green 7fd199
+  // blue 7fc7fa
+  // yellow fff67f
+  // orange ffcd7f
+  // red f97f86
 
   // TODO: refactor create_nodes() and redraw_node() so they can be moved to helper file
 
