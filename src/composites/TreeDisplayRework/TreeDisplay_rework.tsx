@@ -2,7 +2,6 @@
 import TreeNode from "./TreeNode/TreeNode.jsx";
 import './TreeDisplay.css';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 import {process_data, draw_edges, draw_up_edges} from './TreeDisplayHelpers.tsx'
 import { EyeOpenIcon, EyeClosedIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import NodeDescriptionPanel from "./nodeDescriptionPanel/NodeDescriptionPanel";
@@ -10,35 +9,7 @@ import { useProcessedData } from "../../data/useProcessedData";
 import { useAtomValue } from "jotai";
 import { State } from "../../state";
 import * as d3 from 'd3';
-import { render } from "react-dom";
 import "./nodeDescriptionPanel/NodeDescriptionPanel.css";
-
-
-
-// TODO:
-//    - support node description panel                          ** FOCUS **
-//    - drag nodes                                              ** I need a way to grab the updated x and y coords of the <draggable>
-//    - drag page around
-//    - measures nodes                                          ** done **
-//    - diagnostics nodes                                       ** done **
-//    - differentiate between types of nodes
-//    - edge weights                                            ** done ** 
-//    - edit edge weights
-//    - edit node values
-//    - add up arrow                                            ** done**
-//    - dynamic close and open eye icon                         ** done ** 
-//    - horizontal and vertical scroll bars to tree canvas      ** need to center horizontal bar upon loading ** 
-//    - reset zoom functionality
-//    - reset selection button
-//    - quick actions button
-//    - click on node to activate its edges to it's children    ** done **
-//    - look at list display to see how it gets the updated data - it's not passed as a parameter   ** done **
-//    - BUGFIX - processed data does not reset without reloading page and showing 0 weights is no longer working
-
-//    - REWORK SCROLLBARS TO BE PANNING AND ZOOMING - REMOVE SCROLLBARS
-//    - d3/visx panning/scrolling/zooming
-//    - react gesture for dragging
-//    - usestate/usememo/usecallback/useeffect
 
 const node_width = 120;
 const node_height = 60;
@@ -51,16 +22,20 @@ const product_factor_y = quality_aspect_y + node_y_spacing;
 const measure_y = product_factor_y + node_y_spacing;
 const diagnostic_y = measure_y + node_y_spacing;
 
-const min_width = 400; // the min width at which to render the tree
 let canvas_width = 8000; // width of the background
 let canvas_height = diagnostic_y + 70; // height of the background
 
-
-
 //export default function Example({ width, height, margin = defaultMargin }: TreeProps) { // original
-export function TreeDisplay_Rework() {
+export const TreeDisplay_Rework = () => {
+  
+  // get dataset and processed dataset
+  const dataset = useAtomValue(State.dataset);
+  //const processedData = useProcessedData();
+  //const processedData = useProcessedData();
 
-  const processedData = useProcessedData();
+  const [processedData, setProcessedData] = useState<any>(useProcessedData());
+
+  //console.log(State.hideZeroWeightEdgeState);
 
   // notes about the tree:
   //    Despite being called a tree, the linkage is different than lets say a BST.
@@ -453,8 +428,7 @@ export function TreeDisplay_Rework() {
       measure_nodes, diagnostic_nodes
   ]);
 
- 
-
+  // returns the node and edge html components.
   function render_nodes_and_edges(){
     return(
       <svg width={canvas_width} height={canvas_height} fill={'green'}>
@@ -471,8 +445,6 @@ export function TreeDisplay_Rework() {
       </svg>
     );
   }
-
-
 
   // handles the zooming and panning
   // thank you chatgpt!
@@ -539,7 +511,6 @@ export function TreeDisplay_Rework() {
     setUpwardsProductFactorNode(null);
     setPFUpEdges([]);
   }
-
 
   // the below code was copied from the old tree display to get stuff working
   // TODO: refactor code so its easier to read and doesn't have so many errors/warnings
@@ -656,7 +627,7 @@ export function TreeDisplay_Rework() {
     // reset pf nodes
     let new_pf_nodes = [];
     new_pf_nodes = product_factor_nodes.map((_node) => {
-      return redraw_node(_node, false, false);
+      return redraw_node(_node, true, false);
     });
     setProductFactorNodes(new_pf_nodes);
 
@@ -696,13 +667,6 @@ export function TreeDisplay_Rework() {
     </div>
     
   );
-
-
-  // green 7fd199
-  // blue 7fc7fa
-  // yellow fff67f
-  // orange ffcd7f
-  // red f97f86
 
   // TODO: refactor create_nodes() and redraw_node() so they can be moved to helper file
 
