@@ -158,14 +158,13 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
       <Flex
         direction={"column"}
         align={"center"}
-        justify={"center"}
         gap={"5"}
         style={{ flexBasis: "30%" }}
       >
         <Box>
           <Text style={{ color: "var(--violet-11)" }}>Lowest 3 Scores:</Text>
         </Box>
-        <Box>
+        <Box style={{ marginTop: "70px" }}>
           <Flex direction="column" gap="7" align="start">
             {/* Renders the top 3 list's information and popup windows */}
             {topProblematicItems.map((item, index) => (
@@ -173,7 +172,7 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
                 <Dialog.Trigger>
                   {/* Buttons containing item name, score, and trigger for popup window */}
                   <Button
-                    style={{ background: "none" }}
+                    style={{ background: "none"}}
                     onClick={() => handleItemClick(item)}
                   >
                     <Text as="p">
