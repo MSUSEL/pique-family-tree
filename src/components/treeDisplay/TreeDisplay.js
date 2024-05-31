@@ -1,32 +1,22 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
-import TreeNode from "./TreeNode/TreeNode";
-import NodeRiskColor from "./TreeNode/NodeColorHelper";
+import TreeNode from "../treeNode/TreeNode";
+import NodeRiskColor from "../treeNode/NodeColorHelper";
 import "./TreeDisplay.css";
-import NodeDescriptionPanel from "./nodeDescriptionPanel/NodeDescriptionPanel";
-import { EyeOpenIcon, EyeClosedIcon } from "@radix-ui/react-icons";
+import NodeDescriptionPanel from "../nodeDescriptionPanel/NodeDescriptionPanel";
 import {
   determineDescriptionClickerBorder,
   determineDescriptionClickerColor,
-  determineDescriptionClickerIcon,
   determineParentClickerBorder,
   determineParentClickerColor,
   findPIQUENode,
 } from "./TreeDisplayHelpers";
+import "../fileHandling/UploadFile.css";
 /**
  * @param fileData PIQUE .json output file.
  */
 
-export function TreeDisplay(props) {
-
-  
-  const [selectedNode, setSelectedNode] = useState(null);
-  const [selectedNodes, setSelectedNodes] = useState([]);
-
-  useEffect(() => {
-    console.log('Selected Node:', selectedNode);
-  }, [selectedNode]);
-
+export default function TreeDisplay(props) {
   const [qaChildrenEdgeVisibility, setQAChildrenEdgeVisibility] = useState(
     () => {
       let default_obj = {};
@@ -71,12 +61,10 @@ export function TreeDisplay(props) {
 
   const [measureWithParentsShowing, setMeasureWithParentsShowing] =
     useState(null);
-
   const [
     measureWithParentsShowingCoordinates,
     setMeasureWithParentsShowingCoordinates,
   ] = useState([]);
-
   const [measuresWithMultipleParents] = useState(() => {
     let measures = {};
     for (let measure in props.fileData.measures) {
@@ -411,7 +399,7 @@ export function TreeDisplay(props) {
         .append("path")
         .attr("id", "tqi_" + treeNodes[item].name + "_edge" + item)
         .attr("d", link)
-        .attr("stroke-width", "1px")
+        .attr("stroke-width", "2px")
         .attr("stroke", "black")
         .attr("fill", "none");
 
@@ -430,7 +418,7 @@ export function TreeDisplay(props) {
         .attr("font-size", "10px")
         .attr("xlink:href", "#tqi_" + treeNodes[item].name + "_edge" + item)
         .text(
-          Object.values(treeNodes[0].json_data.weights)[item - 1].toFixed(2)
+          Object.values(treeNodes[0].json_data.weights)[item - 1].toFixed(6)
         );
     }
 
@@ -460,7 +448,7 @@ export function TreeDisplay(props) {
           .append("path")
           .attr("id", treeNodes[aspect].name + "_edge" + factor)
           .attr("d", link)
-          .attr("stroke-width", "1px")
+          .attr("stroke-width", "2px")
           .attr("stroke", "black")
           .attr(
             "opacity",
@@ -470,7 +458,7 @@ export function TreeDisplay(props) {
                 p_factors[factor].name
               ]
                 ? 1
-                : 0 // initial 0.05, change to 0
+                : 0.05
             }`
           )
           .attr("fill", "none");
@@ -499,7 +487,7 @@ export function TreeDisplay(props) {
             .text(
               treeNodes[aspect].json_data.weights[
                 p_factors[factor].name
-              ].toFixed(2)
+              ].toFixed(6)
             );
         }
       }
@@ -538,7 +526,6 @@ export function TreeDisplay(props) {
      * Creating the TQI and quality factor nodes in the treeDisplay display.
      */
     // TQI node
-    // add a white background color for tqi
     svg
       .append("rect")
       .attr("id", "tqi^" + treeNodes[0].name)
@@ -547,18 +534,8 @@ export function TreeDisplay(props) {
       .attr("rx", 2)
       .attr("x", treeNodes[0].x)
       .attr("y", treeNodes[0].y)
-      .style("fill", "white");
-
-    svg
-      .append("rect")
-      .attr("id", "tqi^" + treeNodes[0].name)
-      .attr("width", treeNodes[0].width)
-      .attr("height", treeNodes[0].height)
-      .attr("rx", 2)
-      .attr("x", treeNodes[0].x)
-      .attr("y", treeNodes[0].y)
-      .style("fill", NodeRiskColor(treeNodes[0].json_data.value, treeNodes[0].name, selectedNode))
-      .style("stroke-width", "1px")
+      .style("fill", NodeRiskColor(treeNodes[0].json_data.value))
+      .style("stroke-width", "2px")
       .style("stroke", "black");
 
     svg
@@ -574,7 +551,7 @@ export function TreeDisplay(props) {
 
     svg
       .append("text")
-      .text(treeNodes[0].json_data.value.toFixed(2))
+      .text(treeNodes[0].json_data.value.toFixed(8))
       .attr("font-size", "12px")
       .attr("x", treeNodes[0].x + node_width * 0.5)
       .attr("y", treeNodes[0].y + node_height * 0.6)
@@ -584,7 +561,6 @@ export function TreeDisplay(props) {
 
     // Quality aspect nodes
     for (let item = 1; item < treeNodes.length; item++) {
-      // add the white background color for 2nd level nodes to hide edges behhind the rect
       svg
         .append("rect")
         .attr("id", "quality_aspects^" + treeNodes[item].name)
@@ -593,18 +569,8 @@ export function TreeDisplay(props) {
         .attr("rx", 2)
         .attr("x", treeNodes[item].x)
         .attr("y", treeNodes[item].y)
-        .style("fill", "white");
-
-      svg
-        .append("rect")
-        .attr("id", "quality_aspects^" + treeNodes[item].name)
-        .attr("width", treeNodes[item].width)
-        .attr("height", treeNodes[item].height)
-        .attr("rx", 2)
-        .attr("x", treeNodes[item].x)
-        .attr("y", treeNodes[item].y)
-        .style("fill", NodeRiskColor(treeNodes[item].json_data.value, treeNodes[item].name, selectedNode))
-        .style("stroke-width", "1px")
+        .style("fill", NodeRiskColor(treeNodes[item].json_data.value))
+        .style("stroke-width", "2px")
         .style("stroke", "black")
         .on("click", handleQAEdgesToggle);
 
@@ -621,7 +587,7 @@ export function TreeDisplay(props) {
 
       svg
         .append("text")
-        .text(treeNodes[item].json_data.value.toFixed(2))
+        .text(treeNodes[item].json_data.value.toFixed(8))
         .attr("font-size", "12px")
         .attr("x", treeNodes[item].x + node_width * 0.5)
         .attr("y", treeNodes[item].y + node_height * 0.6)
@@ -705,7 +671,7 @@ export function TreeDisplay(props) {
               measureWithParentsShowing + "_parentEdge" + p_factors[pf].name
             )
             .attr("d", link)
-            .attr("stroke-width", "1px")
+            .attr("stroke-width", "2px")
             .attr("stroke", "black")
             .attr("fill", "none");
 
@@ -736,7 +702,7 @@ export function TreeDisplay(props) {
             .text(
               p_factors[pf].json_data.weights[
                 measureWithParentsShowing
-              ].toFixed(2)
+              ].toFixed(6)
             );
         }
       }
@@ -776,7 +742,7 @@ export function TreeDisplay(props) {
             .append("path")
             .attr("id", p_factors[pf].name + "_edge" + iter)
             .attr("d", link)
-            .attr("stroke-width", "1px")
+            .attr("stroke-width", "2px")
             .attr("stroke", "black")
             .attr("fill", "none");
 
@@ -798,7 +764,7 @@ export function TreeDisplay(props) {
             )
             .attr("font-size", "8px")
             .attr("xlink:href", "#" + p_factors[pf].name + "_edge" + iter)
-            .text(p_factors[pf].json_data.weights[measure_name].toFixed(2));
+            .text(p_factors[pf].json_data.weights[measure_name].toFixed(6));
 
           // ---------------------------------------------------
           /**
@@ -848,7 +814,7 @@ export function TreeDisplay(props) {
                 .append("path")
                 .attr("id", measure_name + "_edge" + iter)
                 .attr("d", link)
-                .attr("stroke-width", "1px")
+                .attr("stroke-width", "2px")
                 .attr("stroke", "black")
                 .attr("fill", "none");
 
@@ -864,11 +830,10 @@ export function TreeDisplay(props) {
                 .text(
                   props.fileData.measures[measure_name].weights[
                     diagnostic_name
-                  ].toFixed(2)
+                  ].toFixed(6)
                 );
 
               const diag_x = calc_diag_x(i);
-              // add the white background color to hide behind edges
               svg
                 .append("rect")
                 .attr(
@@ -881,21 +846,13 @@ export function TreeDisplay(props) {
                 .attr("rx", 2)
                 .attr("x", diag_x)
                 .attr("y", diag_y)
-                .style("fill", "white");
-
-              svg
-                .append("rect")
-                .attr(
-                  "id",
-                  "diagnostics^" +
-                    props.fileData["diagnostics"][diagnostic_name].name
+                .style(
+                  "fill",
+                  NodeRiskColor(
+                    props.fileData["diagnostics"][diagnostic_name].value,
+                    "diagnostic"
+                  )
                 )
-                .attr("width", node_width)
-                .attr("height", node_height)
-                .attr("rx", 2)
-                .attr("x", diag_x)
-                .attr("y", diag_y)
-                .style("fill",NodeRiskColor(props.fileData["diagnostics"][diagnostic_name].value, props.fileData["diagnostics"][diagnostic_name].name, selectedNode, "diagnostic"))
                 .style("stroke-width", "1px")
                 .style("stroke", "black");
 
@@ -914,7 +871,7 @@ export function TreeDisplay(props) {
                 .append("text")
                 .text(
                   props.fileData["diagnostics"][diagnostic_name].value.toFixed(
-                    0
+                    8
                   )
                 )
                 .attr("font-size", "11px")
@@ -931,7 +888,6 @@ export function TreeDisplay(props) {
           /**
            * Draw the measure nodes for the associated product factor.
            */
-          // add white bgc
           svg
             .append("rect")
             .attr(
@@ -943,20 +899,9 @@ export function TreeDisplay(props) {
             .attr("rx", 2)
             .attr("x", x_cor)
             .attr("y", y_cor)
-            .style("fill", "white");
-
-          svg
-            .append("rect")
-            .attr(
-              "id",
-              "measures^" + props.fileData.measures[measure_name].name
-            )
-            .attr("width", node_width)
-            .attr("height", node_height)
-            .attr("rx", 2)
-            .attr("x", x_cor)
-            .attr("y", y_cor)
-            .style("fill",NodeRiskColor(props.fileData.measures[measure_name].value,props.fileData.measures[measure_name].name, selectedNode)
+            .style(
+              "fill",
+              NodeRiskColor(props.fileData.measures[measure_name].value)
             )
             .style("stroke-width", "1px")
             .style("stroke", "black")
@@ -975,7 +920,7 @@ export function TreeDisplay(props) {
 
           svg
             .append("text")
-            .text(props.fileData.measures[measure_name].value.toFixed(2))
+            .text(props.fileData.measures[measure_name].value.toFixed(8))
             .attr("font-size", "11px")
             .attr("x", x_cor + node_width * 0.5)
             .attr("y", y_cor + node_height * 0.6)
@@ -992,7 +937,6 @@ export function TreeDisplay(props) {
      * Creating the product factor nodes in the treeDisplay display.
      */
     for (let i = 0; i < p_factors.length; i++) {
-      // add white bgc
       svg
         .append("rect")
         .attr("id", "product_factors^" + p_factors[i].name)
@@ -1001,17 +945,7 @@ export function TreeDisplay(props) {
         .attr("rx", 2)
         .attr("x", p_factors[i].x)
         .attr("y", p_factors[i].y)
-        .style("fill", "white");
-
-      svg
-        .append("rect")
-        .attr("id", "product_factors^" + p_factors[i].name)
-        .attr("width", p_factors[i].width)
-        .attr("height", p_factors[i].height)
-        .attr("rx", 2)
-        .attr("x", p_factors[i].x)
-        .attr("y", p_factors[i].y)
-        .style("fill", NodeRiskColor(p_factors[i].json_data.value,p_factors[i].name,selectedNode))
+        .style("fill", NodeRiskColor(p_factors[i].json_data.value))
         .style("stroke-width", "1px")
         .style("stroke", "black")
         .on("click", handlePFEdgesToggle);
@@ -1029,7 +963,7 @@ export function TreeDisplay(props) {
 
       svg
         .append("text")
-        .text(p_factors[i].json_data.value.toFixed(2))
+        .text(p_factors[i].json_data.value.toFixed(8))
         .attr("font-size", "11px")
         .attr("x", p_factors[i].x + p_factor_width * 0.5)
         .attr("y", p_factors[i].y + p_factor_height * 0.6)
@@ -1037,27 +971,29 @@ export function TreeDisplay(props) {
         .attr("dominant-baseline", "middle")
         .attr("text-anchor", "middle");
     }
-    
+
     const handleClickingNodeForDescriptionPanel = (e) => {
       let nfpa = nodesForPanelBoxes;
+
       const clicked_id_name = e.path[0].id.split("^")[2];
-    
+
       if (
-        nodesForPanelBoxes.filter((n) => n["name"] === clicked_id_name).length > 0
+        nodesForPanelBoxes.filter((n) => n["name"] === clicked_id_name).length >
+        0
       ) {
         nfpa = nfpa.filter((e) => e.name !== clicked_id_name);
-        const previousSelectedNode = selectedNodes[selectedNodes.length - 2]; 
-        setSelectedNodes((prevSelectedNodes) => prevSelectedNodes.slice(0, -1)); 
-        setSelectedNode(previousSelectedNode); 
-      } else {
+      } else if (nodesForPanelBoxes.length < 5) {
         nfpa = [...nfpa, findPIQUENode(props.fileData, e.path[0].id)];
-        setSelectedNodes((prevSelectedNodes) => [...prevSelectedNodes, clicked_id_name]);
-        setSelectedNode(clicked_id_name);
+      } else {
+        alert(
+          "Max amount of descriptions in side panel (5).\n" +
+            "Remove nodes from side panel to add more."
+        );
       }
-    
+
+      nfpa.sort((a, b) => (a.name > b.name ? 1 : -1));
       setNodesForPanelBoxes(nfpa);
     };
-    
 
     const handleClickingPFParentClicker = (e) => {
       //console.log(e.path[0].id)
@@ -1115,17 +1051,6 @@ export function TreeDisplay(props) {
       const y = nodes[i].y.animVal.value;
       const width = nodes[i].width.animVal.value;
       const height = nodes[i].height.animVal.value;
-      // Adding an eye icon SVG on top of the rectangle
-      const iconWidth = width / 8; // Match the rectangle's width
-      const iconBase64 = determineDescriptionClickerIcon(nodesForPanelBoxes, nodes[i].id);
-
-      svg
-        .append("svg:image")
-        .attr("xlink:href", "data:image/svg+xml;base64," + iconBase64)
-        .attr("width", iconWidth)
-        .attr("height", iconWidth)
-        .attr("x", x + (27 * width) / 32)
-        .attr("y", y + height / 20);
 
       svg
         .append("rect")
@@ -1152,22 +1077,6 @@ export function TreeDisplay(props) {
         (node_type === "measures" &&
           measuresWithMultipleParents.hasOwnProperty(nodes[i].id.split("^")[1]))
       ) {
-        //up arrow icon to indicate showing edges to parent nodes
-        const upArrowIcon = btoa(`
-  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M7.14645 2.14645C7.34171 1.95118 7.65829 1.95118 7.85355 2.14645L11.8536 6.14645C12.0488 6.34171 12.0488 6.65829 11.8536 6.85355C11.6583 7.04882 11.3417 7.04882 11.1464 6.85355L8 3.70711L8 12.5C8 12.7761 7.77614 13 7.5 13C7.22386 13 7 12.7761 7 12.5L7 3.70711L3.85355 6.85355C3.65829 7.04882 3.34171 7.04882 3.14645 6.85355C2.95118 6.65829 2.95118 6.34171 3.14645 6.14645L7.14645 2.14645Z" 
-    fill="#49475B"/>
-  </svg>
-`);
-
-        svg
-          .append("svg:image")
-          .attr("xlink:href", "data:image/svg+xml;base64," + upArrowIcon)
-          .attr("width", width / 8)
-          .attr("height", width / 8)
-          .attr("x", x + width / 32)
-          .attr("y", y + height / 20);
-
         svg
           .append("rect")
           .attr("id", "parents_clicker^" + nodes[i].id)
@@ -1226,6 +1135,38 @@ export function TreeDisplay(props) {
       .on("mouseleave", handleNodeMouseLeave);
   };
 
+  // Rest the tree display by sorting nodes in ascending order
+  const ascendingSort = () => {
+    alert("Sort all nodes: left = smallest, right = largest");
+
+    //dowdloadTestCase(props)
+    var data = JSON.stringify(props);
+    var blob = new Blob([data], { type: "text/json; charset=utf-8" });
+    let a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "data.json";
+    a.hidden = true;
+    document.body.appendChild(a);
+    a.innerHTML = "someinnerhtml";
+    a.click();
+
+    setWidth(
+      nodesForPanelBoxes.length > 0
+        ? (window.innerWidth * 65) / 100
+        : window.innerWidth
+    );
+    setHeight(window.innerHeight * 0.75 * 0.99); // Original code before flexbox
+    //setHeight(window_height);   // Code with flexbox
+    setX(0);
+    setY(0);
+  };
+
+  // Reset tree display by filtering out zero values
+  const filterZero = () => {
+    let jsonTemp = JSON.stringify(props);
+    alert(jsonTemp.length);
+  };
+
   // Reset tree display to x,y,width,height when initially opening it.
   const resetTreeView = () => {
     setWidth(
@@ -1282,7 +1223,6 @@ export function TreeDisplay(props) {
 
   const clearSidePanel = () => {
     setNodesForPanelBoxes([]);
-    setSelectedNode(null);
   };
 
   // Adjusts SVG when node description panel opens up or close.
@@ -1327,7 +1267,7 @@ export function TreeDisplay(props) {
       <div id={"canvas_container"}>
         <div id={"tree_canvas"} ref={tree_canvas}></div>
         {nodesForPanelBoxes.length > 0 ? (
-          <NodeDescriptionPanel nodes={nodesForPanelBoxes} impacts={impacts} setSelectedNode={setSelectedNode} />
+          <NodeDescriptionPanel nodes={nodesForPanelBoxes} impacts={impacts} />
         ) : null}
       </div>
 

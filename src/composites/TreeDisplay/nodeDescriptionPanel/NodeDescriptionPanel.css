@@ -31,6 +31,8 @@
   font-size: 0.8vw;
   background-color: transparent;
   border-bottom: 2px solid gray;
+  position: relative;
+  
 }
 
 .node-name {
@@ -50,7 +52,8 @@
 
 .scrollable-panel {
   overflow-y: auto;
-  max-height: 100vh;
+  overflow-x: auto;
+  max-height: 80vh;
   max-width: 70vw;
 }
 
@@ -88,24 +91,113 @@
   display: none;
 }
 
-.utility-block{
+.utility-block {
   margin-bottom: 0.05%;
   margin-left: 1%;
 }
 
-.utility-block:hover .external-link-icon {
-  display: inline-block;
-}
-
-.utility-block > div {
+.utility-details {
   display: none;
 }
 
-.utility-block:hover > div {
+.arrow-icon:hover + .utility-details,
+.utility-details:hover {
   display: block;
 }
 
-.utility-block.active > div {
+.arrow-icon {
+  height: 12px;
+  width: 12px;
+  color: gray;
+}
+
+.utility-text {
+  display: inline-block;
+}
+
+.object-details {
+  margin-left: 20px;
+}
+
+.object-key {
+  margin-bottom: 5px;
+}
+
+.object-value.hidden {
+  display: none;
+}
+
+.arrow-icon {
+  cursor: pointer;
+}
+
+.arrow-icon:hover + .object-value {
   display: block;
 }
 
+.eye-icon {
+ position: absolute;
+ top: 5px;
+ left: 5px;
+ 
+}
+
+.node-type-header {
+  position: sticky;
+  opacity: 1;
+  top: 0;
+  z-index: 1;
+  background-color: ivory;
+  text-align: center;
+  border-top: 3px groove #000;
+  border-bottom: 3px groove #000;
+  padding: 2px; 
+}
+
+.node-group-scrollable {
+  overflow-y: auto;
+  max-height: 450px; 
+  border-bottom: 1px solid #000; 
+}
+
+.scrollable-nodes {
+  padding-right: 20px;
+}
+
+.TooltipContent {
+  border-radius: 4px;
+  padding: 10px 15px;
+  font-size: 0.8vw; 
+  color: #000; 
+  background-color: ivory; 
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); 
+}
+
+.TooltipArrow {
+  fill: ivory; 
+}
+
+.info-icon {
+  margin-left: 5px; 
+  vertical-align: middle;
+}
+
+.info-text {
+  display: none;
+  position: absolute;
+  background-color: #000;
+  color: #fff;
+  padding: 4px;
+  border-radius: 4px;
+  font-size: 12px;
+  z-index: 1;
+}
+
+.node-type-header:hover .info-text {
+  display: inline-block;
+}
+
+.order-by-header {
+  border-bottom: 2px solid gray;
+  padding: 4px;
+}

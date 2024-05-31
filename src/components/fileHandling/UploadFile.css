@@ -1,0 +1,917 @@
+#fileChooser {
+  display: block;
+  margin: auto;
+  padding-top: 20px;
+  text-align: center;
+  text-align-last: center;
+}
+
+#filename {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  height: 5vh;
+}
+
+/* Legend container in terms of risk level: color category, risk level name, and scale */
+.legend-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+  padding: 10px;
+  /*background-color: #f4f4f4;*/
+  background: transparent !important;
+  border-radius: 5px;
+}
+
+.legend-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin: auto;
+  text-align: center;
+  text-align-last: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+/*.legend-range {
+  font-weight: bold;
+}*/
+
+.legend-category {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* Color coding styles */
+.legend-color-red {
+  background-color: #E58F8F;
+}
+
+.legend-color-orange {
+  background-color: #EAA27D;
+}
+
+.legend-color-yellow {
+  background-color: #E9DB7D;
+}
+
+.legend-color-blue {
+  background-color: #8DB1E0;
+}
+
+.legend-color-green {
+  background-color: #8FBC94;
+}
+.legend-color-blue {
+  background-color: #3565cdb4;
+}
+
+.legend-color-yellow {
+  background-color: #fde001bb;
+}
+
+.legend-color-orange {
+  background-color: #ff6600c2;
+}
+
+.legend-color-red {
+  background-color: #cb0033bd;
+}
+
+/* Sort button group */
+.sort-btn-group {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.sort-dropdown {
+  display: inline-block;
+  position: relative;
+}
+
+.sort-btn {
+  margin-right: 10px;
+}
+
+.sort-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.sort-option {
+  margin: 5px;
+  border: 1px solid black;
+  background-color: beige;
+}
+
+/* Filter button group */
+.filter-btn-group {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.filter-dropdown {
+  display: inline-block;
+  position: relative;
+}
+
+.filter-btn {
+  margin-right: 10px;
+}
+
+.filter-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.filter-option {
+  margin: 5px;
+}
+
+.filter-option-label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.filter-checkbox {
+  margin-right: 5px;
+}
+
+/* Style the Dropdown Button */
+.dropbtn {
+  background-color: #f1f1f1;
+  color: black;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  margin-top: 8px;
+  border-radius: 4px;
+}
+
+/* Links inside the dropdown */
+.dropdown-content button {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  background-color: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content button:hover {
+  background-color: #f1f1f1;
+}
+
+/* Add a visual indicator for the toggled/pressed state */
+.dropdown-content button.selected {
+  background-color: #d3d3d3;
+  color: black;
+  font-weight: bold;
+}
+
+/* Non-clickable button style */
+.dropdown-content button.disabled {
+  background-color: transparent;
+  color: grey;
+  cursor: not-allowed;
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {
+  background-color: #d3d3d3;
+}
+
+
+/* modal container */
+.custom-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  padding: 20px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h2 {
+  margin-top: 0;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modal-actions button {
+  padding: 8px 16px;
+  margin-left: 10px;
+  border: none;
+  background-color: #4caf50;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.modal-actions button:last-child {
+  background-color: #f44336;
+}
+
+.modal-actions button:hover {
+  opacity: 0.8;
+}
+
+
+/* Legand container */
+.legend-container {
+  margin-top: 20px;
+}
+
+.legend-title,
+.legend-range,
+.legend-category {
+  font-family: Arial, sans-serif;
+  /* Replace with your preferred font */
+  color: #333;
+  /* Replace with your preferred color */
+}
+
+.legend-title {
+  font-size: 18px;
+  margin-top: 0;
+  margin-bottom: 5px;
+  /* Updated margin */
+  font-weight: bold;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 10px;
+  border-radius: 2px;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+/* CSS for Descriptive Statistics Panel */
+.statistics-panel {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+/* CSS for Descriptive Statistics Button */
+.statistics-button {
+  position: fixed;
+  top: 20px;
+  right: 200px;
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+/* Checkbox Container */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+}
+
+/* Checkbox Label */
+.checkbox-container label {
+  margin-left: 5px;
+}
+
+/* Checkbox Container when checked */
+.checkbox-container input[type="checkbox"]:checked+label {
+  background-color: #ccc;
+}
+
+/* Descriptive Statistics Button */
+.statistics-button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 12px;
+}
+
+/* Descriptive Statistics Panel */
+.statistics-panel.visible {
+  padding: 16px;
+  padding-top: 8px;
+  position: absolute;
+  top: 15%;
+  right: 0;
+  width: 20vw;
+  height: 75vh;
+  background-color: #f9f9f9;
+  border: black solid 3px;
+  box-shadow: none;
+  overflow-y: scroll;
+  z-index: 1;
+}
+
+.statistics-panel.invisible {
+  display: none;
+}
+
+.PTCanvasContainer {
+  display: flex;
+  flex-direction: column;
+  height: 75vh;
+  width: 100%;
+
+}
+
+.statistics-panel.visible h3,
+.statistics-panel.visible h4 {
+  padding: 8px;
+  margin-top: 8px;
+  margin-bottom: 0;
+  font-size: 18px;
+  background-color: lightgray;
+}
+
+.statistics-panel.visible p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Descriptive Statistics Button */
+.statistics-button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 12px;
+}
+
+/* Header for each section in the Descriptive Statistics Panel */
+.statistics-panel h4.visible {
+  background-color: #e7e7e7;
+  color: #333;
+  padding: 10px;
+  margin: 0;
+  font-size: 20px;
+}
+
+/* Paragraphs in Descriptive Statistics Panel */
+.statistics-panel.visible p {
+  padding: 8px 12px;
+  margin: 0;
+}
+
+/* Risk level categories for color */
+.statistics-panel p:nth-child(2),
+.statistics-panel p:nth-child(8),
+.statistics-panel p:nth-child(14),
+.statistics-panel p:nth-child(20) {
+  background-color: rgba(255, 0, 0, 0.497);
+}
+.dsSevereLevelCard {
+  background-color: #cb0033a8;
+  /* red */
+}
+.dsSevLevelDrop {
+  background-color: #cb00332f;
+}
+
+.statistics-panel p:nth-child(3),
+.statistics-panel p:nth-child(9),
+.statistics-panel p:nth-child(15),
+.statistics-panel p:nth-child(21) {
+  background-color: rgba(255, 166, 0, 0.715);
+}
+.dsHighLevelCard {
+  background-color: #ff66009f;
+  /* orange */
+}
+.dsHighLevelDrop {
+  background-color: #ff660033;
+}
+
+.statistics-panel p:nth-child(4),
+.statistics-panel p:nth-child(10),
+.statistics-panel p:nth-child(16),
+.statistics-panel p:nth-child(22) {
+  background-color: #f3ec669c;
+}
+
+.dsModerateLevelCard {
+  background-color: #fde001a5;
+  /* yellow */
+}
+.dsModLevelDrop {
+  background-color: #fde00133;
+}
+
+.statistics-panel p:nth-child(5),
+.statistics-panel p:nth-child(11),
+.statistics-panel p:nth-child(17),
+.statistics-panel p:nth-child(23) {
+  background-color: rgba(0, 136, 255, 0.4);
+  }
+.dsMinorLevelCard {
+  background-color: #3565cd95;
+  /* light green */
+}
+.dsMinLevelDrop {
+  background-color: #3565cd34;
+}
+
+.statistics-panel p:nth-child(6),
+.statistics-panel p:nth-child(12),
+.statistics-panel p:nth-child(18),
+.statistics-panel p:nth-child(24) {
+  background-color: rgba(0, 128, 0, 0.437);
+}
+.dsInsignificantLevelCard {
+  background-color: #009a679b;
+  /* green */
+}
+.dsInsigLevelDrop {
+  background-color: #009a671f;
+}
+
+
+.statistics-panel.visible button {
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+  float:right;
+  padding:0px 7px;
+
+  background-color: #cb003300;
+}
+
+.statistics-panel.visible button:hover{
+  background-color: #00000031;
+}
+
+/* Descriptive Statistics Button */
+.statistics-button {
+  position: absolute;
+
+  background-color: #3a913d;
+  color: white;
+  padding: 10px 20px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  margin-right: -150px;
+}
+
+.statistics-button:hover {
+  background-color: #555;
+}
+
+.dsSevLevelDrop dt,
+.dsHighLevelDrop dt,
+.dsModLevelDrop dt,
+.dsMinLevelDrop dt,
+.dsInsigLevelDrop dt{  
+  font-size: 16px;
+  margin-left: 5px;
+  margin-top: 0px;
+  text-wrap: wrap;
+  word-wrap: break-word;
+}
+
+.dsSevLevelDrop dd,
+.dsHighLevelDrop dd,
+.dsModLevelDrop dd,
+.dsMinLevelDrop dd,
+.dsInsigLevelDrop dd{
+  display: list-item;
+  list-style-type: disc;
+  margin-left: 25px;
+  margin-bottom: 0px;
+  text-wrap: balance;
+
+}
+
+.dsSevLevelDrop p,
+.dsHighLevelDrop p,
+.dsModLevelDrop p,
+.dsMinLevelDrop p,
+.dsInsigLevelDrop p {
+  padding-left: 5px;
+}
+
+/* Filter Dropdown Container */
+.dropdown {
+  position: relative;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+/* Filter Dropdown Button */
+.dropbtn {
+  background-color: #333333a8;
+  color: white;
+  padding: 10px 20px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+/* Filter Dropdown Content */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 200px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  overflow: auto;
+  border-radius: 4px;
+}
+
+/* Checkbox Container */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+/* Checkbox Styling */
+.checkbox-container input[type="checkbox"] {
+  display: none;
+}
+
+.checkbox-container label {
+  position: relative;
+  padding-left: 30px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+
+
+.checkbox-container input[type="checkbox"]:checked+label::before {
+  background-color: #333;
+}
+
+.checkbox-container input[type="checkbox"]:checked+label::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  background-color: white;
+  border-radius: 4px;
+}
+
+/* Show dropdown when hovered */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* Add a grey background color to dropdown links on hover */
+.dropdown-content div:hover {
+  background-color: #ddd;
+}
+
+.checkbox-container.clicked {
+  background-color: #ddd;
+}
+
+
+/* Custom Checkbox Styling */
+.checkbox-container {
+  position: relative;
+}
+
+.checkbox-container input[type="checkbox"] {
+  opacity: 0;
+  position: absolute;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkbox-container label {
+  position: relative;
+  cursor: pointer;
+  padding-left: 30px;
+}
+
+/* Custom Checkbox */
+.custom-checkbox {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  position: relative;
+  top: 2px;
+}
+
+.custom-checkbox.checked {
+  background-color: #2196F3;
+  border: 1px solid #2196F3;
+}
+
+.tqi {
+  font-weight: bold;
+  color: #2E8B57;
+}
+
+.quality_aspects {
+  font-weight: bold;
+  color: #FF4500;
+}
+
+.product_factors {
+  font-weight: bold;
+  color: #1E90FF;
+}
+
+.measures {
+  font-weight: bold;
+  color: #8A2BE2;
+}
+
+.diagnostics {
+  font-weight: bold;
+  color: #B22222;
+}
+
+/* list - sort*/
+.sort-button {
+  background-color: #ddd;
+  color: black;
+  padding: 10px 10px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 10%;
+}
+
+.sort-dropdown {
+  display: flex;
+  flex-direction: column;
+}
+
+.sort-ascend-button {
+  background-color: #008bba8a;
+  color: white;
+  padding: 10px 16px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 10%;
+}
+
+.sort-descend-button {
+  background-color: #f4433652;
+  color: white;
+  padding: 10px 16px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 10%;
+}
+
+/* list - filter - risk category*/
+
+.filter-button-insignificant {
+  background-color: rgba(0, 128, 0, 0.437);
+  color: black;
+  padding: 10px 16px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 10%;
+}
+
+.filter-button-minor {
+  background-color: rgba(0, 136, 255, 0.4);
+  color: black;
+  padding: 10px 16px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 10%;
+}
+.filter-button-moderate {
+  background-color: #f3ec669c;
+  color: black;
+  padding: 10px 16px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 10%;
+}
+.filter-button-high {
+  background-color: rgba(255, 166, 0, 0.715);
+  color: black;
+  padding: 10px 16px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 10%;
+}
+.filter-button-severe {
+  background-color: rgba(255, 0, 0, 0.497);
+  color: black;
+  padding: 10px 16px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 10%;
+}
+
+/* for all fiterings */
+/* Main dropdown */
+.main-dropdown {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.main-dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 200px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+/* Sub dropdowns */
+.sub-dropdown {
+  position: relative;
+  width: 100%;
+  padding: 10px;
+  border-bottom: 0px solid #f9f9f9;
+  min-width: 220px; /* Increase this to give more space */
+}
+
+.sub-dropdown-content {
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: 0;
+  min-width: 220px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  background-color: #f9f9f9;
+  border-radius: 0px;
+  padding: 10px;
+} 
+
+.dropbtn {
+  background-color: rgba(128, 128, 128, 0.667);
+  color: white;
+  padding: 10px;
+  margin: 2px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  min-width: 60px; /* Increase this to give more space */
+  text-align: center; /* To center the text */
+}
+
+/* Checkbox styling */
+input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+/* Button styling */
+button {
+  margin-top: 10px;
+  padding: 5px 10px;
+  background-color: lightgray;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Show dropdown content on hover */
+.main-dropdown:hover .main-dropdown-content,
+.sub-dropdown:hover .sub-dropdown-content {
+  display: block;
+}
