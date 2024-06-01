@@ -193,7 +193,7 @@ export const Wrapper = () => {
         <Flex
           direction="column"
           style={{
-            width: isRightSidebarOpen ? rightWidth : "50px",
+            width: isRightSidebarOpen ? rightWidth : "0px",
             height: "100vh", // instead of 100%
             position: "fixed", //relative
             top: "0",
