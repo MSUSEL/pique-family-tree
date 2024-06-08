@@ -134,12 +134,15 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
         gap={"5"}
         style={{ flexBasis: "30%" }}
       >
+        <Box style={{ marginBottom: "8%" }}>
+        <Badge size="2">Diagnostics Pie Chart</Badge>
+        </Box>
         <Box>
           <PieChart width={300} height={300}>
             <Pie
               data={chartData}
               cx="50%"
-              cy="50%"
+              cy="48%"
               outerRadius={100}
               fill="#8884d8"
               dataKey="Count"
@@ -162,17 +165,17 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
         style={{ flexBasis: "30%" }}
       >
         <Box>
-          <Text style={{ color: "var(--violet-11)" }}>Lowest 3 Scores:</Text>
+        <Badge size="2">Lowest 3 Scores</Badge>
         </Box>
         <Box style={{ marginTop: "70px" }}>
-          <Flex direction="column" gap="7" align="start">
+          <Flex direction="column" gap="7" align="center">
             {/* Renders the top 3 list's information and popup windows */}
             {topProblematicItems.map((item, index) => (
               <Dialog.Root key={index}>
                 <Dialog.Trigger>
                   {/* Buttons containing item name, score, and trigger for popup window */}
                   <Button
-                    style={{ background: "none"}}
+                    style={{ background: "none",  border: "1px solid var(--violet-11)",padding: "15px", }}
                     onClick={() => handleItemClick(item)}
                   >
                     <Text as="p">
