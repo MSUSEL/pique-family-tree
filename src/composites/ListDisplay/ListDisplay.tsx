@@ -16,6 +16,8 @@ export const ListDisplay = () => {
   const dataset = useAtomValue(State.dataset);
   const processedData = useProcessedData();
 
+  //console.log(State.hideZeroWeightEdgeState);
+
   // State to manage the expanded state of accordion items
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>(
     {}
