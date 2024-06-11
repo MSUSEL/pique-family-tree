@@ -28,6 +28,11 @@ export function draw_edges(_parent : any, _children : any[]){
   //children.forEach(function(_child){
   return _children.map((_child : any) => {
   
+    //console.log(_child);
+    if (_child._rect.props.children[0].props.weight == 0){
+      console.log('child with 0 weight');
+    }
+
     // get childrens x and y coord
     let child_x = _child._rect.props.children[0].props.x + _child._rect.props.children[0].props.width / 2;
     let child_y = _child._rect.props.children[0].props.y;
@@ -46,8 +51,8 @@ export function draw_edges(_parent : any, _children : any[]){
     //      any browsers besides firefox; so my rememdy is to reverse the start and endpoints of the path manually
     if (_parent.json_data.weights[_child._rect.key] !== undefined){
       return(
-        <g>
-          <path key={_parent._rect.key + _child.key} id={_parent._rect.key + _child._rect.key} 
+        <g key={_parent._rect.key + _child._rect.key}>
+          <path id={_parent._rect.key + _child._rect.key} 
           d={child_x > parent_x ? `M${parent_x} ${parent_y} C${x1} ${y1} ${x2} ${y2} ${child_x} ${child_y}`
             : `M${child_x} ${child_y} C${x2} ${y2} ${x1} ${y1} ${parent_x} ${parent_y}`} 
           stroke={'#000000'} strokeWidth={1} fill={'none'}/>
