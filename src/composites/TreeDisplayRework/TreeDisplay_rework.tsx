@@ -25,15 +25,17 @@ const diagnostic_y = measure_y + node_y_spacing;
 let canvas_width = 8000; // width of the background
 let canvas_height = diagnostic_y + 70; // height of the background
 
-//export default function Example({ width, height, margin = defaultMargin }: TreeProps) { // original
 export const TreeDisplay_Rework = () => {
   
+  console.log('render tree');
+
   // get dataset and processed dataset
   const dataset = useAtomValue(State.dataset);
   //const processedData = useProcessedData();
-  //const processedData = useProcessedData();
+  const processedData = useProcessedData();
+  //console.log(process_data);
 
-  const [processedData, setProcessedData] = useState<any>(useProcessedData());
+  //const [processedData, setProcessedData] = useState<any>(useProcessedData());
 
   //console.log(State.hideZeroWeightEdgeState);
 
@@ -45,6 +47,8 @@ export const TreeDisplay_Rework = () => {
   //    This is why instead of having one central list of all nodes, I broke it each layer
   //    of nodes up into it's own list. 
   //    From top to bottom: tqi -> quality_aspects -> product_factors
+
+  // react hooks and useMemo
 
   // Define state variables to manage dynamic aspects
   const [tqi_nodes, setTQINodes] = useState<any[]>([]);
@@ -411,25 +415,34 @@ export const TreeDisplay_Rework = () => {
     }
 
     set_nodes();
-  }, []);
+  }, [processedData]);
   
   // used to draw the edges of active nodes.
   useEffect(() => {
+    //console.log("here");
+
 
     function draw_active_edges() {
       setTQIEdges(draw_edges(active_tqi_node, quality_aspect_nodes));
-      setQAEdges(draw_edges(active_quality_aspect_node, product_factor_nodes));
+      //setQAEdges(draw_edges(active_quality_aspect_node, product_factor_nodes));
+      setQAEdges((oldstate) => {
+        const newstate = draw_edges(active_quality_aspect_node, product_factor_nodes);
+        console.log(oldstate);
+        console.log(newstate);
+        return newstate;
+      })
       setPFEdges(draw_edges(active_product_factor_node, measure_nodes));
       setMeasureEdges(draw_edges(active_measure_node, diagnostic_nodes));
     }
 
     draw_active_edges();
   }, [active_tqi_node, active_quality_aspect_node, 
-      measure_nodes, diagnostic_nodes
+      measure_nodes, diagnostic_nodes, processedData
   ]);
 
   // returns the node and edge html components.
   function render_nodes_and_edges(){
+    //console.log('render_nodes_and_edges');
     return(
       <svg width={canvas_width} height={canvas_height} fill={'green'}>
         {tqi_nodes.map((node : any) => {return node._rect;}) }
@@ -673,6 +686,7 @@ export const TreeDisplay_Rework = () => {
   // creates and returns an array of nodes representing the specified layer
   function create_nodes(_factors : any, _x_pos: number, _y_pos: number, _arrow : boolean){
 
+    //TODO use memo conversion
     // required so we can use map on the factors.
     _factors = process_data(_factors);
 
