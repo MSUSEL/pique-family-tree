@@ -25,7 +25,7 @@ export const Wrapper = () => {
   const processedData = useProcessedData();
   if (!processedData) return null;
 
-  const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
+  const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(false);
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
 
   const leftSidebarWidthExpanded = "25vw"; // 20% of the viewport width
@@ -165,7 +165,6 @@ export const Wrapper = () => {
               <Tabs.Trigger value="tree">Tree</Tabs.Trigger>
               <Tabs.Trigger value="list">List</Tabs.Trigger>
               <Tabs.Trigger value="treerefactor">TreeRefactor</Tabs.Trigger>
-
             </Tabs.List>
 
             {/* Tab Content with Overflow Handling */}
@@ -190,7 +189,7 @@ export const Wrapper = () => {
               </Tabs.Content>
 
               <Tabs.Content value="treerefactor">
-                <TreeDisplay_Rework/>
+                <TreeDisplay_Rework />
               </Tabs.Content>
             </Box>
           </Tabs.Root>
