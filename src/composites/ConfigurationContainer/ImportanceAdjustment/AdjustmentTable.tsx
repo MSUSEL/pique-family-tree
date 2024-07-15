@@ -30,12 +30,14 @@ interface AdjustmentTableProps {
   selectedProfile?: Profile[];
   isProfileApplied: boolean;
   onResetApplied: () => void; // New prop for reset handler
+  containerHeight?: string;
 }
 
 export const AdjustmentTable: React.FC<AdjustmentTableProps> = ({
   selectedProfile,
   isProfileApplied,
   onResetApplied,
+  containerHeight = '100%'
 }) => {
   const dataset = useAtomValue(State.dataset);
   if (!dataset) return null;
@@ -130,9 +132,13 @@ export const AdjustmentTable: React.FC<AdjustmentTableProps> = ({
   };
 
   return (
-    <Flex direction={"column"} align={"center"}>
+    <Flex
+      direction={"column"}
+      align={"center"}
+      style={{ width: "100%", maxWidth: "100vw", overflowX: "auto" }}
+    >
       <Box>
-        <Table.Root variant="surface">
+        <Table.Root variant="surface" style={{ width: "100%" }}>
           <Table.Header>
             <Table.Row align={"center"}>
               <Table.ColumnHeaderCell justify={"center"} width={"25%"}>
@@ -209,7 +215,7 @@ export const AdjustmentTable: React.FC<AdjustmentTableProps> = ({
         justify="between"
         style={{ width: "100%" }}
       >
-        <Box style={{ flexBasis: "40%" }}>
+        <Box style={{ flexBasis: "40%", width: "100%" }}>
           <Card size="1">
             <Flex gap="3" align="center">
               <Avatar size="3" radius="full" fallback="Ini" color="indigo" />
@@ -224,7 +230,7 @@ export const AdjustmentTable: React.FC<AdjustmentTableProps> = ({
             </Flex>
           </Card>
         </Box>
-        <Box style={{ flexBasis: "40%" }}>
+        <Box style={{ flexBasis: "40%", width: "100%" }}>
           <Card size="1">
             <Flex gap="3" align="center">
               <Avatar size="3" radius="full" fallback="New" color="indigo" />
@@ -246,7 +252,8 @@ export const AdjustmentTable: React.FC<AdjustmentTableProps> = ({
             <Button
               variant="surface"
               onClick={resetAllAdjustments}
-              style={{ width: "100%", height: "30px" }}
+              // style={{ width: "100%", height: "30px" }}
+              style={{ width: "100%", height: "auto", padding: "10px" }}
             >
               <ResetIcon width="16" height="16" />
               Reset

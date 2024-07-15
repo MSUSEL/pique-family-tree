@@ -17,7 +17,7 @@ input {
   animation: overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.DialogContent {
+/* .DialogContent {
   background-color: white;
   border-radius: 6px;
   box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;
@@ -29,7 +29,25 @@ input {
   height: 70%;
   padding: 25px;
   animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+} */
+
+.DialogContent {
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: hsl(206 22% 7% / 15%) 0px 5px 15px -5px, hsl(206 22% 7% / 10%) 0px 5px 10px -10px; /* Reduced shadow intensity and spread */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 95vw;  
+  max-width: 1500px; /* Keep maximum width relative to the viewport */
+  height: 80vh; /* Height adjusted if needed */
+  max-height: 95vh; /* Keep maximum height relative to the viewport */
+  padding: 25px;
+  overflow: auto; /* Allows scrolling within the dialog if content exceeds its height */
+  animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .DialogContent:focus {
   outline: none;
 }
