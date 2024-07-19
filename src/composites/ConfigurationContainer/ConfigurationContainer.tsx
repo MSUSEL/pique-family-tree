@@ -5,6 +5,7 @@ import * as Tabs from "@radix-ui/react-tabs";
 import { ConfigurationSummary } from "./Summary";
 import { ImportanceAdjustment } from "./ImportanceAdjustment";
 import { NodeValueAdjustment } from "./NodeValueAdjustment";
+import { EnhancedImportanceAdjustment } from "./EnhancedImportanceAdjustment";
 import "../Style/Separator.css";
 import "../Style/ConfigTab.css";
 
@@ -16,10 +17,13 @@ export const ConfigurationContainer = () => {
         <Tabs.Root className="ConfigTab--TabsRoot" defaultValue="summary">
           <Tabs.List className="ConfigTab--TabsList">
             <Tabs.Trigger className="ConfigTab--TabsTrigger" value="summary">
-              <Strong>(In Progress)</Strong> Summary
+              Summary
             </Tabs.Trigger>
             <Tabs.Trigger className="ConfigTab--TabsTrigger" value="importance">
               Importance Adjustment
+            </Tabs.Trigger>
+            <Tabs.Trigger className="ConfigTab--TabsTrigger" value="enhancedimportance">
+              Importance Adjustment(Enhanced)
             </Tabs.Trigger>
             {/* <Tabs.Trigger className="ConfigTab--TabsTrigger" value="value">
               <Strong>(In Progress)</Strong> Value Adjustment
@@ -38,6 +42,13 @@ export const ConfigurationContainer = () => {
             <Tabs.Content className="ConfigTab--TabsContent" value="importance">
               <Box width="100%">
                 <ImportanceAdjustment />
+              </Box>
+            </Tabs.Content>
+
+            {/* enhanced dynamic importance adjustment */}
+            <Tabs.Content className="ConfigTab--TabsContent" value="enhancedimportance">
+              <Box width="100%">
+                <EnhancedImportanceAdjustment />
               </Box>
             </Tabs.Content>
 
