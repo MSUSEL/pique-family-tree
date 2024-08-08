@@ -1,6 +1,5 @@
-// AdjustmentTableLogic.tsx
 import { useAtomValue } from "jotai";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect, useCallback } from "react";
 import { State } from "../../../../state";
 import { Profile } from "../../../../types";
 import * as schema from "../../../../data/schema";
@@ -18,12 +17,14 @@ interface AdjustmentTableProps {
   selectedProfile?: Profile[];
   isProfileApplied: boolean;
   onResetApplied: () => void;
+  onWeightsChange: (weights: Weights) => void; // Add this prop
 }
 
 export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
   selectedProfile,
   isProfileApplied,
   onResetApplied,
+  onWeightsChange,
 }) => {
   const dataset = useAtomValue(State.dataset);
   if (!dataset) return null;
@@ -54,7 +55,8 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
   }, [selectedProfile, dataset, isProfileApplied]);
 
   const [values, setValues] = useState<{ [key: string]: number }>(sliderValues);
-  useMemo(() => {
+
+  useEffect(() => {
     setValues(sliderValues);
   }, [sliderValues]);
 
@@ -76,12 +78,15 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
     return newWeights;
   }, [values]);
 
+  useEffect(() => {
+    onWeightsChange(recalculatedWeights);
+  }, [recalculatedWeights, onWeightsChange]);
+
   const handleSliderChange = (name: string, newImportance: number) => {
     setValues((prev) => ({ ...prev, [name]: newImportance }));
   };
 
   const handleDownload = () => {
-    // Define the initial weights
     let weights: Weights = {};
     Object.entries(dataset.factors.tqi).forEach(([_, tqiEntry]) => {
       const entry = tqiEntry as TQIEntry;
@@ -90,7 +95,6 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
       });
     });
 
-    // Create a list of aspects that have changed
     let changedAspects: any = [];
     Object.entries(values).forEach(
       ([aspect, recalculatedImportance]) => {
@@ -100,13 +104,11 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
       }
     );
 
-    // Generate the filename based on the changed aspects
     let filename =
       changedAspects.length > 0
         ? `Custom_Profile_Changed_${changedAspects.join("_")}.json`
         : `Custom_Profile_Unchanged.json`;
 
-    // Create a Profile object to download
     let profileToDownload: Profile = {
       type: "Custom Profile",
       importance: recalculatedWeights,
@@ -116,7 +118,7 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
     const blob = new Blob([json], { type: "application/json" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = filename; // Use the generated filename
+    link.download = filename;
     link.click();
     URL.revokeObjectURL(link.href);
   };

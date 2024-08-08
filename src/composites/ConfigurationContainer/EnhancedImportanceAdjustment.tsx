@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   Button,
   Flex,
@@ -14,20 +14,20 @@ import {
 import { InfoCircledIcon, GearIcon, Cross2Icon } from "@radix-ui/react-icons";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Tabs from "@radix-ui/react-tabs";
+import { PieChart, Pie, Cell, Tooltip } from "recharts";
 import "../Style/Dialog.css";
 
 import { AdjustmentTableLogic } from "./ImportanceAdjustment/AdjustmentTable/AdjustmentTableLogic";
 import ProfileSelectionLogic from "./ImportanceAdjustment/ProfileSelection/ProfileSelectionLogic";
 import { Profile } from "../../types";
-import contributionExampleImg from "../../assets/contribution_example.png";
 import sensitivityExampleImg from "../../assets/sensitivity_example.png";
 import strategiesExampleImg from "../../assets/strategies_example.png";
 
+const COLORS = ['#41afaa', '#466eb4', '#aa998f', '#e6a532', '#d7642c', '#af4b91'];
 
 export const EnhancedImportanceAdjustment = () => {
-  const [selectedProfile, setSelectedProfile] = useState<
-    Profile | Profile[] | null
-  >(null);
+  const [selectedProfile, setSelectedProfile] = useState<Profile | Profile[] | null>(null);
+  const [recalculatedWeights, setRecalculatedWeights] = useState<{ [key: string]: number }>({});
 
   const handleProfileApply = (profile: Profile[] | null) => {
     setSelectedProfile(profile);
@@ -38,6 +38,15 @@ export const EnhancedImportanceAdjustment = () => {
   const handleReset = () => {
     setSelectedProfile(null);
   };
+
+  const handleWeightsChange = useCallback((weights: { [key: string]: number }) => {
+    setRecalculatedWeights(weights);
+  }, []);
+
+  const pieData = Object.entries(recalculatedWeights).map(([name, value]) => ({
+    name,
+    value,
+  }));
 
   return (
     <Flex direction="column" gap="3" align="start">
@@ -120,6 +129,7 @@ export const EnhancedImportanceAdjustment = () => {
                   }
                   isProfileApplied={isProfileApplied}
                   onResetApplied={handleReset}
+                  onWeightsChange={handleWeightsChange}
                 />
               </Box>
 
@@ -133,14 +143,24 @@ export const EnhancedImportanceAdjustment = () => {
                     <Tabs.Trigger value="sensitivity">Sensitivity</Tabs.Trigger>
                   </Tabs.List>
                   <Tabs.Content value="contribution">
-                    {/* Placeholder for Contribution content */}
+                    {/* Pie Chart for Contribution */}
                     <Box style={{ padding: "16px", border: "1px dashed #ccc" }}>
-                      Contribution Content Placeholder
-                      <img
-                        src={contributionExampleImg}
-                        alt="Contribution Example"
-                        style={{ width: "100%", marginTop: "16px" }}
-                      />
+                      <PieChart width={400} height={300}>
+                        <Pie
+                          data={pieData}
+                          dataKey="value"
+                          nameKey="name"
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={100}
+                          fill="#8884d8"
+                        >
+                          {pieData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
                     </Box>
                   </Tabs.Content>
                   <Tabs.Content value="sensitivity">
@@ -167,10 +187,10 @@ export const EnhancedImportanceAdjustment = () => {
               >
                 Strategies Content Placeholder
                 <img
-                        src={strategiesExampleImg}
-                        alt="Strategy Example"
-                        style={{ width: "60%", marginTop: "16px" }}
-                      />
+                  src={strategiesExampleImg}
+                  alt="Strategy Example"
+                  style={{ width: "60%", marginTop: "16px" }}
+                />
               </Box>
 
               <Dialog.Close asChild>
