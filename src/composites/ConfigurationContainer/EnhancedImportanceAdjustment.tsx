@@ -136,30 +136,28 @@ export const EnhancedImportanceAdjustment = () => {
               {/* Middle-right block: Tabs */}
               <Box style={{ gridRow: "2", gridColumn: "2" }}>
                 <Tabs.Root defaultValue="contribution">
-                  <Tabs.List>
-                    <Tabs.Trigger value="contribution">
-                      Contribution
-                    </Tabs.Trigger>
+                  <Tabs.List style={{ marginTop: "50px" }}>
+                    <Tabs.Trigger value="contribution">Contribution</Tabs.Trigger>
                     <Tabs.Trigger value="sensitivity">Sensitivity</Tabs.Trigger>
                   </Tabs.List>
                   <Tabs.Content value="contribution">
                     {/* Pie Chart for Contribution */}
                     <Box style={{ padding: "16px", border: "1px dashed #ccc" }}>
-                      <PieChart width={400} height={300}>
+                      <PieChart width={400} height={375}>
                         <Pie
                           data={pieData}
                           dataKey="value"
                           nameKey="name"
                           cx="50%"
                           cy="50%"
-                          outerRadius={100}
+                          outerRadius={130}
                           fill="#8884d8"
                         >
                           {pieData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                           ))}
                         </Pie>
-                        <Tooltip />
+                        <Tooltip position={{ x: 350, y: 50 }} /> 
                       </PieChart>
                     </Box>
                   </Tabs.Content>
