@@ -14,7 +14,7 @@ import {
 import { InfoCircledIcon, GearIcon, Cross2Icon } from "@radix-ui/react-icons";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Tabs from "@radix-ui/react-tabs";
-import { PieChart, Pie, Cell, Tooltip } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from "recharts";
 import "../Style/Dialog.css";
 
 import { AdjustmentTableLogic } from "./ImportanceAdjustment/AdjustmentTable/AdjustmentTableLogic";
@@ -46,6 +46,13 @@ export const EnhancedImportanceAdjustment = () => {
   const pieData = Object.entries(recalculatedWeights).map(([name, value]) => ({
     name,
     value,
+  }));
+
+  // Data for the line chart: Adjust this if characteristic values are different
+  const lineChartData = Object.entries(recalculatedWeights).map(([key, value], index) => ({
+    characteristic: key,
+    value: index, // Replace with actual characteristic value if available
+    weight: value,
   }));
 
   return (
@@ -183,12 +190,38 @@ export const EnhancedImportanceAdjustment = () => {
                   border: "1px dashed #ccc",
                 }}
               >
-                Strategies Content Placeholder
-                <img
-                  src={strategiesExampleImg}
-                  alt="Strategy Example"
-                  style={{ width: "60%", marginTop: "16px" }}
-                />
+                {/* <ResponsiveContainer width="100%" height={400}>
+                  <LineChart
+                    data={lineChartData}
+                    margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="value" label={{ value: 'Characteristic Value', position: 'insideBottom', offset: -5 }} />
+                    <YAxis label={{ value: 'Adjusted Weight', angle: -90, position: 'insideLeft' }} />
+                    <Tooltip />
+                    <Legend />
+                    {lineChartData.map((entry, index) => (
+                      <Line
+                        type="monotone"
+                        dataKey="weight"
+                        data={lineChartData.filter((d) => d.characteristic === entry.characteristic)}
+                        stroke={COLORS[index % COLORS.length]}
+                        key={index}
+                        name={entry.characteristic}
+                        dot={{ r: 5 }}
+                        activeDot={{ r: 8 }}
+                      />
+                    ))}
+                    <Line
+                      type="monotone"
+                      dataKey="weight"
+                      data={lineChartData.map((d) => ({ characteristic: d.characteristic, value: d.value, weight: 1 }))}
+                      stroke="red"
+                      strokeDasharray="5 5"
+                      name="Threshold"
+                    />
+                  </LineChart>
+                </ResponsiveContainer> */}
               </Box>
 
               <Dialog.Close asChild>
