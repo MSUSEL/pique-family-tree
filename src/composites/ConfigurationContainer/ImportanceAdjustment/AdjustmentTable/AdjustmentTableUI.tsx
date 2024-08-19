@@ -77,7 +77,7 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
         <Table.Root variant="surface" style={{ width: "100%" }}>
           <Table.Header>
             <Table.Row align={"center"}>
-              <Table.ColumnHeaderCell justify={"center"} width={"25%"}>
+              <Table.ColumnHeaderCell justify={"center"} width={"25%"} color = "gray">
                 <Text>Characteristics </Text>
                 <HoverCard.Root>
                   <HoverCard.Trigger>
@@ -161,7 +161,7 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
             <Flex gap="3" align="center">
               <Avatar size="3" radius="full" fallback="Ini" color="indigo" />
               <Box>
-                <Text as="div" size="2" weight="bold">
+                <Text as="div" size="2" weight="bold" color = "gray">
                   Initial TQI
                 </Text>
                 <Text as="div" size="2" color="gray">
@@ -176,7 +176,7 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
             <Flex gap="3" align="center">
               <Avatar size="3" radius="full" fallback="New" color="indigo" />
               <Box>
-                <Text as="div" size="2" weight="bold">
+                <Text as="div" size="2" weight="bold" color = "gray">
                   Updated TQI
                 </Text>
                 <Flex gap="2" align="center">

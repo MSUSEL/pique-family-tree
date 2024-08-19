@@ -26,16 +26,16 @@ const ProfileSelectionUI: React.FC<ProfileSelectionUIProps> = ({
   return (
     <Flex direction={"column"} style={{ margin: "10px" }}>
       <Flex>
-        <Text size={"9"}> (Optional) Profile Selection</Text>
+        <Text size={"9"} color = "gray"> (Optional) Profile Selection</Text>
       </Flex>
       <Flex align={"start"} justify={"between"} gap={"7"} direction={"column"}>
         <Flex direction={"row"} align={"start"} justify={"start"} gap={"5"}>
           <Box>
-            <Text>
+            <Text color = "gray">
               <DropdownMenuIcon /> Option 1. Predefined Industry Profiles:
             </Text>
           </Box>
-          <Box>
+          <Box height={"9"}>
             <Select.Root
               onValueChange={handleProfileChange}
               value={selectValue}
@@ -56,7 +56,7 @@ const ProfileSelectionUI: React.FC<ProfileSelectionUIProps> = ({
 
         <Flex direction={"row"} align={"start"} justify={"start"} gap={"5"}>
           <Box>
-            <UploadIcon /> <Text>Option 2. Personal Profiles: </Text>
+            <UploadIcon color = "gray" /> <Text color = "gray">Option 2. Personal Profiles: </Text>
           </Box>
           <Box>
             <input type="file" onChange={handleFileUpload} />
