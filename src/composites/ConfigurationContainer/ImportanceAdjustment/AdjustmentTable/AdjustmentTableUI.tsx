@@ -208,6 +208,7 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
             variant="outline"
             onClick={handleApply}
             style={{ width: "100%", height: "30px" }}
+            color = "gray"
           >
             <MagicWandIcon width="16" height="16" />
             Apply
@@ -218,6 +219,7 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
             variant="surface"
             onClick={resetAllAdjustments}
             style={{ width: "100%", height: "30px" }}
+            color = "gray"
           >
             <ResetIcon width="16" height="16" />
             Reset
@@ -228,8 +230,9 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
             variant={"surface"}
             onClick={handleDownload}
             style={{ width: "100%", height: "30px" }}
+            color = "gray"
           >
-            <DownloadIcon width="16" height="16" />
+            <DownloadIcon width="16" height="16"/>
             Download
           </Button>
         </Box>
