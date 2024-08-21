@@ -26,18 +26,27 @@ import * as schema from "../../../../data/schema";
 import { useAtom } from "jotai";
 import { State } from "../../../../state";
 
+
+// added for multiple sliders
+export enum SliderMode {
+  importance,
+  characteristics,
+}
+
 interface AdjustmentTableUIProps {
   dataset: schema.base.Schema;
-  values: { [key: string]: number };
+  characteristicValues: { [key: string]: number };
+  importanceValues: { [key: string]: number };
   recalculatedWeights: { [key: string]: number };
-  handleSliderChange: (name: string, newImportance: number) => void;
+  handleSliderChange: (name: string, newImportance: number, mode : SliderMode) => void;
   resetAllAdjustments: () => void;
   handleDownload: () => void;
 }
 
 export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
   dataset,
-  values,
+  characteristicValues,
+  importanceValues,
   recalculatedWeights,
   handleSliderChange,
   resetAllAdjustments,
@@ -77,7 +86,7 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
         <Table.Root variant="surface" style={{ width: "100%" }}>
           <Table.Header>
             <Table.Row align={"center"}>
-              <Table.ColumnHeaderCell justify={"center"} width={"25%"} color = "gray">
+              <Table.ColumnHeaderCell justify={"center"} width={"25%"}>
                 <Text>Characteristics </Text>
                 <HoverCard.Root>
                   <HoverCard.Trigger>
@@ -92,6 +101,9 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
                     </Text>
                   </HoverCard.Content>
                 </HoverCard.Root>
+              </Table.ColumnHeaderCell>
+              <Table.ColumnHeaderCell justify={"center"} width={"15%"}>
+                Original Value
               </Table.ColumnHeaderCell>
               <Table.ColumnHeaderCell justify={"center"} width={"15%"}>
                 Characteristics Value
@@ -132,14 +144,18 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
                   <SingleTableRow
                     key={name}
                     name={name}
-                    qualityAspectValue={
-                      dataset.factors.quality_aspects[name]?.value || 0
-                    }
+                    //qualityAspectValue={
+                      //dataset.factors.quality_aspects[name]?.value || 0
+                    //}
                     qualityAspectDescription={
                       dataset.factors.quality_aspects[name]?.description || ""
                     }
+                    
+                    characteristicValue={tqiEntry.value}
+                    characteristicSlider={characteristicValues[name]}
+
                     weightValue={weight}
-                    sliderValue={values[name]}
+                    importanceSlider={importanceValues[name]}
                     recalculatedWeight={recalculatedWeights[name]}
                     onSliderChange={handleSliderChange}
                   />

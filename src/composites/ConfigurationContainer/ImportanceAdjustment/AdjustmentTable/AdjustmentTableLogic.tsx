@@ -3,7 +3,7 @@ import React, { useMemo, useState, useEffect, useCallback } from "react";
 import { State } from "../../../../state";
 import { Profile } from "../../../../types";
 import * as schema from "../../../../data/schema";
-import { AdjustmentTableUI } from "./AdjustmentTableUI";
+import { AdjustmentTableUI, SliderMode } from "./AdjustmentTableUI";
 
 interface Weights {
   [key: string]: number;
@@ -32,58 +32,113 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
   const getInitialWeights = (
     selectedProfile: Profile[] | undefined,
     dataset: schema.base.Schema,
-    useDataset: boolean
+    useDataset: boolean,
+    mode: SliderMode
   ): { [key: string]: number } => {
     let weights: Weights = {};
     if (selectedProfile && selectedProfile.length > 0 && !useDataset) {
-      const profileWeights = selectedProfile[0].importance;
-      weights = { ...profileWeights };
-    } else {
-      Object.entries(dataset.factors.tqi).forEach(([_, tqiEntry]) => {
-        const entry = tqiEntry as TQIEntry;
-        Object.entries(entry.weights).forEach(([aspect, importance]) => {
-          weights[aspect] = importance;
+
+      var profileWeights : any;
+      // get either the importance or characteristic factor depending on mode
+      if (mode === SliderMode.importance){
+        profileWeights = selectedProfile[0].importance;
+      }
+      else if (mode === SliderMode.characteristics){
+        profileWeights = selectedProfile[0].characteristic;        
+      }
+
+      weights = { ...profileWeights };      
+    } 
+    else {
+      console.log(dataset.factors.tqi);
+      if (mode === SliderMode.importance){
+        Object.entries(dataset.factors.tqi).forEach(([_, tqiEntry]) => {
+          console.log(tqiEntry);
+          const entry = tqiEntry as TQIEntry;          
+          Object.entries(entry.weights).forEach(([aspect, importance]) => {
+            weights[aspect] = importance;
+          });          
         });
-      });
+      }
+
+      //dataset.factors.quality_aspects[name]?.value || 0
+      else if (mode === SliderMode.characteristics){
+        Object.entries(dataset.factors.tqi).forEach(([_, tqiEntry]) => {
+          console.log(tqiEntry);
+          const entry = tqiEntry as TQIEntry;          
+          Object.entries(entry.weights).forEach(([aspect, importance]) => {
+            weights[aspect] = dataset.factors.quality_aspects[aspect]?.value || 0;
+          });          
+        });
+      }      
     }
     return weights;
-  };
+  };  
 
-  const sliderValues = useMemo(() => {
+  const sliderImportanceValues = useMemo(() => {
     const useDataset = !isProfileApplied;
-    return getInitialWeights(selectedProfile, dataset, useDataset);
+    return getInitialWeights(selectedProfile, dataset, useDataset, SliderMode.importance);
   }, [selectedProfile, dataset, isProfileApplied]);
 
-  const [values, setValues] = useState<{ [key: string]: number }>(sliderValues);
+  // added
+  const sliderCharacteristicValues = useMemo(() => {
+    console.log("SLIDER CHAR VALUES");
+    const useDataset = !isProfileApplied;
+    console.log(getInitialWeights(selectedProfile, dataset, useDataset, SliderMode.characteristics));
+    return getInitialWeights(selectedProfile, dataset, useDataset, SliderMode.characteristics);
+  }, [selectedProfile, dataset, isProfileApplied]);
+
+  const [importanceValues, setImportanceValues] = useState<{ [key: string]: number }>(sliderImportanceValues);
+
+  // added
+  const [characteristicValues, setCharacteristicValues] = useState<{ [key: string]: number }>(sliderCharacteristicValues);
 
   useEffect(() => {
-    setValues(sliderValues);
-  }, [sliderValues]);
+    console.log("SET IMPORTANCE VALUES");
+    setImportanceValues(sliderImportanceValues);
+  }, [sliderImportanceValues]);
+
+  // added
+  useEffect(() => {
+    setCharacteristicValues(sliderCharacteristicValues);
+  }, [sliderCharacteristicValues]);
 
   const resetAllAdjustments = () => {
-    const resetValues = getInitialWeights(selectedProfile, dataset, true);
-    setValues(resetValues);
+
+    console.log("RESET ALL ADJUSTMENTS");
+
+    var resetValues = getInitialWeights(selectedProfile, dataset, true, SliderMode.importance);
+    setImportanceValues(resetValues);
+
+    resetValues = getInitialWeights(selectedProfile, dataset, true, SliderMode.characteristics);
+    setCharacteristicValues(resetValues);
+
     onResetApplied();
   };
 
   const recalculatedWeights = useMemo(() => {
     const newWeights: Weights = {};
-    Object.keys(values).forEach((name) => {
-      const totalImportance = Object.values(values).reduce(
+    Object.keys(importanceValues).forEach((name) => {
+      const totalImportance = Object.values(importanceValues).reduce(
         (sum, importance) => sum + importance,
         0
       );
-      newWeights[name] = values[name] / totalImportance;
+      newWeights[name] = importanceValues[name] / totalImportance;
     });
     return newWeights;
-  }, [values]);
+  }, [importanceValues]);
 
   useEffect(() => {
     onWeightsChange(recalculatedWeights);
   }, [recalculatedWeights, onWeightsChange]);
 
-  const handleSliderChange = (name: string, newImportance: number) => {
-    setValues((prev) => ({ ...prev, [name]: newImportance }));
+  const handleSliderChange = (name: string, newValue: number, mode : SliderMode) => {
+    if (mode === SliderMode.characteristics){
+      setCharacteristicValues((prev) => ({ ...prev, [name]: newValue }));
+    }
+    else if (mode === SliderMode.importance){
+      setImportanceValues((prev) => ({ ...prev, [name]: newValue }));
+    }   
   };
 
   const handleDownload = () => {
@@ -96,7 +151,7 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
     });
 
     let changedAspects: any = [];
-    Object.entries(values).forEach(
+    Object.entries(importanceValues).forEach(
       ([aspect, recalculatedImportance]) => {
         if (recalculatedImportance !== weights[aspect]) {
           changedAspects.push(aspect);
@@ -112,6 +167,7 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
     let profileToDownload: Profile = {
       type: "Custom Profile",
       importance: recalculatedWeights,
+      characteristic: sliderCharacteristicValues,
     };
 
     const json = JSON.stringify(profileToDownload, null, 2);
@@ -126,7 +182,8 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
   return (
     <AdjustmentTableUI
       dataset={dataset}
-      values={values}
+      characteristicValues={characteristicValues}
+      importanceValues={importanceValues}
       recalculatedWeights={recalculatedWeights}
       handleSliderChange={handleSliderChange}
       resetAllAdjustments={resetAllAdjustments}

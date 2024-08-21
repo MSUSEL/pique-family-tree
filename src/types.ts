@@ -6,6 +6,10 @@ export interface Profile {
   importance: {
     [qualityAspect: string]: number;
   };
+  // added for characteristic slider
+  characteristic: {
+    [qualityAspect: string]: number;
+  }
 }
 
   

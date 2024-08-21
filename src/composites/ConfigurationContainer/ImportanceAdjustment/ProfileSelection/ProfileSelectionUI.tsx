@@ -35,7 +35,7 @@ const ProfileSelectionUI: React.FC<ProfileSelectionUIProps> = ({
               <DropdownMenuIcon /> Option 1. Predefined Industry Profiles:
             </Text>
           </Box>
-          <Box height={"9"}>
+          <Box>
             <Select.Root
               onValueChange={handleProfileChange}
               value={selectValue}
