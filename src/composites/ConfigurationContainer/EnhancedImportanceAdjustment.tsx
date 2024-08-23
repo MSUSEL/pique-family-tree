@@ -16,14 +16,12 @@ import * as Dialog from "@radix-ui/react-dialog";
 import * as Tabs from "@radix-ui/react-tabs";
 import { PieChart, Pie, Cell, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from "recharts";
 import "../Style/Dialog.css";
-
+import {Pie_Chart} from "./ImportanceAdjustment/PlotPanel/PlotPanel.tsx";
 import { AdjustmentTableLogic } from "./ImportanceAdjustment/AdjustmentTable/AdjustmentTableLogic";
 import ProfileSelectionLogic from "./ImportanceAdjustment/ProfileSelection/ProfileSelectionLogic";
 import { Profile } from "../../types";
 import sensitivityExampleImg from "../../assets/sensitivity_example.png";
 import strategiesExampleImg from "../../assets/strategies_example.png";
-
-const COLORS = ['#41afaa', '#466eb4', '#aa998f', '#e6a532', '#d7642c', '#af4b91'];
 
 export const EnhancedImportanceAdjustment = () => {
   const [selectedProfile, setSelectedProfile] = useState<Profile | Profile[] | null>(null);
@@ -150,22 +148,7 @@ export const EnhancedImportanceAdjustment = () => {
                   <Tabs.Content value="contribution">
                     {/* Pie Chart for Contribution */}
                     <Box style={{ padding: "16px", border: "1px dashed #ccc" }}>
-                      <PieChart width={400} height={375}>
-                        <Pie
-                          data={pieData}
-                          dataKey="value"
-                          nameKey="name"
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={130}
-                          fill="#8884d8"
-                        >
-                          {pieData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip position={{ x: 350, y: 50 }} /> 
-                      </PieChart>
+                      {Pie_Chart(pieData)}
                     </Box>
                   </Tabs.Content>
                   <Tabs.Content value="sensitivity">

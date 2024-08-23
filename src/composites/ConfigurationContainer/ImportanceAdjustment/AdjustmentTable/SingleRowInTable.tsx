@@ -42,7 +42,9 @@ const SingleTableRow: React.FC<SingleTableRowProps> = ({
                     </HoverCard.Content>
                 </HoverCard.Root>
             </Table.ColumnHeaderCell>
-            <Table.Cell align='center' justify={'center'}>{characteristicValue.toFixed(2)}</Table.Cell> {/* Original characteristic value */}
+            <Table.Cell align='center' justify={'center'}>
+                {characteristicValue.toFixed(2)}
+            </Table.Cell>
             <Table.Cell align='center' justify={'center'}>
                 <Box style={{ position: 'relative', padding: '20px' }}>
                     <Slider.Root
@@ -62,7 +64,9 @@ const SingleTableRow: React.FC<SingleTableRowProps> = ({
                     </div>
                 </Box>
             </Table.Cell>
-            <Table.Cell align='center' justify={'center'}>{weightValue.toFixed(2)}</Table.Cell> {/* Original weight value */}
+            <Table.Cell align='center' justify={'center'}>
+                {weightValue.toFixed(2)}
+            </Table.Cell>
             <Table.Cell align='center' justify={'center'}>
                 <Box style={{ position: 'relative', padding: '20px' }}>
                     <Slider.Root
@@ -82,7 +86,9 @@ const SingleTableRow: React.FC<SingleTableRowProps> = ({
                     </div>
                 </Box>
             </Table.Cell>
-            <Table.Cell align='center' justify={'center'}>{recalculatedWeight.toFixed(2)}</Table.Cell>
+            <Table.Cell align='center' justify={'center'}>
+                {recalculatedWeight.toFixed(2)}
+            </Table.Cell>
         </Table.Row>
     );
 };

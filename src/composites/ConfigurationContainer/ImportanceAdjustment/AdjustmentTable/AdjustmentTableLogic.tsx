@@ -50,10 +50,8 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
       weights = { ...profileWeights };      
     } 
     else {
-      console.log(dataset.factors.tqi);
       if (mode === SliderMode.importance){
         Object.entries(dataset.factors.tqi).forEach(([_, tqiEntry]) => {
-          console.log(tqiEntry);
           const entry = tqiEntry as TQIEntry;          
           Object.entries(entry.weights).forEach(([aspect, importance]) => {
             weights[aspect] = importance;
@@ -64,7 +62,6 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
       //dataset.factors.quality_aspects[name]?.value || 0
       else if (mode === SliderMode.characteristics){
         Object.entries(dataset.factors.tqi).forEach(([_, tqiEntry]) => {
-          console.log(tqiEntry);
           const entry = tqiEntry as TQIEntry;          
           Object.entries(entry.weights).forEach(([aspect, importance]) => {
             weights[aspect] = dataset.factors.quality_aspects[aspect]?.value || 0;
@@ -82,9 +79,7 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
 
   // added
   const sliderCharacteristicValues = useMemo(() => {
-    console.log("SLIDER CHAR VALUES");
     const useDataset = !isProfileApplied;
-    console.log(getInitialWeights(selectedProfile, dataset, useDataset, SliderMode.characteristics));
     return getInitialWeights(selectedProfile, dataset, useDataset, SliderMode.characteristics);
   }, [selectedProfile, dataset, isProfileApplied]);
 
@@ -94,7 +89,6 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
   const [characteristicValues, setCharacteristicValues] = useState<{ [key: string]: number }>(sliderCharacteristicValues);
 
   useEffect(() => {
-    console.log("SET IMPORTANCE VALUES");
     setImportanceValues(sliderImportanceValues);
   }, [sliderImportanceValues]);
 
@@ -104,8 +98,6 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
   }, [sliderCharacteristicValues]);
 
   const resetAllAdjustments = () => {
-
-    console.log("RESET ALL ADJUSTMENTS");
 
     var resetValues = getInitialWeights(selectedProfile, dataset, true, SliderMode.importance);
     setImportanceValues(resetValues);

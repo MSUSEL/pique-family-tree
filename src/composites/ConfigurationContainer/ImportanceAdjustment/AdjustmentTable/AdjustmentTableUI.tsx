@@ -77,8 +77,8 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
   const handleApply = () => {
     setTqiValue(updatedTQI); // Set tqiValue as updatedTQI
     setAdjustedImportance(recalculatedWeights); // Set adjustedImportance as recalculatedWeights
-    console.log('Applied updatedTQI:', updatedTQI);
-    console.log('Applied recalculatedWeights:', recalculatedWeights);
+    //console.log('Applied updatedTQI:', updatedTQI);
+    //console.log('Applied recalculatedWeights:', recalculatedWeights);
   };
   return (
     <Flex direction={"column"} align={"center"}>
