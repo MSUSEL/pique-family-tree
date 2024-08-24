@@ -1,7 +1,5 @@
 import './style.css';
 import Plot from 'react-plotly.js';
-//import { PieChart, Pie, Cell, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from "recharts";
-const COLORS = ['#41afaa', '#466eb4', '#aa998f', '#e6a532', '#d7642c', '#af4b91'];
 
 
 /***

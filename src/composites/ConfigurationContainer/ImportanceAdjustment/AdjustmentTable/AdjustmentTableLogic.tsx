@@ -159,7 +159,7 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
     let profileToDownload: Profile = {
       type: "Custom Profile",
       importance: recalculatedWeights,
-      characteristic: sliderCharacteristicValues,
+      characteristic: characteristicValues,
     };
 
     const json = JSON.stringify(profileToDownload, null, 2);
