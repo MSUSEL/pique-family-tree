@@ -57,11 +57,11 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
     parseFloat(
       Object.values(dataset.factors.tqi)[0]?.value.toFixed(precision)
     ) || 0;
-  const updatedTQIRaw =
+  const updatedTQIRaw : number =
     recalculatedWeights &&
     Object.entries(recalculatedWeights).reduce(
       (total, [name, weight]) =>
-        total + (dataset.factors.quality_aspects[name]?.value || 0) * weight,
+        total + (characteristicValues[name] || 0) * weight,
       0
     );
 

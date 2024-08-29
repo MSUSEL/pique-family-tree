@@ -16,15 +16,19 @@ interface TQIEntry {
 interface AdjustmentTableProps {
   selectedProfile?: Profile[];
   isProfileApplied: boolean;
+  updatedTQIRaw: number;
   onResetApplied: () => void;
   onWeightsChange: (weights: Weights) => void; // Add this prop
+  onValuesChange: (weights: Weights) => void; // Add this prop
 }
 
 export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
   selectedProfile,
   isProfileApplied,
+  updatedTQIRaw, 
   onResetApplied,
   onWeightsChange,
+  onValuesChange,
 }) => {
   const dataset = useAtomValue(State.dataset);
   if (!dataset) return null;
@@ -124,6 +128,10 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
     onWeightsChange(recalculatedWeights);
   }, [recalculatedWeights, onWeightsChange]);
 
+  useEffect(() => {
+    onValuesChange(characteristicValues);
+  }, [characteristicValues, onValuesChange]);
+
   const handleSliderChange = (name: string, newValue: number, mode : SliderMode) => {
     if (mode === SliderMode.characteristics){
       setCharacteristicValues((prev) => ({ ...prev, [name]: newValue }));
@@ -177,6 +185,7 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
       characteristicValues={characteristicValues}
       importanceValues={importanceValues}
       recalculatedWeights={recalculatedWeights}
+      updatedTQIRaw={updatedTQIRaw}
       handleSliderChange={handleSliderChange}
       resetAllAdjustments={resetAllAdjustments}
       handleDownload={handleDownload}
