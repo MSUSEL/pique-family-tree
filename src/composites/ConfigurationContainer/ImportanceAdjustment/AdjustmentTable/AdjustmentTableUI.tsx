@@ -38,6 +38,7 @@ interface AdjustmentTableUIProps {
   characteristicValues: { [key: string]: number };
   importanceValues: { [key: string]: number };
   recalculatedWeights: { [key: string]: number };
+  updatedTQIRaw : number;
   handleSliderChange: (name: string, newImportance: number, mode : SliderMode) => void;
   resetAllAdjustments: () => void;
   handleDownload: () => void;
@@ -48,6 +49,7 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
   characteristicValues,
   importanceValues,
   recalculatedWeights,
+  updatedTQIRaw,
   handleSliderChange,
   resetAllAdjustments,
   handleDownload,
@@ -57,20 +59,20 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
     parseFloat(
       Object.values(dataset.factors.tqi)[0]?.value.toFixed(precision)
     ) || 0;
-  const updatedTQIRaw : number =
+  /*const updatedTQIRaw : number =
     recalculatedWeights &&
     Object.entries(recalculatedWeights).reduce(
       (total, [name, weight]) =>
         total + (characteristicValues[name] || 0) * weight,
       0
-    );
+    );*/
 
   // Ensure updatedTQI is formatted to the same precision
   const updatedTQI = updatedTQIRaw
     ? parseFloat(updatedTQIRaw.toFixed(precision))
     : 0;
 
-  // to apply the custermized importance
+  // to apply the customized importance
   const [_, setTqiValue] = useAtom(State.tqiValue);
   const [__, setAdjustedImportance] = useAtom(State.adjustedImportance);
 

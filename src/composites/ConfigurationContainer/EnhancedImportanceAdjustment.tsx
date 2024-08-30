@@ -100,8 +100,8 @@ export const EnhancedImportanceAdjustment = () => {
     );
 
   const pieData = Object.entries(recalculatedWeights).map(([name, value]) => ({
-    name,
-    value,
+    name, 
+    value: value * updatedValues[name] / updatedTQIRaw, // value * importance / total score
   }));
 
   const chartData : ChartData[] = Object.entries(recalculatedWeights).map(([name, _value]) => ({
