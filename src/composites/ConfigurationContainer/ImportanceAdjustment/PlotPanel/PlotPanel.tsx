@@ -1,3 +1,5 @@
+import { Box, Flex } from "@radix-ui/themes";
+import * as Tabs from '@radix-ui/react-tabs';
 import './style.css';
 import Plot from 'react-plotly.js';
 
@@ -125,4 +127,78 @@ export function SensitivityChart(charts : ChartData[], score: number, x_ticks: n
           }}
       />
   );
+}
+
+/***
+ * Renders the views to the right of the adjustment table, pie chart, sensitivities, and strategies
+ * 
+ * @param {{name: string; value: number}[]} pieData array of pie datas
+ * @param {ChartData[]} charts array of chart nodes
+ * @param {number} updatedTQI
+ * @param {number[]} x_tick the interval at which each data point is calculated
+ * @param {number} threshold the desired value for the score
+ */
+export function TabWindow(pieData : {name: string; value: number;}[], chartData: ChartData[], updatedTQIRaw: number, x_tick: number[], threshold: number) {
+
+  return(
+    <Flex direction="column" gap="4">
+      <Tabs.Root className="TabsRoot" defaultValue="tab1">
+          <Tabs.List className="TabsList" aria-label="Addditional details">
+              <Tabs.Trigger className="TabsTrigger" value="tab1">
+                  Contributions
+              </Tabs.Trigger>
+              <Tabs.Trigger className="TabsTrigger" value="tab2">
+                  Sensitivity
+              </Tabs.Trigger>
+              <Tabs.Trigger className="TabsTrigger" value="tab3">
+                  Impacts
+              </Tabs.Trigger>
+          </Tabs.List>
+          <Tabs.Content className="TabsContent" value="tab1">
+              <p className="Text">Provides Information about Contributions</p>
+              {Pie_Chart(pieData)}
+          </Tabs.Content>
+          <Tabs.Content className="TabsContent" value="tab2">
+              <p className="Text">Provides Information about sensitivity</p>
+              {SensitivityChart(chartData, updatedTQIRaw, x_tick, threshold)}
+          </Tabs.Content>
+          <Tabs.Content className="TabsContent" value="tab3">
+              <p className="Text">Provides Information about Impacts</p>
+              {/* strategy select*/}
+              
+          </Tabs.Content>
+      </Tabs.Root>
+    </Flex>
+  );
+}
+
+export function StrategySelect(){
+  /*
+  return(
+    <label htmlFor={ID}>
+        Strategy :
+        <select
+            name="selecStartegy"
+            value={selectValue}
+            onChange={e => handleChange(e.target.value)}
+        >
+            <option value="Lowest">Lowest</option>
+            <option value="Fastest">Fastest</option>
+            <option value="LowestEffort">Lowest Effort</option>
+            <option value="Custom">Custom 1</option>
+        </select>
+    </label>
+    
+    <div className="Recommendations">
+                  <p>Recommendation priority list</p>
+                  <ol>
+                      {props.impactIdx.map((idx) =>
+                          <li>
+                              {props.names[idx]} : {props.impact[idx]}
+                          </li>
+                      )}
+                  </ol>
+              </div>
+              
+);*/
 }

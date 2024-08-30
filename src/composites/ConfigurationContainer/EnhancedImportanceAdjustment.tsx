@@ -15,7 +15,7 @@ import { InfoCircledIcon, GearIcon, Cross2Icon } from "@radix-ui/react-icons";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Tabs from "@radix-ui/react-tabs";
 import "../Style/Dialog.css";
-import {ChartData, Pie_Chart, SensitivityChart} from "./ImportanceAdjustment/PlotPanel/PlotPanel.tsx";
+import {ChartData, Pie_Chart, SensitivityChart, TabWindow} from "./ImportanceAdjustment/PlotPanel/PlotPanel.tsx";
 import { AdjustmentTableLogic } from "./ImportanceAdjustment/AdjustmentTable/AdjustmentTableLogic";
 import ProfileSelectionLogic from "./ImportanceAdjustment/ProfileSelection/ProfileSelectionLogic";
 import { Profile } from "../../types";
@@ -199,25 +199,10 @@ export const EnhancedImportanceAdjustment = () => {
               </Box>
 
               {/* Middle-right block: Tabs */}
+              
+
               <Box style={{ gridRow: "2", gridColumn: "2" }}>
-                <Tabs.Root defaultValue="contribution">
-                  <Tabs.List style={{ marginTop: "50px" }}>
-                    <Tabs.Trigger value="contribution">Contribution</Tabs.Trigger>
-                    <Tabs.Trigger value="sensitivity">Sensitivity</Tabs.Trigger>
-                  </Tabs.List>
-                  <Tabs.Content value="contribution">
-                    {/* Pie Chart for Contribution */}
-                    <Box style={{ padding: "16px", border: "1px dashed #ccc" }}>
-                      {Pie_Chart(pieData)}
-                    </Box>
-                  </Tabs.Content>
-                  <Tabs.Content value="sensitivity">
-                    {/* Placeholder for Sensitivity content */}
-                    {<Box style={{ padding: "16px", border: "1px dashed #ccc" }}>
-                      {SensitivityChart(chartData, updatedTQIRaw, x_tick, 1.0)}
-                    </Box>}
-                  </Tabs.Content>
-                </Tabs.Root>
+              {TabWindow(pieData, chartData, updatedTQIRaw, x_tick, 1.0)}
               </Box>
 
               {/* Bottom block: Strategies */}
