@@ -89,6 +89,9 @@ const SingleTableRow: React.FC<SingleTableRowProps> = ({
             <Table.Cell align='center' justify={'center'}>
                 {recalculatedWeight.toFixed(2)}
             </Table.Cell>
+            <Table.Cell align='center' justify={'center'}>
+                {(characteristicSlider -recalculatedWeight).toFixed(2)}
+            </Table.Cell>
         </Table.Row>
     );
 };

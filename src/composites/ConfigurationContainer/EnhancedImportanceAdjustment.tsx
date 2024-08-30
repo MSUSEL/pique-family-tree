@@ -162,7 +162,7 @@ export const EnhancedImportanceAdjustment = () => {
               style={{
                 display: "grid",
                 gridTemplateRows: "auto 1fr auto",
-                gridTemplateColumns: "1fr 1fr",
+                gridTemplateColumns: "60% 40%",
                 gap: "16px",
               }}
             >

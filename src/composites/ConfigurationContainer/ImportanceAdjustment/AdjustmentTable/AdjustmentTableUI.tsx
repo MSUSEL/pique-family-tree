@@ -88,7 +88,7 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
         <Table.Root variant="surface" style={{ width: "100%" }}>
           <Table.Header>
             <Table.Row align={"center"}>
-              <Table.ColumnHeaderCell justify={"center"} width={"25%"}>
+              <Table.ColumnHeaderCell justify={"center"} width={"16%"}>
                 <Text>Characteristics </Text>
                 <HoverCard.Root>
                   <HoverCard.Trigger>
@@ -104,16 +104,16 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
                   </HoverCard.Content>
                 </HoverCard.Root>
               </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell justify={"center"} width={"15%"}>
+              <Table.ColumnHeaderCell justify={"center"} width={"10%"}>
                 Original Value
               </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell justify={"center"} width={"15%"}>
-                Characteristics Value
+              <Table.ColumnHeaderCell justify={"center"} width={"22%"}>
+                Characteristic Adjustment Sliders
               </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell justify={"center"} width={"15%"}>
+              <Table.ColumnHeaderCell justify={"center"} width={"10%"}>
                 Original Weight
               </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell justify={"center"} width={"30%"}>
+              <Table.ColumnHeaderCell justify={"center"} width={"22%"}>
                 <Text>Importance Adjustment Sliders </Text>
                 <HoverCard.Root>
                   <HoverCard.Trigger>
@@ -133,8 +133,11 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
                   </HoverCard.Content>
                 </HoverCard.Root>
               </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell justify={"center"} width={"15%"}>
+              <Table.ColumnHeaderCell justify={"center"} width={"10%"}>
                 Adjusted Weight
+              </Table.ColumnHeaderCell>
+              <Table.ColumnHeaderCell justify={"center"} width={"10%"}>
+                Impact
               </Table.ColumnHeaderCell>
             </Table.Row>
           </Table.Header>
