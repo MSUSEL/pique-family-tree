@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useEffect } from "react";
 import {
   Button,
   Flex,
@@ -13,9 +13,8 @@ import {
 } from "@radix-ui/themes";
 import { InfoCircledIcon, GearIcon, Cross2Icon } from "@radix-ui/react-icons";
 import * as Dialog from "@radix-ui/react-dialog";
-import * as Tabs from "@radix-ui/react-tabs";
 import "../Style/Dialog.css";
-import {ChartData, Pie_Chart, SensitivityChart, TabWindow} from "./ImportanceAdjustment/PlotPanel/PlotPanel.tsx";
+import {ChartData, TabWindow} from "./ImportanceAdjustment/PlotPanel/PlotPanel.tsx";
 import { AdjustmentTableLogic } from "./ImportanceAdjustment/AdjustmentTable/AdjustmentTableLogic";
 import ProfileSelectionLogic from "./ImportanceAdjustment/ProfileSelection/ProfileSelectionLogic";
 import { Profile } from "../../types";
@@ -69,7 +68,63 @@ const calculateGraphedImpacts = (slope : number, step : number,  x : number, y :
 export const EnhancedImportanceAdjustment = () => {
   const [selectedProfile, setSelectedProfile] = useState<Profile | Profile[] | null>(null);
   const [recalculatedWeights, setRecalculatedWeights] = useState<{ [key: string]: number }>({});
-  const [updatedValues, setUpdatedValues] = useState<{ [key: string]: number }>({});
+  const [updatedValues, setUpdatedValues] = useState<{ [key: string]: number }>({}); // characteristic value
+  const [updatedImportance, setUpdatedImportance] = useState<{ [key: string]: number }>({}); // importance value
+
+  // the numbers that appear in the strategies/impact lists
+  const [strategyValues, setStrategyValues] = useState<{ [key: string]: number }>({});
+  const [strategy, setStrategy] = useState("Lowest");
+
+  /*useEffect(() => {
+    console.log('Updated strategy values: ', strategyValues);
+  }, [strategyValues]);*/
+  useEffect(() => {
+    handleStrategyChanged();
+    console.log('Updated strategy: ', strategy);
+  }, [strategy, updatedImportance, updatedValues, recalculatedWeights]);
+
+  useEffect(() => {
+    console.log('Updated importance values: ', updatedImportance);
+  }, [updatedImportance]);
+
+  const handleStrategyChanged = () => {
+
+    if (strategy == 'Lowest'){ // by characteristic value, highest to lowest
+
+      let sortedValues = Object.fromEntries(
+        Object.entries(updatedValues).sort(([, a], [, b]) => a - b)
+      );  
+      setStrategyValues(sortedValues);
+    }
+    else if (strategy == 'Fastest'){ // by importance value, highest to lowest
+
+      let sortedValues = Object.fromEntries(
+        Object.entries(updatedImportance).sort(([, a], [, b]) => b - a)
+      );  
+      setStrategyValues(sortedValues);
+    }
+    else if (strategy === 'LowestEffort'){ // by (1 - importance) * char value, highest to lowest
+
+      const lowestEffortArray = Object.entries(updatedImportance).map(([name, value]) => ({
+        name, 
+        value: (1 - updatedValues[name]) * value,
+      }));
+
+      lowestEffortArray.sort((a, b) => b.value - a.value);
+  
+      const lowestEffort = Object.fromEntries(
+        lowestEffortArray.map(item => [item.name, item.value])
+      );
+      setStrategyValues(lowestEffort);
+    }
+    else { // by characteristic value, lowest to highest
+
+      let sortedValues = Object.fromEntries(
+        Object.entries(updatedValues).sort(([, a], [, b]) => b - a)
+      );  
+      setStrategyValues(sortedValues);
+    }
+  };
 
   const handleProfileApply = (profile: Profile[] | null) => {
     setSelectedProfile(profile);
@@ -80,16 +135,6 @@ export const EnhancedImportanceAdjustment = () => {
   const handleReset = () => {
     setSelectedProfile(null);
   };
-
-  const handleWeightsChange = useCallback((weights: { [key: string]: number }) => {
-    console.log('handle weights change');
-    setRecalculatedWeights(weights);
-  }, []);
-
-  const handleValuesChange = useCallback((weights: { [key: string]: number }) => {
-    console.log("handle values change");
-    setUpdatedValues(weights);
-  }, []);
 
   const updatedTQIRaw : number =
     recalculatedWeights &&
@@ -193,16 +238,17 @@ export const EnhancedImportanceAdjustment = () => {
                   isProfileApplied={isProfileApplied}
                   updatedTQIRaw={updatedTQIRaw}
                   onResetApplied={handleReset}
-                  onWeightsChange={handleWeightsChange}
-                  onValuesChange={handleValuesChange}
+                  onWeightsChange={setRecalculatedWeights}
+                  onImportanceChange={setUpdatedImportance}
+                  onValuesChange={setUpdatedValues}
                 />
               </Box>
 
               {/* Middle-right block: Tabs */}
               
 
-              <Box style={{ gridRow: "2", gridColumn: "2" }}>
-              {TabWindow(pieData, chartData, updatedTQIRaw, x_tick, 1.0)}
+              <Box style={{ gridRow: "2", gridColumn: "2" }}>      
+                {TabWindow(pieData, chartData, updatedTQIRaw, x_tick, 1.0, strategy, setStrategy, strategyValues)}
               </Box>
 
               {/* Bottom block: Strategies */}

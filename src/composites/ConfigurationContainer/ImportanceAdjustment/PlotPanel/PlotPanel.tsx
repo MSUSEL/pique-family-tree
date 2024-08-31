@@ -137,8 +137,12 @@ export function SensitivityChart(charts : ChartData[], score: number, x_ticks: n
  * @param {number} updatedTQI
  * @param {number[]} x_tick the interval at which each data point is calculated
  * @param {number} threshold the desired value for the score
+ * @param {string} strategy
+ * @param {function} onStrategyChanged
+ * @param {{[key: string]: number}} strategyValues
  */
-export function TabWindow(pieData : {name: string; value: number;}[], chartData: ChartData[], updatedTQIRaw: number, x_tick: number[], threshold: number) {
+export function TabWindow(pieData : {name: string; value: number;}[], chartData: ChartData[], updatedTQIRaw: number, x_tick: number[], threshold: number,
+  strategy : string, onStrategyChanged : (name : string) => void, strategyValues : {[key: string]: number}) {
 
   return(
     <Flex direction="column" gap="4">
@@ -159,23 +163,29 @@ export function TabWindow(pieData : {name: string; value: number;}[], chartData:
               {Pie_Chart(pieData)}
           </Tabs.Content>
           <Tabs.Content className="TabsContent" value="tab2">
-              <p className="Text">Provides Information about sensitivity</p>
+              <p className="Text">Provides Information about Sensitivity</p>
               {SensitivityChart(chartData, updatedTQIRaw, x_tick, threshold)}
           </Tabs.Content>
           <Tabs.Content className="TabsContent" value="tab3">
               <p className="Text">Provides Information about Impacts</p>
-              {/* strategy select*/}
-              
+              {StrategySelect(strategy, onStrategyChanged)}
+              {recommendationList(strategyValues)}
           </Tabs.Content>
       </Tabs.Root>
     </Flex>
   );
 }
 
-export function StrategySelect(){
-  /*
+/***
+ * Renders the views to the right of the adjustment table, pie chart, sensitivities, and strategies
+ * 
+ * @param {string} selectValue the active strategy
+ * @param {function} onStrategyChanged
+ */
+export function StrategySelect(selectValue : string, handleChange : (name : string) => void){
+  
   return(
-    <label htmlFor={ID}>
+    <label>
         Strategy :
         <select
             name="selecStartegy"
@@ -188,17 +198,22 @@ export function StrategySelect(){
             <option value="Custom">Custom 1</option>
         </select>
     </label>
-    
-    <div className="Recommendations">
-                  <p>Recommendation priority list</p>
-                  <ol>
-                      {props.impactIdx.map((idx) =>
-                          <li>
-                              {props.names[idx]} : {props.impact[idx]}
-                          </li>
-                      )}
-                  </ol>
-              </div>
-              
-);*/
+  );
+}
+
+export function recommendationList(impacts : {[key: string]: number}){
+
+  console.log('Rendering recommendationList with strategyValues:', impacts);
+  return(
+  <div className="Recommendations">
+  <p style={{ color: 'black' }}>Recommendation priority list</p>
+  <ol style={{ color: 'black' }}>
+    {Object.keys(impacts).map((key) => (
+      <li key={key}>
+        {key}: {impacts[key]}
+      </li>
+    ))}
+  </ol>
+  </div>
+  );
 }

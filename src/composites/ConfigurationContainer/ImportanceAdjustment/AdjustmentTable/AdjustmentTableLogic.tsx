@@ -19,6 +19,7 @@ interface AdjustmentTableProps {
   updatedTQIRaw: number;
   onResetApplied: () => void;
   onWeightsChange: (weights: Weights) => void; // Add this prop
+  onImportanceChange: (weights: Weights) => void; // Add this prop
   onValuesChange: (weights: Weights) => void; // Add this prop
 }
 
@@ -28,6 +29,7 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
   updatedTQIRaw, 
   onResetApplied,
   onWeightsChange,
+  onImportanceChange,
   onValuesChange,
 }) => {
   const dataset = useAtomValue(State.dataset);
@@ -94,6 +96,7 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
 
   useEffect(() => {
     setImportanceValues(sliderImportanceValues);
+    onImportanceChange(sliderImportanceValues);
   }, [sliderImportanceValues]);
 
   // added
@@ -125,6 +128,7 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
   }, [importanceValues]);
 
   useEffect(() => {
+    console.log('onweightschanged');
     onWeightsChange(recalculatedWeights);
   }, [recalculatedWeights, onWeightsChange]);
 
@@ -138,6 +142,7 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
     }
     else if (mode === SliderMode.importance){
       setImportanceValues((prev) => ({ ...prev, [name]: newValue }));
+      onImportanceChange(importanceValues);
     }   
   };
 
