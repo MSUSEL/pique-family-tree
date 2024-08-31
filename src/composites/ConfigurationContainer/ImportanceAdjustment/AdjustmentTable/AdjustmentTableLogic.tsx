@@ -128,7 +128,6 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
   }, [importanceValues]);
 
   useEffect(() => {
-    console.log('onweightschanged');
     onWeightsChange(recalculatedWeights);
   }, [recalculatedWeights, onWeightsChange]);
 

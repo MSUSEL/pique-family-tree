@@ -17,8 +17,6 @@ export interface ChartData{
  */
 export const Pie_Chart = (pieData : {name: string; value: number;}[]) => {
 
-  console.log("pie chart returned");
-
   let _labels : string[] = [];
   pieData.forEach((entry) => {
     _labels.push(entry.name);
@@ -28,9 +26,6 @@ export const Pie_Chart = (pieData : {name: string; value: number;}[]) => {
   pieData.forEach((entry) => {
     _values.push(entry.value);
   });
-
-  console.log('names: ' + _labels);
-  console.log('_values: ' + _values);
 
   return (
     <Plot
@@ -203,7 +198,6 @@ export function StrategySelect(selectValue : string, handleChange : (name : stri
 
 export function recommendationList(impacts : {[key: string]: number}){
 
-  console.log('Rendering recommendationList with strategyValues:', impacts);
   return(
   <div className="Recommendations">
   <p style={{ color: 'black' }}>Recommendation priority list</p>

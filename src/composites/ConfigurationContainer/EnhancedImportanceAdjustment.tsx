@@ -75,17 +75,9 @@ export const EnhancedImportanceAdjustment = () => {
   const [strategyValues, setStrategyValues] = useState<{ [key: string]: number }>({});
   const [strategy, setStrategy] = useState("Lowest");
 
-  /*useEffect(() => {
-    console.log('Updated strategy values: ', strategyValues);
-  }, [strategyValues]);*/
   useEffect(() => {
     handleStrategyChanged();
-    console.log('Updated strategy: ', strategy);
   }, [strategy, updatedImportance, updatedValues, recalculatedWeights]);
-
-  useEffect(() => {
-    console.log('Updated importance values: ', updatedImportance);
-  }, [updatedImportance]);
 
   const handleStrategyChanged = () => {
 
