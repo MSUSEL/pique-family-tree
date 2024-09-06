@@ -1,5 +1,5 @@
 // AdjustmentTableUI.tsx
-import React from "react";
+import React, { useState } from "react";
 import {
   Flex,
   Text,
@@ -26,19 +26,30 @@ import * as schema from "../../../../data/schema";
 import { useAtom } from "jotai";
 import { State } from "../../../../state";
 
+
+// added for multiple sliders
+export enum SliderMode {
+  importance,
+  characteristics,
+}
+
 interface AdjustmentTableUIProps {
   dataset: schema.base.Schema;
-  values: { [key: string]: number };
+  characteristicValues: { [key: string]: number };
+  importanceValues: { [key: string]: number };
   recalculatedWeights: { [key: string]: number };
-  handleSliderChange: (name: string, newImportance: number) => void;
+  updatedTQIRaw : number;
+  handleSliderChange: (name: string, newImportance: number, mode : SliderMode) => void;
   resetAllAdjustments: () => void;
   handleDownload: () => void;
 }
 
 export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
   dataset,
-  values,
+  characteristicValues,
+  importanceValues,
   recalculatedWeights,
+  updatedTQIRaw,
   handleSliderChange,
   resetAllAdjustments,
   handleDownload,
@@ -48,36 +59,45 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
     parseFloat(
       Object.values(dataset.factors.tqi)[0]?.value.toFixed(precision)
     ) || 0;
-  const updatedTQIRaw =
+  /*const updatedTQIRaw : number =
     recalculatedWeights &&
     Object.entries(recalculatedWeights).reduce(
       (total, [name, weight]) =>
-        total + (dataset.factors.quality_aspects[name]?.value || 0) * weight,
+        total + (characteristicValues[name] || 0) * weight,
       0
-    );
+    );*/
 
   // Ensure updatedTQI is formatted to the same precision
   const updatedTQI = updatedTQIRaw
     ? parseFloat(updatedTQIRaw.toFixed(precision))
     : 0;
 
-  // to apply the custermized importance
+  // to apply the customized importance
   const [_, setTqiValue] = useAtom(State.tqiValue);
   const [__, setAdjustedImportance] = useAtom(State.adjustedImportance);
+  const [___, setAdjustedCharacteristic] = useState(dataset.factors.quality_aspects);
 
   const handleApply = () => {
+    console.log('dataset factors: ', dataset.factors);
     setTqiValue(updatedTQI); // Set tqiValue as updatedTQI
     setAdjustedImportance(recalculatedWeights); // Set adjustedImportance as recalculatedWeights
-    console.log('Applied updatedTQI:', updatedTQI);
-    console.log('Applied recalculatedWeights:', recalculatedWeights);
+
+    // update each QA char value
+    let updatedQA : any = dataset.factors.quality_aspects;
+    updatedQA.map((e : any) => {
+      e.value = characteristicValues[e.name];
+    });
+
+    setAdjustedCharacteristic(updatedQA);
   };
+
   return (
     <Flex direction={"column"} align={"center"}>
       <Box>
         <Table.Root variant="surface" style={{ width: "100%" }}>
           <Table.Header>
             <Table.Row align={"center"}>
-              <Table.ColumnHeaderCell justify={"center"} width={"25%"}>
+              <Table.ColumnHeaderCell justify={"center"} width={"16%"}>
                 <Text>Characteristics </Text>
                 <HoverCard.Root>
                   <HoverCard.Trigger>
@@ -93,13 +113,16 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
                   </HoverCard.Content>
                 </HoverCard.Root>
               </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell justify={"center"} width={"15%"}>
-                Characteristics Value
+              <Table.ColumnHeaderCell justify={"center"} width={"10%"}>
+                Original Value
               </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell justify={"center"} width={"15%"}>
+              <Table.ColumnHeaderCell justify={"center"} width={"22%"}>
+                Characteristic Adjustment Sliders
+              </Table.ColumnHeaderCell>
+              <Table.ColumnHeaderCell justify={"center"} width={"10%"}>
                 Original Weight
               </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell justify={"center"} width={"30%"}>
+              <Table.ColumnHeaderCell justify={"center"} width={"22%"}>
                 <Text>Importance Adjustment Sliders </Text>
                 <HoverCard.Root>
                   <HoverCard.Trigger>
@@ -119,8 +142,11 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
                   </HoverCard.Content>
                 </HoverCard.Root>
               </Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell justify={"center"} width={"15%"}>
+              <Table.ColumnHeaderCell justify={"center"} width={"10%"}>
                 Adjusted Weight
+              </Table.ColumnHeaderCell>
+              <Table.ColumnHeaderCell justify={"center"} width={"10%"}>
+                Impact
               </Table.ColumnHeaderCell>
             </Table.Row>
           </Table.Header>
@@ -132,14 +158,18 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
                   <SingleTableRow
                     key={name}
                     name={name}
-                    qualityAspectValue={
-                      dataset.factors.quality_aspects[name]?.value || 0
-                    }
+                    //qualityAspectValue={
+                      //dataset.factors.quality_aspects[name]?.value || 0
+                    //}
                     qualityAspectDescription={
                       dataset.factors.quality_aspects[name]?.description || ""
                     }
+                    
+                    characteristicValue={tqiEntry.value}
+                    characteristicSlider={characteristicValues[name]}
+
                     weightValue={weight}
-                    sliderValue={values[name]}
+                    importanceSlider={importanceValues[name]}
                     recalculatedWeight={recalculatedWeights[name]}
                     onSliderChange={handleSliderChange}
                   />
@@ -161,7 +191,7 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
             <Flex gap="3" align="center">
               <Avatar size="3" radius="full" fallback="Ini" color="indigo" />
               <Box>
-                <Text as="div" size="2" weight="bold">
+                <Text as="div" size="2" weight="bold" color = "gray">
                   Initial TQI
                 </Text>
                 <Text as="div" size="2" color="gray">
@@ -176,7 +206,7 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
             <Flex gap="3" align="center">
               <Avatar size="3" radius="full" fallback="New" color="indigo" />
               <Box>
-                <Text as="div" size="2" weight="bold">
+                <Text as="div" size="2" weight="bold" color = "gray">
                   Updated TQI
                 </Text>
                 <Flex gap="2" align="center">
@@ -208,6 +238,7 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
             variant="outline"
             onClick={handleApply}
             style={{ width: "100%", height: "30px" }}
+            color = "gray"
           >
             <MagicWandIcon width="16" height="16" />
             Apply
@@ -218,6 +249,7 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
             variant="surface"
             onClick={resetAllAdjustments}
             style={{ width: "100%", height: "30px" }}
+            color = "gray"
           >
             <ResetIcon width="16" height="16" />
             Reset
@@ -228,8 +260,9 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
             variant={"surface"}
             onClick={handleDownload}
             style={{ width: "100%", height: "30px" }}
+            color = "gray"
           >
-            <DownloadIcon width="16" height="16" />
+            <DownloadIcon width="16" height="16"/>
             Download
           </Button>
         </Box>

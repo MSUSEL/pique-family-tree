@@ -198,7 +198,7 @@ export const AdjustmentTable: React.FC<AdjustmentTableProps> = ({
                       dataset.factors.quality_aspects[name]?.description || ""
                     }
                     weightValue={weight}
-                    sliderValue={values[name]}
+                    importanceSlider={values[name]}
                     recalculatedWeight={recalculatedWeights[name]}
                     onSliderChange={handleSliderChange}
                   />

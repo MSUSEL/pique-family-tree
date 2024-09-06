@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useEffect } from "react";
 import {
   Button,
   Flex,
@@ -13,21 +13,110 @@ import {
 } from "@radix-ui/themes";
 import { InfoCircledIcon, GearIcon, Cross2Icon } from "@radix-ui/react-icons";
 import * as Dialog from "@radix-ui/react-dialog";
-import * as Tabs from "@radix-ui/react-tabs";
-import { PieChart, Pie, Cell, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from "recharts";
 import "../Style/Dialog.css";
-
+import {ChartData, TabWindow} from "./ImportanceAdjustment/PlotPanel/PlotPanel.tsx";
 import { AdjustmentTableLogic } from "./ImportanceAdjustment/AdjustmentTable/AdjustmentTableLogic";
 import ProfileSelectionLogic from "./ImportanceAdjustment/ProfileSelection/ProfileSelectionLogic";
 import { Profile } from "../../types";
-import sensitivityExampleImg from "../../assets/sensitivity_example.png";
-import strategiesExampleImg from "../../assets/strategies_example.png";
 
 const COLORS = ['#41afaa', '#466eb4', '#aa998f', '#e6a532', '#d7642c', '#af4b91'];
+const x_tick_amt : number = 0.1;
+const x_tick : number[] = arrayRange(0,1,x_tick_amt);
+
+/**
+ * Returns an array of numbers between start and stop with step interval
+ *
+ * @param {number} start starting position.
+ * @param {number} stop stopping position.
+ * @param {number} step interval.
+ *
+ * @returns {array} An array of [start:step:stop].
+ */
+function arrayRange(start: number, stop : number, step : number){
+  let foo =[];
+  for(let i =start; i <= stop; i=i+step){
+      let next = start+ i;
+      foo.push(Number.parseFloat(next.toPrecision(2)));
+  }
+  return foo
+}
+
+/**
+* Returns an array of numbers that graph a linear function
+*
+* @param {number} slope the slope of the function
+* @param {number} step the value to increment each point by
+* @param {number} x the x coord of a point on the line
+* @param {number} y the y coord of a point on the line
+*
+* @returns {array} An array of y values on the line for every step.
+*/
+const calculateGraphedImpacts = (slope : number, step : number,  x : number, y : number) => {
+
+  // y = mx + b
+  // b = y - mx
+  let y_int : number = y - (slope * x);
+
+  let y_coords : number[] = [];
+  for (let i : number = 0; i <= 1; i += step) {
+    y_coords.push(slope * i + y_int);
+  }
+
+  return y_coords;
+}
 
 export const EnhancedImportanceAdjustment = () => {
   const [selectedProfile, setSelectedProfile] = useState<Profile | Profile[] | null>(null);
   const [recalculatedWeights, setRecalculatedWeights] = useState<{ [key: string]: number }>({});
+  const [updatedValues, setUpdatedValues] = useState<{ [key: string]: number }>({}); // characteristic value
+  const [updatedImportance, setUpdatedImportance] = useState<{ [key: string]: number }>({}); // importance value
+
+  // the numbers that appear in the strategies/impact lists
+  const [strategyValues, setStrategyValues] = useState<{ [key: string]: number }>({});
+  const [strategy, setStrategy] = useState("Lowest");
+
+  useEffect(() => {
+    handleStrategyChanged();
+  }, [strategy, updatedImportance, updatedValues, recalculatedWeights]);
+
+  const handleStrategyChanged = () => {
+
+    if (strategy == 'Lowest'){ // by characteristic value, highest to lowest
+
+      let sortedValues = Object.fromEntries(
+        Object.entries(updatedValues).sort(([, a], [, b]) => a - b)
+      );  
+      setStrategyValues(sortedValues);
+    }
+    else if (strategy == 'Fastest'){ // by importance value, highest to lowest
+
+      let sortedValues = Object.fromEntries(
+        Object.entries(updatedImportance).sort(([, a], [, b]) => b - a)
+      );  
+      setStrategyValues(sortedValues);
+    }
+    else if (strategy === 'LowestEffort'){ // by (1 - importance) * char value, highest to lowest
+
+      const lowestEffortArray = Object.entries(updatedImportance).map(([name, value]) => ({
+        name, 
+        value: (1 - updatedValues[name]) * value,
+      }));
+
+      lowestEffortArray.sort((a, b) => b.value - a.value);
+  
+      const lowestEffort = Object.fromEntries(
+        lowestEffortArray.map(item => [item.name, item.value])
+      );
+      setStrategyValues(lowestEffort);
+    }
+    else { // by characteristic value, lowest to highest
+
+      let sortedValues = Object.fromEntries(
+        Object.entries(updatedValues).sort(([, a], [, b]) => b - a)
+      );  
+      setStrategyValues(sortedValues);
+    }
+  };
 
   const handleProfileApply = (profile: Profile[] | null) => {
     setSelectedProfile(profile);
@@ -39,20 +128,24 @@ export const EnhancedImportanceAdjustment = () => {
     setSelectedProfile(null);
   };
 
-  const handleWeightsChange = useCallback((weights: { [key: string]: number }) => {
-    setRecalculatedWeights(weights);
-  }, []);
+  const updatedTQIRaw : number =
+    recalculatedWeights &&
+    Object.entries(recalculatedWeights).reduce(
+      (total, [name, weight]) =>
+        total + (updatedValues[name] || 0) * weight,
+      0
+    );
 
   const pieData = Object.entries(recalculatedWeights).map(([name, value]) => ({
-    name,
-    value,
+    name, 
+    value: value * updatedValues[name] / updatedTQIRaw, // value * importance / total score
   }));
 
-  // Data for the line chart: Adjust this if characteristic values are different
-  const lineChartData = Object.entries(recalculatedWeights).map(([key, value], index) => ({
-    characteristic: key,
-    value: index, // Replace with actual characteristic value if available
-    weight: value,
+  const chartData : ChartData[] = Object.entries(recalculatedWeights).map(([name, _value]) => ({
+    name: name,
+    value: updatedValues[name],
+    importance: _value,
+    impacts: calculateGraphedImpacts(_value, x_tick_amt, updatedValues[name], updatedTQIRaw) 
   }));
 
   return (
@@ -106,7 +199,7 @@ export const EnhancedImportanceAdjustment = () => {
               style={{
                 display: "grid",
                 gridTemplateRows: "auto 1fr auto",
-                gridTemplateColumns: "1fr 1fr",
+                gridTemplateColumns: "60% 40%",
                 gap: "16px",
               }}
             >
@@ -135,62 +228,30 @@ export const EnhancedImportanceAdjustment = () => {
                     Array.isArray(selectedProfile) ? selectedProfile : undefined
                   }
                   isProfileApplied={isProfileApplied}
+                  updatedTQIRaw={updatedTQIRaw}
                   onResetApplied={handleReset}
-                  onWeightsChange={handleWeightsChange}
+                  onWeightsChange={setRecalculatedWeights}
+                  onImportanceChange={setUpdatedImportance}
+                  onValuesChange={setUpdatedValues}
                 />
               </Box>
 
               {/* Middle-right block: Tabs */}
-              <Box style={{ gridRow: "2", gridColumn: "2" }}>
-                <Tabs.Root defaultValue="contribution">
-                  <Tabs.List style={{ marginTop: "50px" }}>
-                    <Tabs.Trigger value="contribution">Contribution</Tabs.Trigger>
-                    <Tabs.Trigger value="sensitivity">Sensitivity</Tabs.Trigger>
-                  </Tabs.List>
-                  <Tabs.Content value="contribution">
-                    {/* Pie Chart for Contribution */}
-                    <Box style={{ padding: "16px", border: "1px dashed #ccc" }}>
-                      <PieChart width={400} height={375}>
-                        <Pie
-                          data={pieData}
-                          dataKey="value"
-                          nameKey="name"
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={130}
-                          fill="#8884d8"
-                        >
-                          {pieData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip position={{ x: 350, y: 50 }} /> 
-                      </PieChart>
-                    </Box>
-                  </Tabs.Content>
-                  <Tabs.Content value="sensitivity">
-                    {/* Placeholder for Sensitivity content */}
-                    <Box style={{ padding: "16px", border: "1px dashed #ccc" }}>
-                      Sensitivity Content Placeholder
-                      <img
-                        src={sensitivityExampleImg}
-                        alt="Sensitivity Example"
-                        style={{ width: "100%", marginTop: "16px" }}
-                      />
-                    </Box>
-                  </Tabs.Content>
-                </Tabs.Root>
+              
+
+              <Box style={{ gridRow: "2", gridColumn: "2" }}>      
+                {TabWindow(pieData, chartData, updatedTQIRaw, x_tick, 1.0, strategy, setStrategy, strategyValues)}
               </Box>
 
               {/* Bottom block: Strategies */}
-              <Box
+              {/*<Box
                 style={{
                   gridColumn: "span 2",
                   padding: "16px",
                   border: "1px dashed #ccc",
                 }}
               >
-                {/* <ResponsiveContainer width="100%" height={400}>
+                <ResponsiveContainer width="100%" height={400}>
                   <LineChart
                     data={lineChartData}
                     margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
@@ -221,8 +282,8 @@ export const EnhancedImportanceAdjustment = () => {
                       name="Threshold"
                     />
                   </LineChart>
-                </ResponsiveContainer> */}
-              </Box>
+                </ResponsiveContainer>
+              </Box>*/}
 
               <Dialog.Close asChild>
                 <IconButton className="IconButton" aria-label="Close">
