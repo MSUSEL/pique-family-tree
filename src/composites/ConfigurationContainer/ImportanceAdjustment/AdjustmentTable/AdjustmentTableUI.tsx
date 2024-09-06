@@ -1,5 +1,5 @@
 // AdjustmentTableUI.tsx
-import React from "react";
+import React, { useState } from "react";
 import {
   Flex,
   Text,
@@ -75,12 +75,22 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
   // to apply the customized importance
   const [_, setTqiValue] = useAtom(State.tqiValue);
   const [__, setAdjustedImportance] = useAtom(State.adjustedImportance);
+  const [___, setAdjustedCharacteristic] = useState(dataset.factors.quality_aspects);
 
   const handleApply = () => {
+    console.log('dataset factors: ', dataset.factors);
     setTqiValue(updatedTQI); // Set tqiValue as updatedTQI
     setAdjustedImportance(recalculatedWeights); // Set adjustedImportance as recalculatedWeights
+
+    // update each QA char value
+    let updatedQA : any = dataset.factors.quality_aspects;
+    updatedQA.map((e : any) => {
+      e.value = characteristicValues[e.name];
+    });
+
+    setAdjustedCharacteristic(updatedQA);
   };
-  
+
   return (
     <Flex direction={"column"} align={"center"}>
       <Box>
