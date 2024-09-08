@@ -74,21 +74,23 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
 
   // to apply the customized importance
   const [_, setTqiValue] = useAtom(State.tqiValue);
-  const [__, setAdjustedImportance] = useAtom(State.adjustedImportance);
-  const [___, setAdjustedCharacteristic] = useState(dataset.factors.quality_aspects);
 
+  // in charge of applying the updated values to the processed data
   const handleApply = () => {
     console.log('dataset factors: ', dataset.factors);
     setTqiValue(updatedTQI); // Set tqiValue as updatedTQI
-    setAdjustedImportance(recalculatedWeights); // Set adjustedImportance as recalculatedWeights
 
-    // update each QA char value
-    let updatedQA : any = dataset.factors.quality_aspects;
-    updatedQA.map((e : any) => {
-      e.value = characteristicValues[e.name];
-    });
+    for (let qa in dataset.factors.quality_aspects) {
+      if (characteristicValues[qa] != null){
+        dataset.factors.quality_aspects[qa].value = characteristicValues[qa];
+      }  
+    }
 
-    setAdjustedCharacteristic(updatedQA);
+    for (let qa in dataset.factors.tqi[Object.keys(dataset.factors.tqi)[0]].weights){
+      if (recalculatedWeights[qa] != null){
+        dataset.factors.tqi[Object.keys(dataset.factors.tqi)[0]].weights[qa] = recalculatedWeights[qa];
+      }
+    }
   };
 
   return (
