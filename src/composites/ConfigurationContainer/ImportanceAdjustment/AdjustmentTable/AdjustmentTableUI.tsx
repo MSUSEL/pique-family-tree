@@ -86,6 +86,7 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
       }  
     }
 
+    // assumes only 1 TQI
     for (let qa in dataset.factors.tqi[Object.keys(dataset.factors.tqi)[0]].weights){
       if (recalculatedWeights[qa] != null){
         dataset.factors.tqi[Object.keys(dataset.factors.tqi)[0]].weights[qa] = recalculatedWeights[qa];
