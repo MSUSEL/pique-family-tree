@@ -10,6 +10,9 @@ export interface ChartData{
   impacts: number[]     // the values to graph (every 0.1 for now)
 }
 
+// color blind colors
+export const cb_colors = ['#00429d', '#4771b2', '#a5d5d8', '#ffbcaf', '#cf3759', '#93003a'];
+
 /***
  * Renders a Pie chart according to the contributions
  *
@@ -36,7 +39,10 @@ export const Pie_Chart = (pieData : {name: string; value: number;}[]) => {
             type: 'pie',
             textinfo: 'label+percent',
             textposition: 'outside',
-            sort: false
+            sort: false,
+            marker:{
+              colors: cb_colors
+            }
         }]}
         layout={{
             title: 'Contributions',
@@ -63,6 +69,7 @@ export function SensitivityChart(charts : ChartData[], score: number, x_ticks: n
 
   let traceData = [];
   let valData =[]
+  let color_idx : number = 0;
 
   for (let idx in node_idx){
 
@@ -71,7 +78,10 @@ export function SensitivityChart(charts : ChartData[], score: number, x_ticks: n
           y: charts[idx].impacts,
           x: x_ticks,
           type: 'scatter',
-          mode: 'lines'
+          mode: 'lines',
+          line:{
+            color: cb_colors[color_idx++]
+          }
       };
 
       let val_point ={
