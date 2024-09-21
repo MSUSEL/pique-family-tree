@@ -6,10 +6,15 @@ import "@radix-ui/themes/styles.css";
 
 import { Theme } from "@radix-ui/themes";
 
+// for color changing
+import { ColorModeProvider } from "./color-mode";
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Theme>
-      <App />
+      <ColorModeProvider>
+        <App />
+      </ColorModeProvider>
     </Theme>
   </React.StrictMode>
 );

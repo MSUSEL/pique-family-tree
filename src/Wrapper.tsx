@@ -19,6 +19,7 @@ import { TreeDisplay_Rework } from "./composites/TreeDisplayRework/TreeDisplay_r
 import { ListDisplay } from "./composites/ListDisplay/ListDisplay";
 // import { TreeDisplay_Rework_Usememo } from "./composites/TreeDisplayRework/TreeDisplay_rework_usememo.tsx";
 import { ConfigurationContainer } from "./composites/ConfigurationContainer/ConfigurationContainer";
+import { useColorMode } from './color-mode';
 
 export const Wrapper = () => {
   const dataset = useAtomValue(State.dataset);
@@ -40,6 +41,8 @@ export const Wrapper = () => {
     : sidebarWidthCollapsed;
   // const middleWidth = `calc(100vw - (${leftWidth} + ${rightWidth}))`;
   const middleWidth = `calc(100vw - (${leftWidth})`;
+
+  const { isColorBlind, toggleColorMode } = useColorMode();
 
   return (
     <div
@@ -155,6 +158,9 @@ export const Wrapper = () => {
             }}
           >
             <LegendContainer />
+            <button className="toggle-button" onClick={toggleColorMode}>
+              Switch to {isColorBlind ? 'Normal Mode' : 'Color Blind Mode'}
+            </button>
           </div>
 
           {/* Layout Tabs: Occupying the remaining 90% of the Middle Sub-Block Height */}

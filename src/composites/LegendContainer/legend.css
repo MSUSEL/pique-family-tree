@@ -1,0 +1,19 @@
+#severe {
+  background-color: var(--severe-color);
+}
+
+#high {
+  background-color: var(--high-color);
+}
+
+#medium {
+  background-color: var(--medium-color);
+}
+
+#low {
+  background-color: var(--low-color);
+}
+
+#insignificant {
+  background-color: var(--insignificant-color);
+}

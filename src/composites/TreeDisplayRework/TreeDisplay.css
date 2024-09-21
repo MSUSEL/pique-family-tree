@@ -29,31 +29,31 @@
 }
 .low_node {
     rx: 5px;
-    fill: #648FFF;
+    fill: var(--insignificant-color);
     stroke: black;
     stroke-width: 1px;
 }
 .guarded_node {
     rx: 5px;
-    fill: #785EF0;
+    fill: var(--low-color);
     stroke: #000000;
     stroke-width: 1px;
 }
 .elevated_node {
     rx: 5px;
-    fill: #FFB000;
+    fill: var(--medium-color);
     stroke: #000000;
     stroke-width: 1px;
 }
 .high_node {
     rx: 5px;
-    fill: #FE6100;
+    fill: var(--high-color);
     stroke: #000000;
     stroke-width: 1px;
 }
 .severe_node {
     rx: 5px;
-    fill: #DC267F;
+    fill: var(--severe-color);
     stroke: #000000;
     stroke-width: 1px;
 }

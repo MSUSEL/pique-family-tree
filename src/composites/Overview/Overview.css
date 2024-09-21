@@ -65,47 +65,47 @@ button {
 
 .AccordionContent.SevereBackground {
   border-radius: 0;
-  background: linear-gradient(to right, #DC267F 1%, var(--mauve-4) 4%);
+  background: linear-gradient(to right, var(--severe-color) 1%, var(--mauve-4) 4%);
 }
 .AccordionTrigger.SevereTitleCard {
   border-radius: 0;
-  background: linear-gradient(to right, #DC267F 1%, var(--mauve-3) 4%);
+  background: linear-gradient(to right, var(--severe-color) 1%, var(--mauve-3) 4%);
 }
 
 .AccordionContent.HighBackground {
   border-radius: 0;
-  background: linear-gradient(to right, #FE6100 1%, var(--mauve-4) 4%);
+  background: linear-gradient(to right, var(--high-color) 1%, var(--mauve-4) 4%);
 }
 .AccordionTrigger.HighTitleCard {
   border-radius: 0;
-  background: linear-gradient(to right, #FE6100 1%, var(--mauve-3) 4%);
+  background: linear-gradient(to right, var(--high-color) 1%, var(--mauve-3) 4%);
 }
 
 .AccordionContent.ModerateBackground {
   border-radius: 0;
-  background: linear-gradient(to right, #FFB000 1%, var(--mauve-4) 4%);
+  background: linear-gradient(to right, var(--medium-color) 1%, var(--mauve-4) 4%);
 }
 .AccordionTrigger.ModerateTitleCard {
   border-radius: 0;
-  background: linear-gradient(to right, #FFB000 1%, var(--mauve-3) 4%);
+  background: linear-gradient(to right, var(--medium-color) 1%, var(--mauve-3) 4%);
 }
 
 .AccordionContent.MinorBackground {
   border-radius: 0;
-  background: linear-gradient(to right, #785EF0 1%, var(--mauve-4) 4%);
+  background: linear-gradient(to right, var(--low-color) 1%, var(--mauve-4) 4%);
 }
 .AccordionTrigger.MinorTitleCard {
   border-radius: 0;
-  background: linear-gradient(to right, #785EF0 1%, var(--mauve-3) 4%);
+  background: linear-gradient(to right, var(--low-color) 1%, var(--mauve-3) 4%);
 }
 
 .AccordionContent.InsignificantBackground {
   border-radius: 0;
-  background: linear-gradient(to right, #648FFF 1%, var(--mauve-4) 4%);
+  background: linear-gradient(to right, var(--insignificant-color) 1%, var(--mauve-4) 4%);
 }
 .AccordionTrigger.InsignificantTitleCard {
   border-radius: 0;
-  background: linear-gradient(to right, #648FFF 1%, var(--mauve-3) 4%);
+  background: linear-gradient(to right, var(--insignificant-color)F 1%, var(--mauve-3) 4%);
 }
 
 .DroppedContent {
@@ -149,4 +149,25 @@ button {
   to {
     height: 0;
   }
+}
+
+.Severe {
+  fill: var(--severe-color);
+}
+
+.High {
+  fill: var(--high-color);
+}
+
+.Medium {
+  fill: var(--medium-color);
+}
+
+.Low {
+  fill: var(--low-color);
+}
+
+.Insignificant {
+  fill: var(--insignificant-color);
+  background: var(--insignificant-color);
 }

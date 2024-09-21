@@ -82,6 +82,8 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
     console.log("Selected Item:", item);
   };
 
+  console.log('colors: ', colors);
+
   return (
     <Flex direction={"row"} style={{ width: "100%" }} justify="between">
       {/* Accordion section */}
@@ -149,7 +151,7 @@ const SectionComponent: React.FC<SectionComponentProps> = ({
               label
             >
               {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={colors[entry.name]} />
+                <Cell key={`cell-${index}`} className={entry.name} />
               ))}
             </Pie>
             <Tooltip />
