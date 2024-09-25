@@ -254,7 +254,8 @@ export const OverviewTab = () => {
       else if (value <= 0.8) return "Medium";
       else if (value <= 1.5) return "High";
       else return "Severe";
-    } else {
+    } 
+    else {
       if (value >= 0.8) return "Insignificant";
       else if (value > 0.6) return "Low";
       else if (value > 0.4) return "Medium";
@@ -345,9 +346,7 @@ export const OverviewTab = () => {
                           2
                         ) as NonNullable<React.ReactNode>
                     }
-                    className={getValueRisk(topProblematicQualityAspects
-                      .at(0)
-                      ?.details.value, false)}
+                    className={getValueRisk(topProblematicQualityAspects.at(0)?.details.value, false)}
                     size={"4"}
                     style={{
                       width: "60px"
@@ -381,7 +380,7 @@ export const OverviewTab = () => {
                           2
                         ) as NonNullable<React.ReactNode>
                     }
-                    className={getValueRisk(tqiRiskLevel.value, false)}
+                    className={getValueRisk(topProblematicMeasures.at(0)?.details.value, false)}
                     size={"4"}
                     style={{
                       width: "60px"
@@ -398,7 +397,7 @@ export const OverviewTab = () => {
                           2
                         ) as NonNullable<React.ReactNode>
                     }
-                    className={getValueRisk(tqiRiskLevel.value, true)}
+                    className={getValueRisk(topProblematicDiagnostics.at(0)?.details.value, true)}
                     size={"4"}
                     style={{
                       width: "60px",

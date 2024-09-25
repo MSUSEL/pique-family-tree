@@ -5,7 +5,8 @@ import {
   getNormalColorBasedOnValue,
   getDiagnosticColorBasedOnValue,
 } from "../LegendContainer/GetColorVasedOnValue";
-
+import { useColorMode } from '../../color-mode.tsx';
+import { normalPalette, colorBlindPalette } from "../../colors.ts";
 import { renderSignleObjectDetails } from "./RenderSignleObjectDetails";
 import "../Style/ListDisplay.css";
 
@@ -15,6 +16,9 @@ export const renderDetails = (
     expandedState: Record<string, boolean>,
     isDiagnosticData: boolean = false
   ) => {
+    const { isColorBlind, toggleColorMode } = useColorMode();
+    const palette = isColorBlind ? colorBlindPalette : normalPalette;
+
     const getColor = isDiagnosticData
       ? getDiagnosticColorBasedOnValue
       : getNormalColorBasedOnValue;
@@ -22,7 +26,7 @@ export const renderDetails = (
       <Accordion.Root type="multiple" className="ListDisplay__AccordionRoot">
         {Object.entries(Data).map(([key, value]) => {
           const isExpanded = expandedState[key] || false;
-          const backgroundColor = getColor(value.value);
+          const backgroundColor = getColor(value.value, palette);
 
           return (
             <Accordion.Item
@@ -56,6 +60,8 @@ export  const renderMeasuresDetails = (
     expandedState: Record<string, boolean>,
     isDiagnosticData: boolean = false
   ) => {
+    const { isColorBlind, toggleColorMode } = useColorMode();
+    const palette = isColorBlind ? colorBlindPalette : normalPalette;
     const getColor = isDiagnosticData
       ? getDiagnosticColorBasedOnValue
       : getNormalColorBasedOnValue;
@@ -67,7 +73,7 @@ export  const renderMeasuresDetails = (
           // Use the key as a fallback if the name property is missing
           const measureName = measure.name ?? key;
           const measureValue = measure.value ?? "N/A";
-          const backgroundColor = getColor(measureValue);
+          const backgroundColor = getColor(measureValue, palette);
 
           return (
             <Accordion.Item

@@ -153,18 +153,22 @@ button {
 
 .Severe {
   fill: var(--severe-color);
+  background: var(--severe-color);
 }
 
 .High {
   fill: var(--high-color);
+  background: var(--high-color);
 }
 
 .Medium {
   fill: var(--medium-color);
+  background: var(--medium-color);
 }
 
 .Low {
   fill: var(--low-color);
+  background: var(--low-color);
 }
 
 .Insignificant {
