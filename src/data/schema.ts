@@ -41,7 +41,6 @@ const utilityFunctionSchema = z.union([
   utilityFunctionNewStructure,
 ]);
 
-
 // Define the new structure of evaluation strategy
 const evalStrategyNewStructure = z.object({
   //required
@@ -51,12 +50,7 @@ const evalStrategyNewStructure = z.object({
 });
 
 // Evaluation Strategy function schema: define 2 versions to accept both the old (only a string) and new (a nested structure) format
-const evalStrategySchema = z.union([
-  z.string(),
-  evalStrategyNewStructure,
-]);
-
-
+const evalStrategySchema = z.union([z.string(), evalStrategyNewStructure]);
 
 // Define the new structure of normalizer
 const normalizerNewStructure = z.object({
@@ -67,10 +61,7 @@ const normalizerNewStructure = z.object({
 });
 
 // Normalizer schema: define 2 versions to accept both the old (only a string) and new (a nested structure) format
-const normalizerSchema = z.union([
-  z.string(),
-  normalizerNewStructure,
-]);
+const normalizerSchema = z.union([z.string(), normalizerNewStructure]);
 
 export namespace base {
   /**
@@ -121,7 +112,7 @@ export namespace base {
     eval_strategy: evalStrategySchema, //z.string(),
     normalizer: normalizerSchema, //z.string(),
     positive: z.boolean(),
-    thresholds: z.tuple([z.number(), z.number()]),
+    thresholds: z.array(z.number()),
     utility_function: utilityFunctionSchema,
     value: z.number(),
     weights: z.record(z.string(), z.number()),
